@@ -1,5 +1,6 @@
-package com.comp2042;
+package com.comp2042.logic;
 
+import com.comp2042.dto.ClearRow;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;

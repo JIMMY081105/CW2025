@@ -1,4 +1,4 @@
-package com.comp2042;
+package com.comp2042.event;
 
 public final class MoveEvent {
     private final EventType eventType;

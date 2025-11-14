@@ -1,8 +1,11 @@
-package com.comp2042;
+package com.comp2042.logic;
 
-import com.comp2042.logic.bricks.Brick;
-import com.comp2042.logic.bricks.BrickGenerator;
-import com.comp2042.logic.bricks.RandomBrickGenerator;
+import com.comp2042.brick.Brick;
+import com.comp2042.brick.BrickGenerator;
+import com.comp2042.brick.NextShapeInfo;
+import com.comp2042.brick.RandomBrickGenerator;
+import com.comp2042.dto.ClearRow;
+import com.comp2042.dto.ViewData;
 
 import java.awt.*;
 

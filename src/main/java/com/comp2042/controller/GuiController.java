@@ -1,5 +1,13 @@
-package com.comp2042;
+package com.comp2042.controller;
 
+import com.comp2042.dto.DownData;
+import com.comp2042.dto.ViewData;
+import com.comp2042.event.EventSource;
+import com.comp2042.event.EventType;
+import com.comp2042.event.InputEventListener;
+import com.comp2042.event.MoveEvent;
+import com.comp2042.ui.GameOverPanel;
+import com.comp2042.ui.NotificationPanel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;

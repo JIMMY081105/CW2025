@@ -1,4 +1,6 @@
-package com.comp2042;
+package com.comp2042.brick;
+
+import com.comp2042.logic.MatrixOperations;
 
 public final class NextShapeInfo {
 

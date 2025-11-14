@@ -1,6 +1,7 @@
-package com.comp2042;
+package com.comp2042.logic;
 
-import com.comp2042.logic.bricks.Brick;
+import com.comp2042.brick.Brick;
+import com.comp2042.brick.NextShapeInfo;
 
 public class BrickRotator {
 
