@@ -1,6 +1,6 @@
-package com.comp2042.logic;
+package com.comp2042.util;
 
-import com.comp2042.dto.ClearRow;
+import com.comp2042.data.ClearRow;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -9,9 +9,7 @@ import java.util.stream.Collectors;
 
 public class MatrixOperations {
 
-
     private MatrixOperations(){
-
     }
 
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
@@ -88,12 +86,12 @@ public class MatrixOperations {
                 break;
             }
         }
-        int scoreBonus = 50 * clearedRows.size() * clearedRows.size();
+        int scoreBonus = GameConstants.SCORE_PER_LINE * clearedRows.size() * clearedRows.size();
         return new ClearRow(clearedRows.size(), tmp, scoreBonus);
     }
 
     public static List<int[][]> deepCopyList(List<int[][]> list){
         return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
     }
-
 }
+
