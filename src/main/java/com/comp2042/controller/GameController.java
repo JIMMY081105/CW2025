@@ -1,26 +1,21 @@
 package com.comp2042.controller;
 
-import com.comp2042.dto.ClearRow;
-import com.comp2042.dto.DownData;
-import com.comp2042.dto.ViewData;
+import com.comp2042.data.ClearRow;
+import com.comp2042.data.DownData;
+import com.comp2042.data.ViewData;
 import com.comp2042.event.EventSource;
 import com.comp2042.event.InputEventListener;
 import com.comp2042.event.MoveEvent;
-import com.comp2042.logic.Board;
-import com.comp2042.logic.SimpleBoard;
+import com.comp2042.model.Board;
+import com.comp2042.util.GameConstants;
 
 public class GameController implements InputEventListener {
 
-    private Board board = new SimpleBoard(25, 10);
+    private final Board board;
 
-    private final GuiController viewGuiController;
-
-    public GameController(GuiController c) {
-        viewGuiController = c;
+    public GameController(Board board) {
+        this.board = board;
         board.createNewBrick();
-        viewGuiController.setEventListener(this);
-        viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
-        viewGuiController.bindScore(board.getScore().scoreProperty());
     }
 
     @Override
@@ -33,15 +28,10 @@ public class GameController implements InputEventListener {
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
             }
-            if (board.createNewBrick()) {
-                viewGuiController.gameOver();
-            }
-
-            viewGuiController.refreshGameBackground(board.getBoardMatrix());
-
+            board.createNewBrick();
         } else {
             if (event.getEventSource() == EventSource.USER) {
-                board.getScore().add(1);
+                board.getScore().add(GameConstants.MANUAL_DOWN_SCORE);
             }
         }
         return new DownData(clearRow, board.getViewData());
@@ -65,11 +55,9 @@ public class GameController implements InputEventListener {
         return board.getViewData();
     }
 
-
     @Override
     public ViewData createNewGame() {
         board.newGame();
-        viewGuiController.refreshGameBackground(board.getBoardMatrix());
         return board.getViewData();
     }
 }
