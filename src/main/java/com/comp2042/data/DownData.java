@@ -1,4 +1,4 @@
-package com.comp2042.dto;
+package com.comp2042.data;
 
 public final class DownData {
     private final ClearRow clearRow;
