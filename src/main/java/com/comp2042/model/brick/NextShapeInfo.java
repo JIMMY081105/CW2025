@@ -1,6 +1,6 @@
-package com.comp2042.brick;
+package com.comp2042.model.brick;
 
-import com.comp2042.logic.MatrixOperations;
+import com.comp2042.util.MatrixOperations;
 
 public final class NextShapeInfo {
 
@@ -20,3 +20,4 @@ public final class NextShapeInfo {
         return position;
     }
 }
+

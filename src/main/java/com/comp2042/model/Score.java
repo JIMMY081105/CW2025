@@ -1,4 +1,4 @@
-package com.comp2042.logic;
+package com.comp2042.model;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
