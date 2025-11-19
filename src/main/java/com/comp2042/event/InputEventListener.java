@@ -1,7 +1,7 @@
 package com.comp2042.event;
 
-import com.comp2042.dto.DownData;
-import com.comp2042.dto.ViewData;
+import com.comp2042.data.DownData;
+import com.comp2042.data.ViewData;
 
 public interface InputEventListener {
 

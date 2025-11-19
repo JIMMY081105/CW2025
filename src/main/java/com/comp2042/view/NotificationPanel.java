@@ -1,4 +1,4 @@
-package com.comp2042.ui;
+package com.comp2042.view;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
