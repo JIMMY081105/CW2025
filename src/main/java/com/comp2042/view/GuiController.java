@@ -20,13 +20,14 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.control.ToggleButton;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -45,6 +46,12 @@ public class GuiController implements Initializable {
 
     @FXML
     private GameOverPanel gameOverPanel;
+
+    @FXML
+    private Text scoreValue;
+
+    @FXML
+    private ToggleButton pauseButton;
 
     private Rectangle[][] displayMatrix;
 
@@ -201,6 +208,9 @@ public class GuiController implements Initializable {
     }
 
     public void bindScore(IntegerProperty integerProperty) {
+        if (scoreValue != null) {
+            scoreValue.textProperty().bind(integerProperty.asString());
+        }
     }
 
     public void gameOver() {
@@ -218,9 +228,26 @@ public class GuiController implements Initializable {
         timeLine.play();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+        if (pauseButton != null) {
+            pauseButton.setText("Pause");
+        }
     }
 
     public void pauseGame(ActionEvent actionEvent) {
+        if (isGameOver.getValue() == Boolean.TRUE) {
+            return;
+        }
+        
+        isPause.setValue(!isPause.getValue());
+        
+        if (isPause.getValue()) {
+            timeLine.pause();
+            pauseButton.setText("Resume");
+        } else {
+            timeLine.play();
+            pauseButton.setText("Pause");
+        }
+        
         gamePanel.requestFocus();
     }
 }

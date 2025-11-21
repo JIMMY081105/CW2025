@@ -28,13 +28,14 @@ public class Main extends Application {
         GuiController guiController = fxmlLoader.getController();
 
         primaryStage.setTitle("TetrisJFX");
-        Scene scene = new Scene(root, 300, 510);
+        Scene scene = new Scene(root, 380, 510);
         primaryStage.setScene(scene);
         primaryStage.show();
         
         GameController gameController = new GameController(board);
         guiController.setEventListener(gameController);
         guiController.bind(board);
+        guiController.bindScore(board.scoreProperty());
     }
 
 

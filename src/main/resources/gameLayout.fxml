@@ -14,6 +14,14 @@
             <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
         </center>
     </BorderPane>
+    
+    <!-- Side Panel: Score and Game Controls (Outside the bordered game area) -->
+    <VBox layoutX="230" layoutY="50" spacing="20" alignment="TOP_CENTER" style="-fx-padding: 10;">
+        <Label text="SCORE" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <Text fx:id="scoreValue" text="0" styleClass="scoreClass"/>
+        <ToggleButton fx:id="pauseButton" text="Pause" onAction="#pauseGame" focusTraversable="false" prefWidth="100"/>
+        <Button text="New Game" onAction="#newGame" focusTraversable="false" prefWidth="100"/>
+    </VBox>
 
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
         <VBox alignment="CENTER">
