@@ -1,15 +1,9 @@
 package com.comp2042.model.brick;
 
-import com.comp2042.util.MatrixOperations;
+final class JBrick extends AbstractBrick {
 
-import java.util.ArrayList;
-import java.util.List;
-
-final class JBrick implements Brick {
-
-    private final List<int[][]> brickMatrix = new ArrayList<>();
-
-    public JBrick() {
+    @Override
+    protected void initializeShapes() {
         brickMatrix.add(new int[][]{
                 {0, 0, 0, 0},
                 {2, 2, 2, 0},
@@ -34,10 +28,5 @@ final class JBrick implements Brick {
                 {0, 2, 2, 0},
                 {0, 0, 0, 0}
         });
-    }
-
-    @Override
-    public List<int[][]> getShapeMatrix() {
-        return MatrixOperations.deepCopyList(brickMatrix);
     }
 }
