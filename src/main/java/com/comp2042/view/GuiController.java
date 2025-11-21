@@ -100,10 +100,6 @@ public class GuiController implements Initializable {
         });
         gameOverPanel.setVisible(false);
 
-        final Reflection reflection = new Reflection();
-        reflection.setFraction(0.8);
-        reflection.setTopOpacity(0.9);
-        reflection.setTopOffset(-12);
     }
 
     public void bind(Board board) {
