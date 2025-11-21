@@ -9,18 +9,14 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final List<Brick> brickList;
-
     private final Deque<Brick> nextBricks = new ArrayDeque<>();
 
     public RandomBrickGenerator() {
         brickList = new ArrayList<>();
-        brickList.add(new IBrick());
-        brickList.add(new JBrick());
-        brickList.add(new LBrick());
-        brickList.add(new OBrick());
-        brickList.add(new SBrick());
-        brickList.add(new TBrick());
-        brickList.add(new ZBrick());
+        for (int i = 0; i < BrickFactory.getBrickCount(); i++) {
+            brickList.add(BrickFactory.createBrick(i));
+        }
+
         nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
         nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
     }
