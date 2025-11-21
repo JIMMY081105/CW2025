@@ -99,18 +99,17 @@ public class GuiController implements Initializable {
             }
         });
         gameOverPanel.setVisible(false);
-
     }
 
     public void bind(Board board) {
         this.board = board;
-        
+
         ChangeListener<int[][]> boardMatrixListener = (obs, oldVal, newVal) -> {
             if (newVal != null) {
                 refreshGameBackground(newVal);
             }
         };
-        
+
         ChangeListener<Boolean> gameOverListener = (obs, oldVal, newVal) -> {
             if (newVal != null && newVal) {
                 gameOver();
@@ -119,10 +118,10 @@ public class GuiController implements Initializable {
                 isGameOver.setValue(Boolean.FALSE);
             }
         };
-        
+
         board.boardMatrixProperty().addListener(boardMatrixListener);
         board.isGameOverProperty().addListener(gameOverListener);
-        
+
         if (board.getBoardMatrix() != null && board.getViewData() != null) {
             initGameView(board.getBoardMatrix(), board.getViewData());
         }
@@ -151,7 +150,6 @@ public class GuiController implements Initializable {
         }
         brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getXPosition() * brickPanel.getVgap() + brick.getXPosition() * GameConstants.BRICK_SIZE);
         brickPanel.setLayoutY(GameConstants.BRICK_PANEL_Y_OFFSET + gamePanel.getLayoutY() + brick.getYPosition() * brickPanel.getHgap() + brick.getYPosition() * GameConstants.BRICK_SIZE);
-
 
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(GameConstants.GAME_TICK_MS),
@@ -235,9 +233,9 @@ public class GuiController implements Initializable {
         if (isGameOver.getValue() == Boolean.TRUE) {
             return;
         }
-        
+
         isPause.setValue(!isPause.getValue());
-        
+
         if (isPause.getValue()) {
             timeLine.pause();
             pauseButton.setText("Resume");
@@ -245,7 +243,7 @@ public class GuiController implements Initializable {
             timeLine.play();
             pauseButton.setText("Pause");
         }
-        
+
         gamePanel.requestFocus();
     }
 }
