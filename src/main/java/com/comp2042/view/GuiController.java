@@ -9,17 +9,15 @@ import com.comp2042.event.MoveEvent;
 import com.comp2042.model.Board;
 import com.comp2042.util.ColorMapper;
 import com.comp2042.util.GameConstants;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
@@ -27,8 +25,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.control.ToggleButton;
-import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -54,51 +50,54 @@ public class GuiController implements Initializable {
     private ToggleButton pauseButton;
 
     private Rectangle[][] displayMatrix;
-
-    private InputEventListener eventListener;
-
     private Rectangle[][] rectangles;
 
-    private Timeline timeLine;
+    private InputEventListener eventListener;
+    private Board board;
 
     private final BooleanProperty isPause = new SimpleBooleanProperty();
-
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
-    private Board board;
+    private GameLoop gameLoop;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
+        Font.loadFont(
+                getClass().getClassLoader().getResource("digital.ttf").toExternalForm(),
+                38
+        );
+
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
-        gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
-                    if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
-                        refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
-                        refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
-                        refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
-                        moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
-                        keyEvent.consume();
-                    }
-                }
-                if (keyEvent.getCode() == KeyCode.N) {
-                    newGame(null);
-                }
-            }
-        });
+
+        gamePanel.setOnKeyPressed(this::handleKeyPressed);
+
         gameOverPanel.setVisible(false);
+    }
+
+    private void handleKeyPressed(KeyEvent keyEvent) {
+        if (!isPause.get() && !isGameOver.get()) {
+            if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
+                refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
+                keyEvent.consume();
+            }
+            if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
+                refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
+                keyEvent.consume();
+            }
+            if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
+                refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
+                keyEvent.consume();
+            }
+            if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
+                moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
+                keyEvent.consume();
+            }
+        }
+
+        if (keyEvent.getCode() == KeyCode.N) {
+            newGame(null);
+        }
     }
 
     public void bind(Board board) {
@@ -115,7 +114,7 @@ public class GuiController implements Initializable {
                 gameOver();
             } else {
                 gameOverPanel.setVisible(false);
-                isGameOver.setValue(Boolean.FALSE);
+                isGameOver.set(false);
             }
         };
 
@@ -148,21 +147,36 @@ public class GuiController implements Initializable {
                 brickPanel.add(rectangle, j, i);
             }
         }
-        brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getXPosition() * brickPanel.getVgap() + brick.getXPosition() * GameConstants.BRICK_SIZE);
-        brickPanel.setLayoutY(GameConstants.BRICK_PANEL_Y_OFFSET + gamePanel.getLayoutY() + brick.getYPosition() * brickPanel.getHgap() + brick.getYPosition() * GameConstants.BRICK_SIZE);
 
-        timeLine = new Timeline(new KeyFrame(
-                Duration.millis(GameConstants.GAME_TICK_MS),
-                ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
-        ));
-        timeLine.setCycleCount(Timeline.INDEFINITE);
-        timeLine.play();
+        updateBrickPanelPosition(brick);
+
+        if (gameLoop == null) {
+            gameLoop = new GameLoop(
+                    GameConstants.GAME_TICK_MS,
+                    () -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+            );
+        }
+        gameLoop.start();
+    }
+
+    private void updateBrickPanelPosition(ViewData brick) {
+        brickPanel.setLayoutX(
+                gamePanel.getLayoutX()
+                        + brick.getXPosition() * brickPanel.getVgap()
+                        + brick.getXPosition() * GameConstants.BRICK_SIZE
+        );
+        brickPanel.setLayoutY(
+                GameConstants.BRICK_PANEL_Y_OFFSET
+                        + gamePanel.getLayoutY()
+                        + brick.getYPosition() * brickPanel.getHgap()
+                        + brick.getYPosition() * GameConstants.BRICK_SIZE
+        );
     }
 
     private void refreshBrick(ViewData brick) {
-        if (isPause.getValue() == Boolean.FALSE) {
-            brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getXPosition() * brickPanel.getVgap() + brick.getXPosition() * GameConstants.BRICK_SIZE);
-            brickPanel.setLayoutY(GameConstants.BRICK_PANEL_Y_OFFSET + gamePanel.getLayoutY() + brick.getYPosition() * brickPanel.getHgap() + brick.getYPosition() * GameConstants.BRICK_SIZE);
+        if (!isPause.get()) {
+            updateBrickPanelPosition(brick);
+
             int[][] currentBrickData = brick.getBrickData();
             for (int i = 0; i < currentBrickData.length; i++) {
                 for (int j = 0; j < currentBrickData[i].length; j++) {
@@ -187,13 +201,16 @@ public class GuiController implements Initializable {
     }
 
     private void moveDown(MoveEvent event) {
-        if (isPause.getValue() == Boolean.FALSE) {
+        if (!isPause.get()) {
             DownData downData = eventListener.onDownEvent(event);
+
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
-                NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
+                NotificationPanel notificationPanel =
+                        new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
             }
+
             refreshBrick(downData.getViewData());
         }
         gamePanel.requestFocus();
@@ -210,37 +227,55 @@ public class GuiController implements Initializable {
     }
 
     public void gameOver() {
-        timeLine.stop();
+        if (gameLoop != null) {
+            gameLoop.stop();
+        }
         gameOverPanel.setVisible(true);
-        isGameOver.setValue(Boolean.TRUE);
+        isGameOver.set(true);
     }
 
     public void newGame(ActionEvent actionEvent) {
-        timeLine.stop();
+        if (gameLoop != null) {
+            gameLoop.stop();
+        }
+
         gameOverPanel.setVisible(false);
+
         ViewData viewData = eventListener.createNewGame();
         refreshBrick(viewData);
         gamePanel.requestFocus();
-        timeLine.play();
-        isPause.setValue(Boolean.FALSE);
-        isGameOver.setValue(Boolean.FALSE);
+
+        if (gameLoop == null) {
+            gameLoop = new GameLoop(
+                    GameConstants.GAME_TICK_MS,
+                    () -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+            );
+        }
+        gameLoop.start();
+
+        isPause.set(false);
+        isGameOver.set(false);
         if (pauseButton != null) {
             pauseButton.setText("Pause");
         }
     }
 
     public void pauseGame(ActionEvent actionEvent) {
-        if (isGameOver.getValue() == Boolean.TRUE) {
+        if (isGameOver.get()) {
             return;
         }
 
-        isPause.setValue(!isPause.getValue());
+        isPause.set(!isPause.get());
 
-        if (isPause.getValue()) {
-            timeLine.pause();
+        if (isPause.get()) {
+            if (gameLoop != null) {
+                gameLoop.pause();
+            }
             pauseButton.setText("Resume");
         } else {
-            timeLine.play();
+            if (gameLoop != null) {
+                gameLoop.start();
+            }
             pauseButton.setText("Pause");
         }
 
