@@ -283,4 +283,27 @@ class MatrixOperationsTest {
         assertEquals(1, copyList.get(0)[0][0]);
         assertEquals(9, original.get(0)[0][0]);
     }
+
+    @Test
+void checkRemoving_SeparatedFullRows_RemovesBothAndKeepsMiddleRow() {
+    int[][] board = {
+            {1, 1, 1, 1}, 
+            {0, 1, 0, 0}, 
+            {1, 1, 1, 1}, 
+            {0, 0, 0, 0}  
+    };
+
+    ClearRow clearRow = MatrixOperations.checkRemoving(board);
+
+    assertEquals(2, clearRow.getLinesRemoved());
+
+    int[][] newMatrix = clearRow.getNewMatrix();
+
+    assertArrayEquals(new int[]{0, 0, 0, 0}, newMatrix[0]);
+    assertArrayEquals(new int[]{0, 0, 0, 0}, newMatrix[1]);
+    assertArrayEquals(new int[]{0, 1, 0, 0}, newMatrix[2]); 
+    assertArrayEquals(new int[]{0, 0, 0, 0}, newMatrix[3]);
 }
+}
+
+
