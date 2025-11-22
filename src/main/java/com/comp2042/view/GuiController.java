@@ -119,11 +119,11 @@ public class GuiController implements Initializable {
             }
         };
 
-        board.boardMatrixProperty().addListener(boardMatrixListener);
-        board.isGameOverProperty().addListener(gameOverListener);
+        this.board.boardMatrixProperty().addListener(boardMatrixListener);
+        this.board.isGameOverProperty().addListener(gameOverListener);
 
-        if (board.getBoardMatrix() != null && board.getViewData() != null) {
-            initGameView(board.getBoardMatrix(), board.getViewData());
+        if (this.board.getBoardMatrix() != null && this.board.getViewData() != null) {
+            initGameView(this.board.getBoardMatrix(), this.board.getViewData());
         }
     }
 

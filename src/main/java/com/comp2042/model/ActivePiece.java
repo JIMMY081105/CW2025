@@ -8,12 +8,10 @@ import com.comp2042.util.MatrixOperations;
 public class ActivePiece {
 
     private final BrickRotator brickRotator = new BrickRotator();
-    private Brick brick;
     private int x;
     private int y;
 
     public void spawn(Brick brick) {
-        this.brick = brick;
         brickRotator.setBrick(brick);
         x = com.comp2042.util.GameConstants.SPAWN_X;
         y = com.comp2042.util.GameConstants.SPAWN_Y;
