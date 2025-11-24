@@ -5,6 +5,7 @@ import com.comp2042.data.ViewData;
 import com.comp2042.model.brick.Brick;
 import com.comp2042.model.brick.BrickGenerator;
 import com.comp2042.model.brick.RandomBrickGenerator;
+import com.comp2042.util.GameConstants;
 import com.comp2042.util.MatrixOperations;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -25,10 +26,14 @@ public class SimpleBoard implements Board {
     private final ObjectProperty<int[][]> boardMatrix = new SimpleObjectProperty<>();
 
     public SimpleBoard(int width, int height) {
+        this(width, height, new RandomBrickGenerator());
+    }
+
+    public SimpleBoard(int width, int height, BrickGenerator brickGenerator) {
         this.width = width;
         this.height = height;
         currentGameMatrix = new int[height][width];
-        brickGenerator = new RandomBrickGenerator();
+        this.brickGenerator = brickGenerator;
         activePiece = new ActivePiece();
         score = new Score();
         boardMatrix.set(currentGameMatrix);
@@ -89,7 +94,7 @@ public class SimpleBoard implements Board {
 
     @Override
     public ViewData getViewData() {
-        return activePiece.toViewData(brickGenerator.getNextBrick());
+        return activePiece.toViewData(brickGenerator.preview(GameConstants.NEXT_PREVIEW_COUNT));
     }
 
     @Override

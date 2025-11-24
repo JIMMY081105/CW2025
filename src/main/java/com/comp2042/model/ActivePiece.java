@@ -4,6 +4,8 @@ import com.comp2042.data.ViewData;
 import com.comp2042.model.brick.Brick;
 import com.comp2042.model.brick.NextShapeInfo;
 import com.comp2042.util.MatrixOperations;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ActivePiece {
 
@@ -51,11 +53,15 @@ public class ActivePiece {
         return y;
     }
 
-    public ViewData toViewData(Brick nextBrick) {
-        int[][] nextData = new int[0][0];
-        if (nextBrick != null && !nextBrick.getShapeMatrix().isEmpty()) {
-            nextData = nextBrick.getShapeMatrix().get(0);
+    public ViewData toViewData(List<Brick> nextBricks) {
+        List<int[][]> previews = new ArrayList<>();
+        if (nextBricks != null) {
+            for (Brick brick : nextBricks) {
+                if (brick != null && !brick.getShapeMatrix().isEmpty()) {
+                    previews.add(brick.getShapeMatrix().get(0));
+                }
+            }
         }
-        return new ViewData(getShape(), x, y, nextData);
+        return new ViewData(getShape(), x, y, previews);
     }
 }

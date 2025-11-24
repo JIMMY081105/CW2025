@@ -16,20 +16,33 @@ import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.geometry.Insets;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class GuiController implements Initializable {
+
+    @FXML
+    private Pane rootPane;
+
+    @FXML
+    private BorderPane gameBoard;
 
     @FXML
     private GridPane gamePanel;
@@ -39,6 +52,15 @@ public class GuiController implements Initializable {
 
     @FXML
     private GridPane brickPanel;
+
+    @FXML
+    private VBox sidePanel;
+
+    @FXML
+    private VBox nextBricksContainer;
+
+    @FXML
+    private VBox nextBricksList;
 
     @FXML
     private GameOverPanel gameOverPanel;
@@ -59,6 +81,7 @@ public class GuiController implements Initializable {
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
     private GameLoop gameLoop;
+    private final List<GridPane> nextPreviewGrids = new ArrayList<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -66,6 +89,9 @@ public class GuiController implements Initializable {
                 getClass().getClassLoader().getResource("digital.ttf").toExternalForm(),
                 38
         );
+
+        applyLayoutMetrics();
+        initialiseNextPreviewPanels();
 
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
@@ -126,6 +152,79 @@ public class GuiController implements Initializable {
         }
     }
 
+    private void applyLayoutMetrics() {
+        gamePanel.setHgap(GameConstants.GRID_GAP);
+        gamePanel.setVgap(GameConstants.GRID_GAP);
+        gamePanel.setPrefWidth(GameConstants.boardPixelWidth());
+        gamePanel.setPrefHeight(GameConstants.boardPixelHeight());
+        gamePanel.setMinSize(GameConstants.boardPixelWidth(), GameConstants.boardPixelHeight());
+        gamePanel.setMaxSize(GameConstants.boardPixelWidth(), GameConstants.boardPixelHeight());
+
+        brickPanel.setHgap(GameConstants.GRID_GAP);
+        brickPanel.setVgap(GameConstants.GRID_GAP);
+
+        gameBoard.setPrefWidth(GameConstants.boardAreaWidth());
+        gameBoard.setPrefHeight(GameConstants.boardAreaHeight());
+        gameBoard.setMinSize(GameConstants.boardAreaWidth(), GameConstants.boardAreaHeight());
+        gameBoard.setMaxSize(GameConstants.boardAreaWidth(), GameConstants.boardAreaHeight());
+
+        sidePanel.setSpacing(GameConstants.SIDE_PANEL_SPACING);
+        sidePanel.setPrefWidth(GameConstants.SIDE_PANEL_WIDTH);
+        sidePanel.setPadding(new Insets(GameConstants.SIDE_PANEL_PADDING));
+        if (nextBricksContainer != null) {
+            nextBricksContainer.setSpacing(GameConstants.NEXT_PREVIEW_SPACING);
+        }
+        if (nextBricksList != null) {
+            nextBricksList.setSpacing(GameConstants.NEXT_PREVIEW_SPACING);
+        }
+
+        groupNotification.setLayoutY(GameConstants.notificationPanelY());
+
+        if (rootPane != null) {
+            rootPane.setPrefWidth(GameConstants.initialWindowWidth());
+            rootPane.setPrefHeight(GameConstants.initialWindowHeight());
+            rootPane.widthProperty().addListener((obs, oldWidth, newWidth) -> positionContent(newWidth.doubleValue()));
+        }
+
+        double initialWidth = rootPane != null
+                ? Math.max(rootPane.getWidth(), GameConstants.initialWindowWidth())
+                : GameConstants.initialWindowWidth();
+        positionContent(initialWidth);
+    }
+
+    private void positionContent(double availableWidth) {
+        double boardLeft = calculateBoardLeft(availableWidth);
+        double boardTop = GameConstants.BOARD_TOP_PADDING;
+
+        gamePanel.setLayoutX(boardLeft);
+        gamePanel.setLayoutY(boardTop);
+
+        gameBoard.setLayoutX(boardLeft - GameConstants.BOARD_FRAME_THICKNESS);
+        gameBoard.setLayoutY(boardTop - GameConstants.BOARD_FRAME_THICKNESS);
+
+        double sidePanelLeft = boardLeft + GameConstants.boardAreaWidth() + GameConstants.PANEL_GAP;
+        sidePanel.setLayoutX(sidePanelLeft);
+        sidePanel.setLayoutY(boardTop);
+
+        groupNotification.setLayoutX(sidePanelLeft);
+
+        if (board != null && board.getViewData() != null) {
+            updateBrickPanelPosition(board.getViewData());
+        }
+    }
+
+    private double calculateBoardLeft(double availableWidth) {
+        double safeWidth = Math.max(availableWidth, GameConstants.initialWindowWidth());
+        double boardWidth = GameConstants.boardAreaWidth();
+
+        double centeredBoardLeft = (safeWidth - boardWidth) / 2;
+        if (safeWidth < GameConstants.minimumCenteredWindowWidth()) {
+            double centeredContent = (safeWidth - GameConstants.contentWidth()) / 2;
+            return Math.max(GameConstants.BOARD_LEFT_PADDING, centeredContent);
+        }
+        return centeredBoardLeft;
+    }
+
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
         for (int i = GameConstants.HIDDEN_BUFFER_ROWS; i < boardMatrix.length; i++) {
@@ -149,6 +248,7 @@ public class GuiController implements Initializable {
         }
 
         updateBrickPanelPosition(brick);
+        renderNextBricks(brick.getNextBricksData());
 
         if (gameLoop == null) {
             gameLoop = new GameLoop(
@@ -160,16 +260,16 @@ public class GuiController implements Initializable {
     }
 
     private void updateBrickPanelPosition(ViewData brick) {
+        double boardOriginX = gameBoard.getLayoutX() + GameConstants.BOARD_FRAME_THICKNESS;
+        double boardOriginY = gameBoard.getLayoutY() + GameConstants.BOARD_FRAME_THICKNESS;
         brickPanel.setLayoutX(
-                gamePanel.getLayoutX()
-                        + brick.getXPosition() * brickPanel.getVgap()
-                        + brick.getXPosition() * GameConstants.BRICK_SIZE
+                boardOriginX
+                        + brick.getXPosition() * GameConstants.brickStep()
         );
         brickPanel.setLayoutY(
-                GameConstants.BRICK_PANEL_Y_OFFSET
-                        + gamePanel.getLayoutY()
-                        + brick.getYPosition() * brickPanel.getHgap()
-                        + brick.getYPosition() * GameConstants.BRICK_SIZE
+                GameConstants.brickPanelYOffset()
+                        + boardOriginY
+                        + brick.getYPosition() * GameConstants.brickStep()
         );
     }
 
@@ -184,6 +284,7 @@ public class GuiController implements Initializable {
                 }
             }
         }
+        renderNextBricks(brick.getNextBricksData());
     }
 
     public void refreshGameBackground(int[][] board) {
@@ -192,6 +293,56 @@ public class GuiController implements Initializable {
                 setRectangleData(board[i][j], displayMatrix[i][j]);
             }
         }
+    }
+
+    private void initialiseNextPreviewPanels() {
+        if (nextBricksList == null) {
+            return;
+        }
+        nextBricksList.getChildren().clear();
+        nextPreviewGrids.clear();
+        for (int i = 0; i < GameConstants.NEXT_PREVIEW_COUNT; i++) {
+            GridPane previewGrid = new GridPane();
+            previewGrid.setHgap(GameConstants.NEXT_BRICK_GAP);
+            previewGrid.setVgap(GameConstants.NEXT_BRICK_GAP);
+            previewGrid.setAlignment(Pos.CENTER);
+            nextPreviewGrids.add(previewGrid);
+            nextBricksList.getChildren().add(previewGrid);
+        }
+    }
+
+    private void renderNextBricks(List<int[][]> nextBricksData) {
+        if (nextBricksList == null) {
+            return;
+        }
+        if (nextPreviewGrids.isEmpty()) {
+            initialiseNextPreviewPanels();
+        }
+        for (int i = 0; i < nextPreviewGrids.size(); i++) {
+            GridPane previewGrid = nextPreviewGrids.get(i);
+            previewGrid.getChildren().clear();
+            if (nextBricksData == null || nextBricksData.size() <= i) {
+                continue;
+            }
+            int[][] brickMatrix = nextBricksData.get(i);
+            for (int row = 0; row < brickMatrix.length; row++) {
+                for (int col = 0; col < brickMatrix[row].length; col++) {
+                    int colorIndex = brickMatrix[row][col];
+                    if (colorIndex != 0) {
+                        Rectangle rectangle = createPreviewRectangle(colorIndex);
+                        previewGrid.add(rectangle, col, row);
+                    }
+                }
+            }
+        }
+    }
+
+    private Rectangle createPreviewRectangle(int colorIndex) {
+        Rectangle rectangle = new Rectangle(GameConstants.NEXT_BRICK_SIZE, GameConstants.NEXT_BRICK_SIZE);
+        rectangle.setFill(ColorMapper.getColor(colorIndex));
+        rectangle.setArcHeight(GameConstants.BRICK_ARC_SIZE);
+        rectangle.setArcWidth(GameConstants.BRICK_ARC_SIZE);
+        return rectangle;
     }
 
     private void setRectangleData(int color, Rectangle rectangle) {
@@ -240,6 +391,11 @@ public class GuiController implements Initializable {
         }
 
         gameOverPanel.setVisible(false);
+        isPause.set(false);
+        isGameOver.set(false);
+        if (pauseButton != null) {
+            pauseButton.setText("Pause");
+        }
 
         ViewData viewData = eventListener.createNewGame();
         refreshBrick(viewData);
@@ -252,12 +408,6 @@ public class GuiController implements Initializable {
             );
         }
         gameLoop.start();
-
-        isPause.set(false);
-        isGameOver.set(false);
-        if (pauseButton != null) {
-            pauseButton.setText("Pause");
-        }
     }
 
     public void pauseGame(ActionEvent actionEvent) {

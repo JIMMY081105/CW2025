@@ -15,6 +15,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.junit.jupiter.api.Test;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,7 +45,7 @@ class GameControllerTest {
         FakeBoard() {
             int[][] currentBrick = new int[][]{{1}};
             int[][] nextBrick = new int[][]{{2}};
-            viewDataToReturn = new ViewData(currentBrick, 0, 0, nextBrick);
+            viewDataToReturn = new ViewData(currentBrick, 0, 0, Collections.singletonList(nextBrick));
             clearRowToReturn = new ClearRow(0, new int[][]{{0}}, 0);
         }
 

@@ -88,7 +88,6 @@ class ActivePieceTest {
         activePiece.spawn(brick);
 
         while (activePiece.move(board, 0, 1)) {
-            // move until it cannot move any further
         }
 
         int yBefore = activePiece.getY();

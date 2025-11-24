@@ -6,24 +6,27 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
-<Pane fx:controller="com.comp2042.view.GuiController"
+<Pane fx:id="rootPane" fx:controller="com.comp2042.view.GuiController"
       xmlns:fx="http://javafx.com/fxml">
-    <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
+    <GridPane fx:id="brickPanel"/>
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">
         <center>
-            <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
+            <GridPane fx:id="gamePanel"/>
         </center>
     </BorderPane>
     
-    <!-- Side Panel: Score and Game Controls (Outside the bordered game area) -->
-    <VBox layoutX="230" layoutY="50" spacing="20" alignment="TOP_CENTER" style="-fx-padding: 10;">
+    <VBox fx:id="sidePanel" alignment="TOP_CENTER">
         <Label text="SCORE" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
         <Text fx:id="scoreValue" text="0" styleClass="scoreClass"/>
+        <VBox fx:id="nextBricksContainer" alignment="TOP_CENTER" spacing="8">
+            <Label text="NEXT 3" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <VBox fx:id="nextBricksList" spacing="10" alignment="CENTER"/>
+        </VBox>
         <ToggleButton fx:id="pauseButton" text="Pause" onAction="#pauseGame" focusTraversable="false" prefWidth="100"/>
         <Button text="New Game" onAction="#newGame" focusTraversable="false" prefWidth="100"/>
     </VBox>
 
-    <Group fx:id="groupNotification" layoutX="14" layoutY="203">
+    <Group fx:id="groupNotification">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>

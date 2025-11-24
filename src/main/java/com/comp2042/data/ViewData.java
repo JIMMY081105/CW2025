@@ -1,19 +1,22 @@
 package com.comp2042.data;
 
 import com.comp2042.util.MatrixOperations;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public final class ViewData {
 
     private final int[][] brickData;
     private final int xPosition;
     private final int yPosition;
-    private final int[][] nextBrickData;
+    private final List<int[][]> nextBricksData;
 
-    public ViewData(int[][] brickData, int xPosition, int yPosition, int[][] nextBrickData) {
+    public ViewData(int[][] brickData, int xPosition, int yPosition, List<int[][]> nextBricksData) {
         this.brickData = brickData;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
-        this.nextBrickData = nextBrickData;
+        this.nextBricksData = copyNextBricks(nextBricksData);
     }
 
     public int[][] getBrickData() {
@@ -28,7 +31,18 @@ public final class ViewData {
         return yPosition;
     }
 
-    public int[][] getNextBrickData() {
-        return MatrixOperations.copy(nextBrickData);
+    public List<int[][]> getNextBricksData() {
+        return copyNextBricks(nextBricksData);
+    }
+
+    private List<int[][]> copyNextBricks(List<int[][]> source) {
+        if (source == null || source.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<int[][]> copies = new ArrayList<>(source.size());
+        for (int[][] shape : source) {
+            copies.add(MatrixOperations.copy(shape));
+        }
+        return copies;
     }
 }

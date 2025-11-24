@@ -6,6 +6,8 @@ import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.comp2042.util.GameConstants;
+
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final List<Brick> brickList;
@@ -17,20 +19,42 @@ public class RandomBrickGenerator implements BrickGenerator {
             brickList.add(BrickFactory.createBrick(i));
         }
 
-        nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
-        nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
+        fillQueue(GameConstants.NEXT_PREVIEW_COUNT);
     }
 
     @Override
     public Brick getBrick() {
-        if (nextBricks.size() <= 1) {
-            nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
-        }
-        return nextBricks.poll();
+        ensurePreviewCapacity(GameConstants.NEXT_PREVIEW_COUNT);
+        Brick brick = nextBricks.poll();
+        fillQueue(GameConstants.NEXT_PREVIEW_COUNT);
+        return brick;
     }
 
     @Override
     public Brick getNextBrick() {
+        ensurePreviewCapacity(GameConstants.NEXT_PREVIEW_COUNT);
         return nextBricks.peek();
+    }
+
+    @Override
+    public List<Brick> preview(int count) {
+        ensurePreviewCapacity(Math.max(count, GameConstants.NEXT_PREVIEW_COUNT));
+        return new ArrayList<>(nextBricks).subList(0, Math.min(count, nextBricks.size()));
+    }
+
+    private void ensurePreviewCapacity(int desiredSize) {
+        if (nextBricks.size() < desiredSize) {
+            fillQueue(desiredSize);
+        }
+    }
+
+    private void fillQueue(int desiredSize) {
+        while (nextBricks.size() < desiredSize) {
+            nextBricks.add(randomBrick());
+        }
+    }
+
+    private Brick randomBrick() {
+        return brickList.get(ThreadLocalRandom.current().nextInt(brickList.size()));
     }
 }

@@ -2,8 +2,16 @@ package com.comp2042.model;
 
 import com.comp2042.data.ClearRow;
 import com.comp2042.data.ViewData;
+import com.comp2042.model.brick.Brick;
+import com.comp2042.model.brick.BrickFactory;
+import com.comp2042.model.brick.BrickGenerator;
 import com.comp2042.util.GameConstants;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -107,30 +115,94 @@ class SimpleBoardTest {
     }
 
     @Test
-void clearRows_SeparatedRows_RemovesBothAndUpdatesMatrixProperty() {
-    SimpleBoard board = new SimpleBoard(4, 4);
-    int[][] matrix = board.getBoardMatrix();
+    void clearRows_SeparatedRows_RemovesBothAndUpdatesMatrixProperty() {
+        SimpleBoard board = new SimpleBoard(4, 4);
+        int[][] matrix = board.getBoardMatrix();
 
-    for (int x = 0; x < 4; x++) {
-        matrix[1][x] = 1;
+        for (int x = 0; x < 4; x++) {
+            matrix[1][x] = 1;
+        }
+
+        matrix[2][1] = 1;
+
+        for (int x = 0; x < 4; x++) {
+            matrix[3][x] = 1;
+        }
+
+        ClearRow result = board.clearRows();
+
+        assertEquals(2, result.getLinesRemoved());
+
+        int[][] newMatrix = board.getBoardMatrix();
+
+        assertArrayEquals(new int[]{0, 0, 0, 0}, newMatrix[0]);
+        assertArrayEquals(new int[]{0, 0, 0, 0}, newMatrix[1]);
+        assertArrayEquals(new int[]{0, 0, 0, 0}, newMatrix[2]);
+        assertArrayEquals(new int[]{0, 1, 0, 0}, newMatrix[3]);
     }
 
-    matrix[2][1] = 1;
+    @Test
+    void nextPreviews_UpdateWhenNewBricksSpawned() {
+        List<Brick> bricks = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            bricks.add(BrickFactory.createBrick(i % BrickFactory.getBrickCount()));
+        }
+        BrickGenerator generator = new FixedBrickGenerator(bricks);
+        SimpleBoard board = new SimpleBoard(GameConstants.BOARD_WIDTH, GameConstants.BOARD_HEIGHT, generator);
 
-    for (int x = 0; x < 4; x++) {
-        matrix[3][x] = 1;
+        board.createNewBrick();
+        List<int[][]> firstPreview = board.getViewData().getNextBricksData();
+
+        assertEquals(GameConstants.NEXT_PREVIEW_COUNT, firstPreview.size());
+        assertMatrixEquals(bricks.get(1).getShapeMatrix().get(0), firstPreview.get(0));
+        assertMatrixEquals(bricks.get(2).getShapeMatrix().get(0), firstPreview.get(1));
+
+        board.mergeBrickToBackground();
+        clearBoard(board.getBoardMatrix());
+        board.createNewBrick();
+        List<int[][]> secondPreview = board.getViewData().getNextBricksData();
+
+        assertMatrixEquals(bricks.get(2).getShapeMatrix().get(0), secondPreview.get(0));
+        assertMatrixEquals(bricks.get(3).getShapeMatrix().get(0), secondPreview.get(1));
     }
 
-    ClearRow result = board.clearRows();
+    private void assertMatrixEquals(int[][] expected, int[][] actual) {
+        assertEquals(expected.length, actual.length);
+        for (int y = 0; y < expected.length; y++) {
+            assertArrayEquals(expected[y], actual[y]);
+        }
+    }
 
-    assertEquals(2, result.getLinesRemoved());
+    private void clearBoard(int[][] matrix) {
+        for (int y = 0; y < matrix.length; y++) {
+            for (int x = 0; x < matrix[y].length; x++) {
+                matrix[y][x] = 0;
+            }
+        }
+    }
 
-    int[][] newMatrix = board.getBoardMatrix();
+    private static class FixedBrickGenerator implements BrickGenerator {
+        private final Deque<Brick> bricks;
 
-    assertArrayEquals(new int[]{0, 0, 0, 0}, newMatrix[0]);
-    assertArrayEquals(new int[]{0, 0, 0, 0}, newMatrix[1]);
-    assertArrayEquals(new int[]{0, 0, 0, 0}, newMatrix[2]);
-    assertArrayEquals(new int[]{0, 1, 0, 0}, newMatrix[3]);
-}
+        FixedBrickGenerator(List<Brick> bricks) {
+            this.bricks = new ArrayDeque<>(bricks);
+        }
+
+        @Override
+        public Brick getBrick() {
+            return bricks.poll();
+        }
+
+        @Override
+        public Brick getNextBrick() {
+            return bricks.peek();
+        }
+
+        @Override
+        public List<Brick> preview(int count) {
+            List<Brick> list = new ArrayList<>(bricks);
+            return list.subList(0, Math.min(count, list.size()));
+        }
+    }
 
 }

@@ -3,6 +3,7 @@ package com.comp2042.model.brick;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -65,5 +66,17 @@ class RandomBrickGeneratorTest {
 
         assertTrue(types.size() > 1,
                 "RandomBrickGenerator should produce more than one brick type over time");
+    }
+
+    @Test
+    void preview_ReturnsRequestedNumberOfBricksWithoutConsuming() {
+        RandomBrickGenerator generator = new RandomBrickGenerator();
+
+        List<Brick> preview = generator.preview(3);
+        Brick nextBefore = generator.getNextBrick();
+
+        assertEquals(3, preview.size(), "Preview should return three upcoming bricks");
+        assertSame(nextBefore, preview.get(0),
+                "First preview element should match the next brick returned by getNextBrick()");
     }
 }
