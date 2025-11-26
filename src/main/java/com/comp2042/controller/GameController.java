@@ -22,18 +22,50 @@ public class GameController implements InputEventListener {
     public DownData onDownEvent(MoveEvent event) {
         boolean canMove = board.moveBrickDown();
         ClearRow clearRow = null;
+
         if (!canMove) {
+            // Lock the piece into the background
             board.mergeBrickToBackground();
+
+            // Clear completed rows
             clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
             }
+
+            // Spawn the next piece (may set game over)
             board.createNewBrick();
         } else {
+            // Manual soft drop scoring (only for user input)
             if (event.getEventSource() == EventSource.USER) {
                 board.getScore().add(GameConstants.MANUAL_DOWN_SCORE);
             }
         }
+
+        return new DownData(clearRow, board.getViewData());
+    }
+
+    @Override
+    public DownData onHardDropEvent(MoveEvent event) {
+        int steps = 0;
+
+        while (board.moveBrickDown()) {
+            steps++;
+        }
+
+        if (steps > 0 && event.getEventSource() == EventSource.USER) {
+            board.getScore().add(steps * GameConstants.MANUAL_DOWN_SCORE);
+        }
+
+        board.mergeBrickToBackground();
+
+        ClearRow clearRow = board.clearRows();
+        if (clearRow.getLinesRemoved() > 0) {
+            board.getScore().add(clearRow.getScoreBonus());
+        }
+
+        board.createNewBrick();
+
         return new DownData(clearRow, board.getViewData());
     }
 
