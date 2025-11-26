@@ -8,12 +8,12 @@
 <?import java.net.URL?>
 <Pane fx:id="rootPane" fx:controller="com.comp2042.view.GuiController"
       xmlns:fx="http://javafx.com/fxml">
+    <!-- Visual frame only - no content inside -->
+    <BorderPane styleClass="gameBoard" fx:id="gameBoard"/>
+    <!-- Background grid (landed pieces) - positioned manually -->
+    <GridPane fx:id="gamePanel"/>
+    <!-- Active falling piece - positioned manually -->
     <GridPane fx:id="brickPanel"/>
-    <BorderPane styleClass="gameBoard" fx:id="gameBoard">
-        <center>
-            <GridPane fx:id="gamePanel"/>
-        </center>
-    </BorderPane>
     
     <VBox fx:id="sidePanel" alignment="TOP_CENTER">
         <Label text="SCORE" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>

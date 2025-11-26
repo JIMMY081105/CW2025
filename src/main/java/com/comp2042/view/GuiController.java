@@ -95,6 +95,7 @@ public class GuiController implements Initializable {
 
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
+        gamePanel.setAlignment(Pos.CENTER);
 
         gamePanel.setOnKeyPressed(this::handleKeyPressed);
 
@@ -163,10 +164,14 @@ public class GuiController implements Initializable {
         brickPanel.setHgap(GameConstants.GRID_GAP);
         brickPanel.setVgap(GameConstants.GRID_GAP);
 
-        gameBoard.setPrefWidth(GameConstants.boardAreaWidth());
-        gameBoard.setPrefHeight(GameConstants.boardAreaHeight());
-        gameBoard.setMinSize(GameConstants.boardAreaWidth(), GameConstants.boardAreaHeight());
-        gameBoard.setMaxSize(GameConstants.boardAreaWidth(), GameConstants.boardAreaHeight());
+        double visualBuffer = 4.0;
+        double bufferedWidth = GameConstants.boardAreaWidth() + (visualBuffer * 2);
+        double bufferedHeight = GameConstants.boardAreaHeight() + (visualBuffer * 2);
+
+        gameBoard.setPrefWidth(bufferedWidth);
+        gameBoard.setPrefHeight(bufferedHeight);
+        gameBoard.setMinSize(bufferedWidth, bufferedHeight);
+        gameBoard.setMaxSize(bufferedWidth, bufferedHeight);
 
         sidePanel.setSpacing(GameConstants.SIDE_PANEL_SPACING);
         sidePanel.setPrefWidth(GameConstants.SIDE_PANEL_WIDTH);
@@ -199,8 +204,9 @@ public class GuiController implements Initializable {
         gamePanel.setLayoutX(boardLeft);
         gamePanel.setLayoutY(boardTop);
 
-        gameBoard.setLayoutX(boardLeft - GameConstants.BOARD_FRAME_THICKNESS);
-        gameBoard.setLayoutY(boardTop - GameConstants.BOARD_FRAME_THICKNESS);
+        double visualBuffer = 4.0;
+        gameBoard.setLayoutX(boardLeft - GameConstants.BOARD_FRAME_THICKNESS - visualBuffer);
+        gameBoard.setLayoutY(boardTop - GameConstants.BOARD_FRAME_THICKNESS - visualBuffer);
 
         double sidePanelLeft = boardLeft + GameConstants.boardAreaWidth() + GameConstants.PANEL_GAP;
         sidePanel.setLayoutX(sidePanelLeft);
@@ -260,8 +266,9 @@ public class GuiController implements Initializable {
     }
 
     private void updateBrickPanelPosition(ViewData brick) {
-        double boardOriginX = gameBoard.getLayoutX() + GameConstants.BOARD_FRAME_THICKNESS;
-        double boardOriginY = gameBoard.getLayoutY() + GameConstants.BOARD_FRAME_THICKNESS;
+        double boardOriginX = gamePanel.getLayoutX();
+        double boardOriginY = gamePanel.getLayoutY();
+
         brickPanel.setLayoutX(
                 boardOriginX
                         + brick.getXPosition() * GameConstants.brickStep()
