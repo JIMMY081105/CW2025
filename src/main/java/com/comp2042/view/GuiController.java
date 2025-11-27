@@ -7,7 +7,7 @@ import com.comp2042.event.EventType;
 import com.comp2042.event.InputEventListener;
 import com.comp2042.event.MoveEvent;
 import com.comp2042.model.Board;
-import com.comp2042.util.ColorMapper;
+import com.comp2042.util.BlockTextureProvider;
 import com.comp2042.util.GameConstants;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -300,7 +300,7 @@ public class GuiController implements Initializable {
         for (int i = 0; i < currentBrickData.length; i++) {
             for (int j = 0; j < currentBrickData[i].length; j++) {
                 Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE, GameConstants.BRICK_SIZE);
-                rectangle.setFill(ColorMapper.getColor(currentBrickData[i][j]));
+                rectangle.setFill(BlockTextureProvider.getPattern(currentBrickData[i][j]));
                 rectangles[i][j] = rectangle;
                 brickPanel.add(rectangle, j, i);
             }
@@ -366,7 +366,7 @@ public class GuiController implements Initializable {
         double step = GameConstants.brickStep();
         double brickSize = GameConstants.BRICK_SIZE;
         Color ghostColor = Color.rgb(255, 255, 255, 0.5);
-        double strokeWidth = 2.0;
+        double strokeWidth = 1.0;
 
         boolean[][] filled = new boolean[brickData.length][brickData[0].length];
         for (int row = 0; row < brickData.length; row++) {
@@ -477,14 +477,12 @@ public class GuiController implements Initializable {
 
     private Rectangle createPreviewRectangle(int colorIndex) {
         Rectangle rectangle = new Rectangle(GameConstants.NEXT_BRICK_SIZE, GameConstants.NEXT_BRICK_SIZE);
-        rectangle.setFill(ColorMapper.getColor(colorIndex));
-        rectangle.setArcHeight(GameConstants.BRICK_ARC_SIZE);
-        rectangle.setArcWidth(GameConstants.BRICK_ARC_SIZE);
+        setRectangleData(colorIndex, rectangle);
         return rectangle;
     }
 
     private void setRectangleData(int color, Rectangle rectangle) {
-        rectangle.setFill(ColorMapper.getColor(color));
+        rectangle.setFill(BlockTextureProvider.getPattern(color));
         rectangle.setArcHeight(GameConstants.BRICK_ARC_SIZE);
         rectangle.setArcWidth(GameConstants.BRICK_ARC_SIZE);
     }
