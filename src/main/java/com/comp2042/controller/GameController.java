@@ -24,19 +24,15 @@ public class GameController implements InputEventListener {
         ClearRow clearRow = null;
 
         if (!canMove) {
-            // Lock the piece into the background
             board.mergeBrickToBackground();
 
-            // Clear completed rows
             clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
             }
 
-            // Spawn the next piece (may set game over)
             board.createNewBrick();
         } else {
-            // Manual soft drop scoring (only for user input)
             if (event.getEventSource() == EventSource.USER) {
                 board.getScore().add(GameConstants.MANUAL_DOWN_SCORE);
             }

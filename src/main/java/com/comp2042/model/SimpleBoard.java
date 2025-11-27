@@ -94,7 +94,7 @@ public class SimpleBoard implements Board {
 
     @Override
     public ViewData getViewData() {
-        return activePiece.toViewData(brickGenerator.preview(GameConstants.NEXT_PREVIEW_COUNT));
+        return activePiece.toViewData(brickGenerator.preview(GameConstants.NEXT_PREVIEW_COUNT), currentGameMatrix);
     }
 
     @Override

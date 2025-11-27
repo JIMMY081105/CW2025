@@ -45,7 +45,7 @@ class GameControllerTest {
         FakeBoard() {
             int[][] currentBrick = new int[][]{{1}};
             int[][] nextBrick = new int[][]{{2}};
-            viewDataToReturn = new ViewData(currentBrick, 0, 0, Collections.singletonList(nextBrick));
+            viewDataToReturn = new ViewData(currentBrick, 0, 0, 10, Collections.singletonList(nextBrick));
             clearRowToReturn = new ClearRow(0, new int[][]{{0}}, 0);
         }
 

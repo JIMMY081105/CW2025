@@ -58,6 +58,9 @@ public class GuiController implements Initializable {
     private GridPane brickPanel;
 
     @FXML
+    private Pane ghostPane;
+
+    @FXML
     private VBox sidePanel;
 
     @FXML
@@ -125,7 +128,6 @@ public class GuiController implements Initializable {
                 keyEvent.consume();
             }
 
-            // NEW: SPACE = hard drop
             if (keyEvent.getCode() == KeyCode.SPACE) {
                 performHardDrop(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
                 keyEvent.consume();
@@ -214,7 +216,6 @@ public class GuiController implements Initializable {
         gamePanel.setLayoutX(boardLeft);
         gamePanel.setLayoutY(boardTop);
 
-        // Position grid lines pane to match gamePanel
         if (gridLinesPane != null) {
             gridLinesPane.setLayoutX(boardLeft);
             gridLinesPane.setLayoutY(boardTop);
@@ -250,7 +251,6 @@ public class GuiController implements Initializable {
 
         Color lineColor = Color.rgb(60, 60, 80, 0.6);
 
-        // Draw vertical lines (columns)
         for (int col = 0; col <= cols; col++) {
             double x = col * step;
             Line verticalLine = new Line(x, 0, x, gridHeight);
@@ -259,7 +259,6 @@ public class GuiController implements Initializable {
             gridLinesPane.getChildren().add(verticalLine);
         }
 
-        // Draw horizontal lines (rows)
         for (int row = 0; row <= visibleRows; row++) {
             double y = row * step;
             Line horizontalLine = new Line(0, y, gridWidth, y);
@@ -268,7 +267,6 @@ public class GuiController implements Initializable {
             gridLinesPane.getChildren().add(horizontalLine);
         }
 
-        // Set the pane size to match the grid
         gridLinesPane.setPrefSize(gridWidth, gridHeight);
         gridLinesPane.setMinSize(gridWidth, gridHeight);
         gridLinesPane.setMaxSize(gridWidth, gridHeight);
@@ -309,6 +307,7 @@ public class GuiController implements Initializable {
         }
 
         updateBrickPanelPosition(brick);
+        drawGhostPiece(brick);
         renderNextBricks(brick.getNextBricksData());
 
         if (gameLoop == null) {
@@ -338,6 +337,7 @@ public class GuiController implements Initializable {
     private void refreshBrick(ViewData brick) {
         if (!isPause.get()) {
             updateBrickPanelPosition(brick);
+            drawGhostPiece(brick);
 
             int[][] currentBrickData = brick.getBrickData();
             for (int i = 0; i < currentBrickData.length; i++) {
@@ -347,6 +347,82 @@ public class GuiController implements Initializable {
             }
         }
         renderNextBricks(brick.getNextBricksData());
+    }
+
+    private void drawGhostPiece(ViewData brick) {
+        if (ghostPane == null) {
+            return;
+        }
+        ghostPane.getChildren().clear();
+
+        int[][] brickData = brick.getBrickData();
+        int ghostY = brick.getGhostYPosition();
+        int brickX = brick.getXPosition();
+
+        if (ghostY == brick.getYPosition()) {
+            return;
+        }
+
+        double step = GameConstants.brickStep();
+        double brickSize = GameConstants.BRICK_SIZE;
+        Color ghostColor = Color.rgb(255, 255, 255, 0.5);
+        double strokeWidth = 2.0;
+
+        boolean[][] filled = new boolean[brickData.length][brickData[0].length];
+        for (int row = 0; row < brickData.length; row++) {
+            for (int col = 0; col < brickData[row].length; col++) {
+                filled[row][col] = brickData[row][col] != 0;
+            }
+        }
+
+        for (int row = 0; row < brickData.length; row++) {
+            for (int col = 0; col < brickData[row].length; col++) {
+                if (!filled[row][col]) {
+                    continue;
+                }
+
+                double cellX = col * step;
+                double cellY = row * step;
+
+                if (row == 0 || !filled[row - 1][col]) {
+                    Line topLine = new Line(cellX, cellY, cellX + brickSize, cellY);
+                    topLine.setStroke(ghostColor);
+                    topLine.setStrokeWidth(strokeWidth);
+                    ghostPane.getChildren().add(topLine);
+                }
+
+                if (row == brickData.length - 1 || !filled[row + 1][col]) {
+                    Line bottomLine = new Line(cellX, cellY + brickSize, cellX + brickSize, cellY + brickSize);
+                    bottomLine.setStroke(ghostColor);
+                    bottomLine.setStrokeWidth(strokeWidth);
+                    ghostPane.getChildren().add(bottomLine);
+                }
+
+                if (col == 0 || !filled[row][col - 1]) {
+                    Line leftLine = new Line(cellX, cellY, cellX, cellY + brickSize);
+                    leftLine.setStroke(ghostColor);
+                    leftLine.setStrokeWidth(strokeWidth);
+                    ghostPane.getChildren().add(leftLine);
+                }
+
+                if (col == brickData[row].length - 1 || !filled[row][col + 1]) {
+                    Line rightLine = new Line(cellX + brickSize, cellY, cellX + brickSize, cellY + brickSize);
+                    rightLine.setStroke(ghostColor);
+                    rightLine.setStrokeWidth(strokeWidth);
+                    ghostPane.getChildren().add(rightLine);
+                }
+            }
+        }
+
+        double boardOriginX = gamePanel.getLayoutX();
+        double boardOriginY = gamePanel.getLayoutY();
+
+        ghostPane.setLayoutX(boardOriginX + brickX * step);
+        ghostPane.setLayoutY(
+                GameConstants.brickPanelYOffset()
+                        + boardOriginY
+                        + ghostY * step
+        );
     }
 
     public void refreshGameBackground(int[][] board) {
@@ -429,7 +505,6 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
-    // NEW: handle result of hard drop (very similar to moveDown)
     private void performHardDrop(MoveEvent event) {
         if (!isPause.get()) {
             DownData downData = eventListener.onHardDropEvent(event);

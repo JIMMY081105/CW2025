@@ -53,7 +53,7 @@ public class ActivePiece {
         return y;
     }
 
-    public ViewData toViewData(List<Brick> nextBricks) {
+    public ViewData toViewData(List<Brick> nextBricks, int[][] boardMatrix) {
         List<int[][]> previews = new ArrayList<>();
         if (nextBricks != null) {
             for (Brick brick : nextBricks) {
@@ -62,6 +62,16 @@ public class ActivePiece {
                 }
             }
         }
-        return new ViewData(getShape(), x, y, previews);
+        int ghostY = calculateGhostY(boardMatrix);
+        return new ViewData(getShape(), x, y, ghostY, previews);
+    }
+
+    private int calculateGhostY(int[][] boardMatrix) {
+        int ghostY = y;
+        int[][] shape = brickRotator.getCurrentShape();
+        while (!MatrixOperations.intersect(boardMatrix, shape, x, ghostY + 1)) {
+            ghostY++;
+        }
+        return ghostY;
     }
 }
