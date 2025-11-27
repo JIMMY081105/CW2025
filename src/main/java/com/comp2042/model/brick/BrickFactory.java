@@ -2,7 +2,7 @@ package com.comp2042.model.brick;
 
 public class BrickFactory {
 
-    private static final int BRICK_COUNT = 7;
+    private static final int BRICK_COUNT = 8;
 
     public static Brick createBrick(int id) {
         switch (id) {
@@ -13,6 +13,7 @@ public class BrickFactory {
             case 4: return new SBrick();
             case 5: return new TBrick();
             case 6: return new ZBrick();
+            case 7: return new PlusBrick();
             default: throw new IllegalArgumentException("Invalid brick ID: " + id);
         }
     }

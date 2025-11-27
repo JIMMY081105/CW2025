@@ -19,6 +19,7 @@ public final class ColorMapper {
         COLOR_MAP.put(5, Color.RED);
         COLOR_MAP.put(6, Color.BEIGE);
         COLOR_MAP.put(7, Color.BURLYWOOD);
+        COLOR_MAP.put(8, Color.HOTPINK);
     }
     
     public static Paint getColor(int colorCode) {
