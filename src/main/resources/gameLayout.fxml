@@ -14,15 +14,21 @@
     <Pane fx:id="ghostPane"/>
     <GridPane fx:id="brickPanel"/>
     
-    <VBox fx:id="sidePanel" alignment="TOP_CENTER">
-        <Label text="SCORE" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-        <Text fx:id="scoreValue" text="0" styleClass="scoreClass"/>
-        <VBox fx:id="nextBricksContainer" alignment="TOP_CENTER" spacing="8">
+    <VBox fx:id="sidePanel" alignment="TOP_CENTER" spacing="16">
+        <VBox styleClass="sectionBox" alignment="CENTER" spacing="8">
+            <Label text="SCORE" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Text fx:id="scoreValue" text="0" styleClass="scoreClass"/>
+        </VBox>
+        <VBox fx:id="nextBricksContainer" alignment="TOP_CENTER" spacing="8" styleClass="sectionBox">
             <Label text="NEXT 3" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
             <VBox fx:id="nextBricksList" spacing="10" alignment="CENTER"/>
         </VBox>
-        <ToggleButton fx:id="pauseButton" text="Pause" onAction="#pauseGame" focusTraversable="false" prefWidth="100"/>
-        <Button text="New Game" onAction="#newGame" focusTraversable="false" prefWidth="100"/>
+        <VBox styleClass="sectionBox" alignment="CENTER">
+            <ToggleButton fx:id="pauseButton" text="Pause" onAction="#pauseGame" focusTraversable="false" prefWidth="120"/>
+        </VBox>
+        <VBox styleClass="sectionBox" alignment="CENTER">
+            <Button text="New Game" onAction="#newGame" focusTraversable="false" prefWidth="120"/>
+        </VBox>
     </VBox>
 
     <Group fx:id="groupNotification">

@@ -9,6 +9,10 @@ import com.comp2042.event.MoveEvent;
 import com.comp2042.model.Board;
 import com.comp2042.util.BlockTextureProvider;
 import com.comp2042.util.GameConstants;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -16,6 +20,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.ToggleButton;
@@ -25,12 +30,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.geometry.Insets;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -89,6 +94,7 @@ public class GuiController implements Initializable {
 
     private GameLoop gameLoop;
     private final List<GridPane> nextPreviewGrids = new ArrayList<>();
+    private Timeline boardVibrationTimeline;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -515,8 +521,31 @@ public class GuiController implements Initializable {
             }
 
             refreshBrick(downData.getViewData());
+            vibrateGameBoard();
         }
         gamePanel.requestFocus();
+    }
+
+    private void vibrateGameBoard() {
+        if (gamePanel == null) {
+            return;
+        }
+
+        if (boardVibrationTimeline != null && boardVibrationTimeline.getStatus() == Animation.Status.RUNNING) {
+            boardVibrationTimeline.stop();
+            gamePanel.setTranslateX(0);
+        }
+
+        boardVibrationTimeline = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(gamePanel.translateYProperty(), 0)),
+                new KeyFrame(Duration.millis(30), new KeyValue(gamePanel.translateYProperty(), 8)),
+                new KeyFrame(Duration.millis(60), new KeyValue(gamePanel.translateYProperty(), -6)),
+                new KeyFrame(Duration.millis(90), new KeyValue(gamePanel.translateYProperty(), 5)),
+                new KeyFrame(Duration.millis(120), new KeyValue(gamePanel.translateYProperty(), -3)),
+                new KeyFrame(Duration.millis(150), new KeyValue(gamePanel.translateYProperty(), 0))
+        );
+        boardVibrationTimeline.setOnFinished(event -> gamePanel.setTranslateX(0));
+        boardVibrationTimeline.play();
     }
 
     public void setEventListener(InputEventListener eventListener) {
