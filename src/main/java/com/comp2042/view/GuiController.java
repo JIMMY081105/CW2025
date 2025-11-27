@@ -23,6 +23,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -67,6 +68,9 @@ public class GuiController implements Initializable {
 
     @FXML
     private VBox sidePanel;
+
+    @FXML
+    private VBox scoreBox;
 
     @FXML
     private VBox nextBricksContainer;
@@ -527,25 +531,46 @@ public class GuiController implements Initializable {
     }
 
     private void vibrateGameBoard() {
-        if (gamePanel == null) {
+        List<Node> targets = getVibrationTargets();
+        if (targets.isEmpty()) {
             return;
         }
 
         if (boardVibrationTimeline != null && boardVibrationTimeline.getStatus() == Animation.Status.RUNNING) {
             boardVibrationTimeline.stop();
-            gamePanel.setTranslateX(0);
+            targets.forEach(target -> target.setTranslateY(0));
         }
 
         boardVibrationTimeline = new Timeline(
-                new KeyFrame(Duration.ZERO, new KeyValue(gamePanel.translateYProperty(), 0)),
-                new KeyFrame(Duration.millis(30), new KeyValue(gamePanel.translateYProperty(), 8)),
-                new KeyFrame(Duration.millis(60), new KeyValue(gamePanel.translateYProperty(), -6)),
-                new KeyFrame(Duration.millis(90), new KeyValue(gamePanel.translateYProperty(), 5)),
-                new KeyFrame(Duration.millis(120), new KeyValue(gamePanel.translateYProperty(), -3)),
-                new KeyFrame(Duration.millis(150), new KeyValue(gamePanel.translateYProperty(), 0))
+                new KeyFrame(Duration.ZERO, keyValuesForTargets(targets, 0)),
+                new KeyFrame(Duration.millis(30), keyValuesForTargets(targets, 8)),
+                new KeyFrame(Duration.millis(60), keyValuesForTargets(targets, -6)),
+                new KeyFrame(Duration.millis(90), keyValuesForTargets(targets, 5)),
+                new KeyFrame(Duration.millis(120), keyValuesForTargets(targets, -3)),
+                new KeyFrame(Duration.millis(150), keyValuesForTargets(targets, 0))
         );
-        boardVibrationTimeline.setOnFinished(event -> gamePanel.setTranslateX(0));
+        boardVibrationTimeline.setOnFinished(event -> targets.forEach(target -> target.setTranslateY(0)));
         boardVibrationTimeline.play();
+    }
+
+    private List<Node> getVibrationTargets() {
+        List<Node> targets = new ArrayList<>();
+        if (gameBoard != null) {
+            targets.add(gameBoard);
+        }
+        if (scoreBox != null) {
+            targets.add(scoreBox);
+        }
+        if (nextBricksContainer != null) {
+            targets.add(nextBricksContainer);
+        }
+        return targets;
+    }
+
+    private KeyValue[] keyValuesForTargets(List<Node> targets, double value) {
+        return targets.stream()
+                .map(target -> new KeyValue(target.translateYProperty(), value))
+                .toArray(KeyValue[]::new);
     }
 
     public void setEventListener(InputEventListener eventListener) {
