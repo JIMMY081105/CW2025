@@ -27,6 +27,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -43,6 +44,9 @@ public class GuiController implements Initializable {
 
     @FXML
     private BorderPane gameBoard;
+
+    @FXML
+    private Pane gridLinesPane;
 
     @FXML
     private GridPane gamePanel;
@@ -210,6 +214,13 @@ public class GuiController implements Initializable {
         gamePanel.setLayoutX(boardLeft);
         gamePanel.setLayoutY(boardTop);
 
+        // Position grid lines pane to match gamePanel
+        if (gridLinesPane != null) {
+            gridLinesPane.setLayoutX(boardLeft);
+            gridLinesPane.setLayoutY(boardTop);
+            drawGridLines();
+        }
+
         double visualBuffer = 4.0;
         gameBoard.setLayoutX(boardLeft - GameConstants.BOARD_FRAME_THICKNESS - visualBuffer);
         gameBoard.setLayoutY(boardTop - GameConstants.BOARD_FRAME_THICKNESS - visualBuffer);
@@ -223,6 +234,44 @@ public class GuiController implements Initializable {
         if (board != null && board.getViewData() != null) {
             updateBrickPanelPosition(board.getViewData());
         }
+    }
+
+    private void drawGridLines() {
+        if (gridLinesPane == null) {
+            return;
+        }
+        gridLinesPane.getChildren().clear();
+
+        double gridWidth = GameConstants.boardPixelWidth();
+        double gridHeight = GameConstants.boardPixelHeight();
+        double step = GameConstants.brickStep();
+        int visibleRows = GameConstants.visibleRows();
+        int cols = GameConstants.BOARD_WIDTH;
+
+        Color lineColor = Color.rgb(60, 60, 80, 0.6);
+
+        // Draw vertical lines (columns)
+        for (int col = 0; col <= cols; col++) {
+            double x = col * step;
+            Line verticalLine = new Line(x, 0, x, gridHeight);
+            verticalLine.setStroke(lineColor);
+            verticalLine.setStrokeWidth(1);
+            gridLinesPane.getChildren().add(verticalLine);
+        }
+
+        // Draw horizontal lines (rows)
+        for (int row = 0; row <= visibleRows; row++) {
+            double y = row * step;
+            Line horizontalLine = new Line(0, y, gridWidth, y);
+            horizontalLine.setStroke(lineColor);
+            horizontalLine.setStrokeWidth(1);
+            gridLinesPane.getChildren().add(horizontalLine);
+        }
+
+        // Set the pane size to match the grid
+        gridLinesPane.setPrefSize(gridWidth, gridHeight);
+        gridLinesPane.setMinSize(gridWidth, gridHeight);
+        gridLinesPane.setMaxSize(gridWidth, gridHeight);
     }
 
     private double calculateBoardLeft(double availableWidth) {
