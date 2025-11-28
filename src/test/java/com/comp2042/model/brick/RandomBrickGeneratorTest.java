@@ -34,7 +34,7 @@ class RandomBrickGeneratorTest {
         RandomBrickGenerator generator = new RandomBrickGenerator();
 
         Brick preview1 = generator.getNextBrick();
-        Brick preview2 = generator.getNextBrick(); 
+        Brick preview2 = generator.getNextBrick();
 
         assertSame(preview1, preview2);
     }
@@ -44,7 +44,7 @@ class RandomBrickGeneratorTest {
         RandomBrickGenerator generator = new RandomBrickGenerator();
 
         Brick previewBefore = generator.getNextBrick();
-        Brick firstBrick = generator.getBrick();   
+        Brick firstBrick = generator.getBrick();
         Brick previewAfter = generator.getNextBrick();
 
         assertSame(previewBefore, firstBrick,

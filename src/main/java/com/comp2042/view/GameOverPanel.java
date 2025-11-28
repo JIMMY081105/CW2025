@@ -3,7 +3,6 @@ package com.comp2042.view;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
-
 public class GameOverPanel extends BorderPane {
 
     public GameOverPanel() {

@@ -20,7 +20,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         Board board = new SimpleBoard(GameConstants.BOARD_WIDTH, GameConstants.BOARD_HEIGHT);
-        
+
         URL location = getClass().getClassLoader().getResource("gameLayout.fxml");
         ResourceBundle resources = null;
         FXMLLoader fxmlLoader = new FXMLLoader(location, resources);
@@ -38,15 +38,14 @@ public class Main extends Application {
         primaryStage.setMinHeight(GameConstants.initialWindowHeight());
         primaryStage.setMaximized(true);
         primaryStage.show();
-        
+
         GameController gameController = new GameController(board);
         guiController.setEventListener(gameController);
         guiController.bind(board);
         guiController.bindScore(board.scoreProperty());
     }
 
-
-    public static void main(String[] args) {
+public static void main(String[] args) {
         launch(args);
     }
 }

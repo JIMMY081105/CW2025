@@ -1,24 +1,34 @@
 package com.comp2042.model.brick;
 
-public class BrickFactory {
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Supplier;
 
-    private static final int BRICK_COUNT = 8;
+public final class BrickFactory {
+
+    private static final List<Supplier<Brick>> BRICK_SUPPLIERS = Arrays.asList(
+            IBrick::new,
+            JBrick::new,
+            LBrick::new,
+            OBrick::new,
+            SBrick::new,
+            TBrick::new,
+            ZBrick::new,
+            PlusBrick::new
+    );
+
+    private BrickFactory() {
+
+    }
 
     public static Brick createBrick(int id) {
-        switch (id) {
-            case 0: return new IBrick();
-            case 1: return new JBrick();
-            case 2: return new LBrick();
-            case 3: return new OBrick();
-            case 4: return new SBrick();
-            case 5: return new TBrick();
-            case 6: return new ZBrick();
-            case 7: return new PlusBrick();
-            default: throw new IllegalArgumentException("Invalid brick ID: " + id);
+        if (id < 0 || id >= BRICK_SUPPLIERS.size()) {
+            throw new IllegalArgumentException("Invalid brick ID: " + id);
         }
+        return BRICK_SUPPLIERS.get(id).get();
     }
 
     public static int getBrickCount() {
-        return BRICK_COUNT;
+        return BRICK_SUPPLIERS.size();
     }
 }

@@ -19,11 +19,12 @@ public class SimpleBoard implements Board {
     private final int height;
     private final BrickGenerator brickGenerator;
     private final ActivePiece activePiece;
-    private int[][] currentGameMatrix;
     private final Score score;
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty(false);
     private final ObjectProperty<int[][]> boardMatrix = new SimpleObjectProperty<>();
+
+    private int[][] currentGameMatrix;
 
     public SimpleBoard(int width, int height) {
         this(width, height, new RandomBrickGenerator());
@@ -32,21 +33,24 @@ public class SimpleBoard implements Board {
     public SimpleBoard(int width, int height, BrickGenerator brickGenerator) {
         this.width = width;
         this.height = height;
-        currentGameMatrix = new int[height][width];
         this.brickGenerator = brickGenerator;
-        activePiece = new ActivePiece();
-        score = new Score();
-        boardMatrix.set(currentGameMatrix);
+        this.activePiece = new ActivePiece();
+        this.score = new Score();
+
+updateBoardMatrix(new int[height][width]);
     }
 
+    @Override
     public BooleanProperty isGameOverProperty() {
         return isGameOver;
     }
 
+    @Override
     public ObjectProperty<int[][]> boardMatrixProperty() {
         return boardMatrix;
     }
 
+    @Override
     public IntegerProperty scoreProperty() {
         return score.scoreProperty();
     }
@@ -75,44 +79,50 @@ public class SimpleBoard implements Board {
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         activePiece.spawn(currentBrick);
+
         boolean gameOver = MatrixOperations.intersect(
                 currentGameMatrix,
                 activePiece.getShape(),
                 activePiece.getX(),
                 activePiece.getY()
         );
+
         if (gameOver) {
             isGameOver.set(true);
         }
+
         return gameOver;
     }
 
     @Override
     public int[][] getBoardMatrix() {
+
         return currentGameMatrix;
     }
 
     @Override
     public ViewData getViewData() {
-        return activePiece.toViewData(brickGenerator.preview(GameConstants.NEXT_PREVIEW_COUNT), currentGameMatrix);
+        return activePiece.toViewData(
+                brickGenerator.preview(GameConstants.NEXT_PREVIEW_COUNT),
+                currentGameMatrix
+        );
     }
 
     @Override
     public void mergeBrickToBackground() {
-        currentGameMatrix = MatrixOperations.merge(
+        int[][] merged = MatrixOperations.merge(
                 currentGameMatrix,
                 activePiece.getShape(),
                 activePiece.getX(),
                 activePiece.getY()
         );
-        boardMatrix.set(currentGameMatrix);
+        updateBoardMatrix(merged);
     }
 
     @Override
     public ClearRow clearRows() {
         ClearRow clearRow = MatrixOperations.checkRemoving(currentGameMatrix);
-        currentGameMatrix = clearRow.getNewMatrix();
-        boardMatrix.set(currentGameMatrix);
+        updateBoardMatrix(clearRow.getNewMatrix());
         return clearRow;
     }
 
@@ -123,10 +133,14 @@ public class SimpleBoard implements Board {
 
     @Override
     public void newGame() {
-        currentGameMatrix = new int[height][width];
         score.reset();
         isGameOver.set(false);
+        updateBoardMatrix(new int[height][width]);
         createNewBrick();
-        boardMatrix.set(currentGameMatrix);
+    }
+
+private void updateBoardMatrix(int[][] newMatrix) {
+        this.currentGameMatrix = newMatrix;
+        this.boardMatrix.set(newMatrix);
     }
 }

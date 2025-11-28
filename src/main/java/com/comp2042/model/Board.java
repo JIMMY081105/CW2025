@@ -19,7 +19,7 @@ public interface Board {
     ClearRow clearRows();
     Score getScore();
     void newGame();
-    
+
     BooleanProperty isGameOverProperty();
     ObjectProperty<int[][]> boardMatrixProperty();
     IntegerProperty scoreProperty();

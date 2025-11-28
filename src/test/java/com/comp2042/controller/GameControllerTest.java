@@ -142,9 +142,9 @@ class GameControllerTest {
         FakeBoard board = new FakeBoard();
         GameController controller = new GameController(board);
 
-        board.nextMoveDownResult = true; 
+        board.nextMoveDownResult = true;
         int initialScore = board.getScore().scoreProperty().get();
-        int initialCreateCalls = board.createNewBrickCalls; 
+        int initialCreateCalls = board.createNewBrickCalls;
 
         DownData result = controller.onDownEvent(
                 new MoveEvent(EventType.DOWN, EventSource.USER));
@@ -164,11 +164,11 @@ class GameControllerTest {
         FakeBoard board = new FakeBoard();
         GameController controller = new GameController(board);
 
-        board.nextMoveDownResult = false; 
+        board.nextMoveDownResult = false;
         board.clearRowToReturn = new ClearRow(2, new int[][]{{0}}, 100);
 
         int initialScore = board.getScore().scoreProperty().get();
-        int initialCreateCalls = board.createNewBrickCalls; 
+        int initialCreateCalls = board.createNewBrickCalls;
 
         DownData result = controller.onDownEvent(
                 new MoveEvent(EventType.DOWN, EventSource.THREAD));

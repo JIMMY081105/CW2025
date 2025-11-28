@@ -27,5 +27,4 @@ public class BrickRotator {
         currentShape = 0;
     }
 
-
 }

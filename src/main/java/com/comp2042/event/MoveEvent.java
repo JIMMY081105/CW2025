@@ -6,11 +6,11 @@ public final class MoveEvent {
     private final EventSource eventSource;
 
     public MoveEvent(EventType eventType, EventSource eventSource) {
-        this.eventType = eventType; 
+        this.eventType = eventType;
         this.eventSource = eventSource;
     }
 
-    public EventType getEventType() {      
+    public EventType getEventType() {
         return eventType;
     }
 

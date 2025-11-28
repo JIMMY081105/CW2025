@@ -287,10 +287,10 @@ class MatrixOperationsTest {
     @Test
 void checkRemoving_SeparatedFullRows_RemovesBothAndKeepsMiddleRow() {
     int[][] board = {
-            {1, 1, 1, 1}, 
-            {0, 1, 0, 0}, 
-            {1, 1, 1, 1}, 
-            {0, 0, 0, 0}  
+            {1, 1, 1, 1},
+            {0, 1, 0, 0},
+            {1, 1, 1, 1},
+            {0, 0, 0, 0}
     };
 
     ClearRow clearRow = MatrixOperations.checkRemoving(board);
@@ -301,9 +301,8 @@ void checkRemoving_SeparatedFullRows_RemovesBothAndKeepsMiddleRow() {
 
     assertArrayEquals(new int[]{0, 0, 0, 0}, newMatrix[0]);
     assertArrayEquals(new int[]{0, 0, 0, 0}, newMatrix[1]);
-    assertArrayEquals(new int[]{0, 1, 0, 0}, newMatrix[2]); 
+    assertArrayEquals(new int[]{0, 1, 0, 0}, newMatrix[2]);
     assertArrayEquals(new int[]{0, 0, 0, 0}, newMatrix[3]);
 }
 }
-
 

@@ -7,14 +7,21 @@ import com.comp2042.event.EventSource;
 import com.comp2042.event.InputEventListener;
 import com.comp2042.event.MoveEvent;
 import com.comp2042.model.Board;
-import com.comp2042.util.GameConstants;
+import com.comp2042.model.scoring.ClassicScoringStrategy;
+import com.comp2042.model.scoring.ScoringStrategy;
 
 public class GameController implements InputEventListener {
 
     private final Board board;
+    private final ScoringStrategy scoringStrategy;
 
     public GameController(Board board) {
+        this(board, new ClassicScoringStrategy());
+    }
+
+    public GameController(Board board, ScoringStrategy scoringStrategy) {
         this.board = board;
+        this.scoringStrategy = scoringStrategy;
         board.createNewBrick();
     }
 
@@ -24,18 +31,9 @@ public class GameController implements InputEventListener {
         ClearRow clearRow = null;
 
         if (!canMove) {
-            board.mergeBrickToBackground();
-
-            clearRow = board.clearRows();
-            if (clearRow.getLinesRemoved() > 0) {
-                board.getScore().add(clearRow.getScoreBonus());
-            }
-
-            board.createNewBrick();
+            clearRow = lockPieceAndHandleLineClear();
         } else {
-            if (event.getEventSource() == EventSource.USER) {
-                board.getScore().add(GameConstants.MANUAL_DOWN_SCORE);
-            }
+            awardManualDownScore(event.getEventSource(), 1);
         }
 
         return new DownData(clearRow, board.getViewData());
@@ -43,24 +41,10 @@ public class GameController implements InputEventListener {
 
     @Override
     public DownData onHardDropEvent(MoveEvent event) {
-        int steps = 0;
+        int steps = dropPieceToBottom();
+        awardManualDownScore(event.getEventSource(), steps);
 
-        while (board.moveBrickDown()) {
-            steps++;
-        }
-
-        if (steps > 0 && event.getEventSource() == EventSource.USER) {
-            board.getScore().add(steps * GameConstants.MANUAL_DOWN_SCORE);
-        }
-
-        board.mergeBrickToBackground();
-
-        ClearRow clearRow = board.clearRows();
-        if (clearRow.getLinesRemoved() > 0) {
-            board.getScore().add(clearRow.getScoreBonus());
-        }
-
-        board.createNewBrick();
+        ClearRow clearRow = lockPieceAndHandleLineClear();
 
         return new DownData(clearRow, board.getViewData());
     }
@@ -87,5 +71,36 @@ public class GameController implements InputEventListener {
     public ViewData createNewGame() {
         board.newGame();
         return board.getViewData();
+    }
+
+    private int dropPieceToBottom() {
+        int steps = 0;
+        while (board.moveBrickDown()) {
+            steps++;
+        }
+        return steps;
+    }
+
+    private void awardManualDownScore(EventSource source, int steps) {
+        if (source != EventSource.USER || steps <= 0) {
+            return;
+        }
+        int score = scoringStrategy.scoreForManualDrop(steps);
+        if (score > 0) {
+            board.getScore().add(score);
+        }
+    }
+
+    private ClearRow lockPieceAndHandleLineClear() {
+        board.mergeBrickToBackground();
+
+        ClearRow clearRow = board.clearRows();
+        int bonus = scoringStrategy.scoreForLineClear(clearRow);
+        if (bonus > 0) {
+            board.getScore().add(bonus);
+        }
+
+        board.createNewBrick();
+        return clearRow;
     }
 }
