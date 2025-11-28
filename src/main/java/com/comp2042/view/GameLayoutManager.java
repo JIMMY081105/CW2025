@@ -6,6 +6,7 @@ import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public class GameLayoutManager {
@@ -19,6 +20,7 @@ public class GameLayoutManager {
     private final VBox nextBricksList;
     private final Group notificationGroup;
     private final BoardRenderer boardRenderer;
+    private final StackPane bombToolbar;
 
     public GameLayoutManager(Pane rootPane,
                              BorderPane gameBoard,
@@ -28,7 +30,8 @@ public class GameLayoutManager {
                              VBox nextBricksContainer,
                              VBox nextBricksList,
                              Group notificationGroup,
-                             BoardRenderer boardRenderer) {
+                             BoardRenderer boardRenderer,
+                             StackPane bombToolbar) {
         this.rootPane = rootPane;
         this.gameBoard = gameBoard;
         this.gamePanel = gamePanel;
@@ -38,6 +41,7 @@ public class GameLayoutManager {
         this.nextBricksList = nextBricksList;
         this.notificationGroup = notificationGroup;
         this.boardRenderer = boardRenderer;
+        this.bombToolbar = bombToolbar;
     }
 
 public void applyInitialLayout() {
@@ -82,6 +86,10 @@ public void applyInitialLayout() {
             rootPane.setPrefWidth(GameConstants.initialWindowWidth());
             rootPane.setPrefHeight(GameConstants.initialWindowHeight());
         }
+
+        if (bombToolbar != null) {
+            bombToolbar.setPadding(new Insets(8));
+        }
     }
 
 public void positionContent(double availableWidth) {
@@ -125,6 +133,13 @@ public void positionContent(double availableWidth) {
 
         if (notificationGroup != null) {
             notificationGroup.setLayoutX(sidePanelLeft);
+        }
+
+        if (bombToolbar != null) {
+            double bombToolbarY = boardTop + GameConstants.boardPixelHeight() + 35;
+            double bombToolbarX = boardLeft + (GameConstants.boardPixelWidth() - 50) / 2;
+            bombToolbar.setLayoutX(bombToolbarX);
+            bombToolbar.setLayoutY(bombToolbarY);
         }
     }
 }

@@ -124,6 +124,10 @@ class GameControllerTest {
         public IntegerProperty scoreProperty() {
             return score.scoreProperty();
         }
+
+        @Override
+        public void explodeBomb(int centerX, int centerY) {
+        }
     }
 
     @Test

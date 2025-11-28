@@ -43,6 +43,23 @@ public final class GameConstants {
         return visibleRows * brickStep();
     }
 
+    public static double gridContentWidth() {
+        return BOARD_WIDTH * BRICK_SIZE + (BOARD_WIDTH - 1) * GRID_GAP;
+    }
+
+    public static double gridContentHeight() {
+        int rows = visibleRows();
+        return rows * BRICK_SIZE + (rows - 1) * GRID_GAP;
+    }
+
+    public static double gridCenterOffsetX() {
+        return (boardPixelWidth() - gridContentWidth()) / 2;
+    }
+
+    public static double gridCenterOffsetY() {
+        return (boardPixelHeight() - gridContentHeight()) / 2;
+    }
+
     public static double brickPanelYOffset() {
         return -HIDDEN_BUFFER_ROWS * brickStep();
     }

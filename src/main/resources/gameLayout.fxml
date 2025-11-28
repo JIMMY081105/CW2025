@@ -36,6 +36,13 @@
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>
     </Group>
+    
+    <StackPane fx:id="bombToolbar" alignment="CENTER" styleClass="bombToolbarBox">
+        <Label fx:id="bombEmoji" text="💣" styleClass="bombEmojiLabel"/>
+        <Label fx:id="bombCountLabel" text="0" styleClass="bombCountBadge" 
+               StackPane.alignment="TOP_RIGHT" translateX="12" translateY="-8"/>
+    </StackPane>
+    
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>

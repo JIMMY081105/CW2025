@@ -83,3 +83,39 @@
     -fx-fill: yellow;
     -fx-text-fill: yellow;
 }
+
+.bombToolbarBox {
+    -fx-background-color: rgba(10, 20, 30, 0.9);
+    -fx-border-color: rgba(255, 140, 0, 0.8);
+    -fx-border-width: 2px;
+    -fx-border-style: solid;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 8px;
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
+    -fx-min-width: 50px;
+    -fx-min-height: 50px;
+    -fx-max-width: 50px;
+    -fx-max-height: 50px;
+}
+
+.bombEmojiLabel {
+    -fx-font-size: 28px;
+}
+
+.bombCountBadge {
+    -fx-background-color: #ff4444;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 1px 5px;
+    -fx-background-radius: 8px;
+    -fx-min-width: 16px;
+    -fx-min-height: 16px;
+    -fx-alignment: center;
+}
+
+.bombDragPreview {
+    -fx-opacity: 0.7;
+}

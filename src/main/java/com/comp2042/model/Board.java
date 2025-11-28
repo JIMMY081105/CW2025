@@ -23,5 +23,6 @@ public interface Board {
     BooleanProperty isGameOverProperty();
     ObjectProperty<int[][]> boardMatrixProperty();
     IntegerProperty scoreProperty();
+    void explodeBomb(int centerX, int centerY);
 }
 

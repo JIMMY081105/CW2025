@@ -70,34 +70,43 @@ public final class MatrixOperations {
     public static ClearRow checkRemoving(final int[][] matrix) {
         int height = matrix.length;
         int width = matrix[0].length;
+        int[][] currentMatrix = copy(matrix);
+        int totalLinesRemoved = 0;
 
-        Deque<int[]> remainingRows = new ArrayDeque<>();
-        List<Integer> clearedRows = new ArrayList<>();
+        while (true) {
+            Deque<int[]> remainingRows = new ArrayDeque<>();
+            List<Integer> clearedRows = new ArrayList<>();
 
-        for (int row = height - 1; row >= 0; row--) {
-            int[] currentRow = matrix[row];
+            for (int row = height - 1; row >= 0; row--) {
+                int[] currentRow = currentMatrix[row];
 
-            if (isRowFull(currentRow)) {
-                clearedRows.add(row);
-
-            } else {
-
-                remainingRows.addLast(cloneRow(currentRow));
+                if (isRowFull(currentRow)) {
+                    clearedRows.add(row);
+                } else {
+                    remainingRows.addLast(cloneRow(currentRow));
+                }
             }
+
+            if (clearedRows.isEmpty()) {
+                break;
+            }
+
+            totalLinesRemoved += clearedRows.size();
+
+            int[][] newMatrix = new int[height][width];
+
+            int writeRow = height - 1;
+            while (!remainingRows.isEmpty() && writeRow >= 0) {
+                newMatrix[writeRow] = remainingRows.removeFirst();
+                writeRow--;
+            }
+
+            currentMatrix = newMatrix;
         }
 
-        int[][] newMatrix = new int[height][width];
+        int scoreBonus = GameConstants.SCORE_PER_LINE * totalLinesRemoved * totalLinesRemoved;
 
-        int writeRow = height - 1;
-        while (!remainingRows.isEmpty() && writeRow >= 0) {
-            newMatrix[writeRow] = remainingRows.removeFirst();
-            writeRow--;
-        }
-
-        int linesRemoved = clearedRows.size();
-        int scoreBonus = GameConstants.SCORE_PER_LINE * linesRemoved * linesRemoved;
-
-        return new ClearRow(linesRemoved, newMatrix, scoreBonus);
+        return new ClearRow(totalLinesRemoved, currentMatrix, scoreBonus);
     }
 
     public static List<int[][]> deepCopyList(List<int[][]> list) {
@@ -126,5 +135,38 @@ public final class MatrixOperations {
         int[] copy = new int[source.length];
         System.arraycopy(source, 0, copy, 0, source.length);
         return copy;
+    }
+
+    public static int[][] explodeBomb(final int[][] matrix, int centerX, int centerY) {
+        int[][] result = copy(matrix);
+
+        for (int row = centerY - 1; row <= centerY + 1; row++) {
+            for (int col = centerX - 1; col <= centerX + 1; col++) {
+                if (!isOutOfBounds(result, col, row)) {
+                    result[row][col] = 0;
+                }
+            }
+        }
+
+        return applyGravity(result);
+    }
+
+    private static int[][] applyGravity(int[][] matrix) {
+        int height = matrix.length;
+        int width = matrix[0].length;
+        int[][] result = new int[height][width];
+        
+        for (int col = 0; col < width; col++) {
+            int writeRow = height - 1;
+            
+            for (int row = height - 1; row >= 0; row--) {
+                if (matrix[row][col] != 0) {
+                    result[writeRow][col] = matrix[row][col];
+                    writeRow--;
+                }
+            }
+        }
+        
+        return result;
     }
 }

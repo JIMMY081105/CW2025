@@ -139,6 +139,14 @@ updateBoardMatrix(new int[height][width]);
         createNewBrick();
     }
 
+    @Override
+    public void explodeBomb(int centerX, int centerY) {
+        int[][] exploded = MatrixOperations.explodeBomb(currentGameMatrix, centerX, centerY);
+        updateBoardMatrix(exploded);
+        ClearRow clearRow = MatrixOperations.checkRemoving(exploded);
+        updateBoardMatrix(clearRow.getNewMatrix());
+    }
+
 private void updateBoardMatrix(int[][] newMatrix) {
         this.currentGameMatrix = newMatrix;
         this.boardMatrix.set(newMatrix);
