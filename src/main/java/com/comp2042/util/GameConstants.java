@@ -6,7 +6,7 @@ public final class GameConstants {
     public static final int BOARD_WIDTH = 10;
     public static final int GAME_TICK_MS = 400;
     public static final int BRICK_SIZE = 28;
-    public static final int GRID_GAP = 2;
+    public static final double GRID_GAP = 2.5;
     public static final int NEXT_PREVIEW_COUNT = 3;
     public static final int NEXT_BRICK_SIZE = 18;
     public static final int NEXT_BRICK_GAP = 2;
