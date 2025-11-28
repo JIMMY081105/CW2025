@@ -7,6 +7,7 @@ import java.util.Random;
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final Random random;
+    private final List<Brick> brickQueue = new ArrayList<>();
 
     public RandomBrickGenerator() {
         this(new Random());
@@ -14,16 +15,31 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     RandomBrickGenerator(Random random) {
         this.random = random;
+        initializeQueue();
+    }
+
+    private void initializeQueue() {
+        for (int i = 0; i < 10; i++) {
+            brickQueue.add(createRandomBrick());
+        }
     }
 
     @Override
     public Brick getBrick() {
-        return createRandomBrick();
+        if (brickQueue.isEmpty()) {
+            initializeQueue();
+        }
+        Brick nextBrick = brickQueue.remove(0);
+        brickQueue.add(createRandomBrick());
+        return nextBrick;
     }
 
     @Override
     public Brick getNextBrick() {
-        return createRandomBrick();
+        if (brickQueue.isEmpty()) {
+            initializeQueue();
+        }
+        return brickQueue.get(0);
     }
 
     private Brick createRandomBrick() {
@@ -34,9 +50,12 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     @Override
     public List<Brick> preview(int count) {
-        List<Brick> previewBricks = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) {
-            previewBricks.add(createRandomBrick());
+        if (brickQueue.isEmpty()) {
+            initializeQueue();
+        }
+        List<Brick> previewBricks = new ArrayList<>();
+        for (int i = 0; i < count && i < brickQueue.size(); i++) {
+            previewBricks.add(brickQueue.get(i));
         }
         return previewBricks;
     }
