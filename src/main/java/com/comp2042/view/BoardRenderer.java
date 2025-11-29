@@ -32,6 +32,11 @@ public class BoardRenderer {
         if (this.gamePanel != null) {
             this.gamePanel.setAlignment(Pos.CENTER);
         }
+
+        if (this.brickPanel != null) {
+            this.brickPanel.setHgap(GameConstants.GRID_GAP);
+            this.brickPanel.setVgap(GameConstants.GRID_GAP);
+        }
     }
 
 public void initialiseBoard(int[][] boardMatrix, ViewData viewData) {

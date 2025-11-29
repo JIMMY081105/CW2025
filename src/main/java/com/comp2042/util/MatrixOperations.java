@@ -47,7 +47,6 @@ public final class MatrixOperations {
                 int targetY = y + row;
 
                 if (isOutOfBounds(result, targetX, targetY)) {
-
                     continue;
                 }
 
@@ -138,35 +137,35 @@ public final class MatrixOperations {
     }
 
     public static int[][] explodeBomb(final int[][] matrix, int centerX, int centerY) {
+        int height = matrix.length;
+        int width = matrix[0].length;
+
         int[][] result = copy(matrix);
 
-        for (int row = centerY - 1; row <= centerY + 1; row++) {
-            for (int col = centerX - 1; col <= centerX + 1; col++) {
-                if (!isOutOfBounds(result, col, row)) {
-                    result[row][col] = 0;
-                }
+        int top = Math.max(0, centerY - 1);
+        int bottom = Math.min(height - 1, centerY + 1);
+        int left = Math.max(0, centerX - 1);
+        int right = Math.min(width - 1, centerX + 1);
+
+        for (int row = top; row <= bottom; row++) {
+            for (int col = left; col <= right; col++) {
+                result[row][col] = 0;
             }
         }
 
-        return applyGravity(result);
-    }
-
-    private static int[][] applyGravity(int[][] matrix) {
-        int height = matrix.length;
-        int width = matrix[0].length;
-        int[][] result = new int[height][width];
-        
-        for (int col = 0; col < width; col++) {
-            int writeRow = height - 1;
-            
-            for (int row = height - 1; row >= 0; row--) {
-                if (matrix[row][col] != 0) {
-                    result[writeRow][col] = matrix[row][col];
+        for (int col = left; col <= right; col++) {
+            int writeRow = bottom;
+            for (int row = bottom; row >= 0; row--) {
+                if (result[row][col] != 0) {
+                    if (writeRow != row) {
+                        result[writeRow][col] = result[row][col];
+                        result[row][col] = 0;
+                    }
                     writeRow--;
                 }
             }
         }
-        
+
         return result;
     }
 }
