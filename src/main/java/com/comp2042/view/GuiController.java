@@ -87,6 +87,8 @@ public class GuiController implements Initializable {
     @FXML
     private Label bombCountLabel;
 
+    private Label modeLabel;
+
     private InputEventListener eventListener;
     private Board board;
 
@@ -157,6 +159,20 @@ public class GuiController implements Initializable {
         
         setupBombDragAndDrop();
         updateBombCountLabel();
+
+        addModeLabel();
+    }
+
+    private void addModeLabel() {
+        if (rootPane == null) {
+            return;
+        }
+        modeLabel = new Label();
+        modeLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;");
+        modeLabel.setVisible(false);
+        rootPane.getChildren().add(modeLabel);
+        modeLabel.setLayoutX(16);
+        modeLabel.setLayoutY(10);
     }
     
     private void setupBombDragAndDrop() {
@@ -561,4 +577,25 @@ public class GuiController implements Initializable {
         }
     }
 
+    public void applyBackgroundImage(String resourcePath) {
+        if (rootPane == null || resourcePath == null || resourcePath.isBlank()) {
+            return;
+        }
+
+        String style = String.format(
+                "-fx-background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('%s');"
+                        + "-fx-background-size: cover, cover;"
+                        + "-fx-background-position: center center, center center;"
+                        + "-fx-background-repeat: no-repeat, no-repeat;",
+                resourcePath
+        );
+        rootPane.setStyle(style);
+    }
+
+    public void showModeLabel(String text) {
+        if (modeLabel != null) {
+            modeLabel.setText(text);
+            modeLabel.setVisible(true);
+        }
+    }
 }

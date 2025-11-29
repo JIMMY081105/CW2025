@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+<StackPane fx:id="homeRoot" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.comp2042.view.HomeController"
+           styleClass="home-root">
+    <VBox alignment="CENTER" spacing="32">
+        <Label text="Welcome to Tetris" styleClass="home-title"/>
+        <Button fx:id="countryButton" text="Country Explore"
+                onAction="#selectCountryExplore"
+                styleClass="home-ellipse"/>
+        <Button fx:id="timeButton" text="Time Racing"
+                onAction="#selectTimeRacing"
+                styleClass="home-ellipse"/>
+    </VBox>
+    <stylesheets>
+        <URL value="@window_style.css"/>
+    </stylesheets>
+</StackPane>

@@ -1,8 +1,6 @@
 .root {
-    -fx-background-image: url("/China/17.jpg");
-    -fx-background-repeat: no-repeat;
-    -fx-background-size: cover;
-    -fx-background-position: center center;
+    /* Default game scene background is fully black; selection applies images as needed. */
+    -fx-background-color: #000000;
 }
 
 
@@ -135,4 +133,50 @@
 
 .bombDragPreview {
     -fx-opacity: 0.7;
+}
+
+.home-root {
+    -fx-background-image:
+        linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
+        url("homebackgound.png");
+    -fx-background-repeat: no-repeat, no-repeat;
+    -fx-background-size: cover, cover;
+    -fx-background-position: center center, center center;
+}
+
+.home-title {
+    -fx-text-fill: white;
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 20px 0;
+}
+
+.home-ellipse, .selection-ellipse {
+    -fx-pref-width: 420px;
+    -fx-pref-height: 150px;
+    -fx-background-color: rgba(10, 20, 30, 0.9);
+    -fx-background-radius: 100px;
+    -fx-border-radius: 100px;
+    -fx-border-color: rgba(255, 255, 255, 0.85);
+    -fx-border-width: 2px;
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 16, 0, 0, 5);
+}
+
+.home-ellipse:hover, .selection-ellipse:hover {
+    -fx-background-color: rgba(25, 40, 55, 0.95);
+}
+
+.selection-root {
+    -fx-background-color: #000000;
+}
+
+.selection-title {
+    -fx-text-fill: white;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 16px 0;
 }
