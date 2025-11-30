@@ -136,19 +136,17 @@
 }
 
 .home-root {
-    -fx-background-image:
-        linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
-        url("homebackgound.png");
-    -fx-background-repeat: no-repeat, no-repeat;
-    -fx-background-size: cover, cover;
-    -fx-background-position: center center, center center;
+    /* Video background handled by HomeController; keep a solid fallback. */
+    -fx-background-color: #000000;
 }
 
 .home-title {
-    -fx-text-fill: white;
-    -fx-font-size: 38px;
+    -fx-text-fill: linear-gradient(#ffffff, #b2f7ff);
+    -fx-font-size: 52px;
     -fx-font-weight: bold;
-    -fx-padding: 0 0 20px 0;
+    -fx-padding: 0 0 10px 0;
+    -fx-font-family: "Let's go Digital";
+    -fx-effect: dropshadow(gaussian, rgba(0, 255, 220, 0.45), 22, 0.35, 0, 1);
 }
 
 .home-ellipse, .selection-ellipse {
@@ -162,6 +160,7 @@
     -fx-text-fill: white;
     -fx-font-size: 26px;
     -fx-font-weight: bold;
+    -fx-font-family: "Times New Roman";
     -fx-cursor: hand;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 16, 0, 0, 5);
 }
@@ -179,4 +178,113 @@
     -fx-font-size: 32px;
     -fx-font-weight: bold;
     -fx-padding: 0 0 16px 0;
+}
+
+.home-overlay {
+    -fx-padding: 48 32 64 32;
+}
+
+.menu-panel {
+    -fx-alignment: center;
+    -fx-spacing: 24;
+    -fx-max-width: 840px;
+    -fx-min-width: 520px;
+}
+
+.mode-stack {
+    -fx-fill-width: true;
+    -fx-alignment: center;
+}
+
+.mode-button {
+    -fx-background-color:
+        linear-gradient(from 0% 0% to 100% 120%, rgba(12, 22, 32, 0.78) 0%, rgba(20, 30, 50, 0.9) 60%, rgba(32, 58, 88, 0.95) 100%),
+        linear-gradient(from 0% 100% to 100% 0%, rgba(0, 255, 191, 0.2), rgba(0, 255, 191, 0.0));
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(0, 255, 191, 0.85);
+    -fx-border-width: 2px;
+    -fx-border-radius: 10;
+    -fx-padding: 18 24;
+    -fx-alignment: center-left;
+    -fx-content-display: left;
+    -fx-graphic-text-gap: 0;
+    -fx-cursor: hand;
+    -fx-pref-width: 720px;
+    -fx-min-height: 110px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 255, 191, 0.35), 18, 0.3, 8, 12);
+    -fx-text-fill: white;
+    -fx-background-position: right center;
+}
+
+.mode-button:hover {
+    -fx-background-color:
+        linear-gradient(from 0% 0% to 100% 120%, rgba(20, 34, 48, 0.9) 0%, rgba(24, 46, 74, 0.92) 55%, rgba(48, 92, 128, 0.98) 100%),
+        linear-gradient(from 0% 100% to 100% 0%, rgba(0, 255, 220, 0.35), rgba(0, 255, 191, 0.05));
+    -fx-border-color: rgba(255, 255, 245, 0.95);
+    -fx-effect: dropshadow(gaussian, rgba(0, 255, 220, 0.55), 26, 0.35, 10, 14);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.0;
+    -fx-padding: 18 24 18 32;
+    -fx-translate-x: -6;
+}
+
+.mode-button:pressed {
+    -fx-effect: dropshadow(gaussian, rgba(0, 255, 220, 0.35), 16, 0.4, 4, 8);
+    -fx-translate-y: 1;
+}
+
+.mode-content {
+    -fx-padding: 4 8;
+}
+
+.mode-badge {
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 42px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0ef5ff;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, rgba(0, 255, 191, 0.35), rgba(0, 255, 191, 0.08));
+    -fx-padding: 14 16;
+    -fx-border-color: rgba(0, 255, 191, 0.9);
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.55), 14, 0.6, 0, 2);
+}
+
+.mode-title {
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Let's go Digital";
+}
+
+.mode-subtitle {
+    -fx-text-fill: rgba(210, 230, 255, 0.85);
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 8, 0.2, 0, 1);
+}
+
+.mode-button:hover .mode-title,
+.mode-button:hover .mode-subtitle,
+.mode-button:hover .mode-badge {
+    -fx-effect: dropshadow(gaussian, rgba(0, 255, 220, 0.55), 16, 0.55, 0, 0);
+    -fx-text-fill: #eaffff;
+}
+
+.footer-bar {
+    -fx-padding: 12 24;
+    -fx-background-color: rgba(10, 20, 30, 0.7);
+    -fx-border-color: rgba(255, 255, 255, 0.12);
+    -fx-border-width: 1px 0 0 0;
+    -fx-background-radius: 12 12 0 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 24, 0.4, 0, -4);
+    -fx-opacity: 0.94;
+}
+
+.footer-text {
+    -fx-text-fill: #c7f9ff;
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
 }

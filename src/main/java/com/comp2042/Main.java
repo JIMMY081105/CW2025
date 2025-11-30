@@ -12,6 +12,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.StageStyle;
 import javafx.stage.Stage;
 
@@ -76,8 +77,7 @@ public class Main extends Application {
         Parent root = fxmlLoader.load();
         GuiController guiController = fxmlLoader.getController();
 
-        // IMPORTANT: do NOT upscale the game UI
-        applyScale(root, GAME_UI_SCALE); // currently 1.0, so effectively no scale
+        applyScale(root, GAME_UI_SCALE); 
         setSceneAndMaximize(primaryStage, root);
 
         GameController gameController = new GameController(board);
@@ -118,9 +118,11 @@ public class Main extends Application {
         stage.setMinWidth(GameConstants.initialWindowWidth());
         stage.setMinHeight(GameConstants.initialWindowHeight());
 
-        // If full-screen is too much for your laptop, you can comment out one/both of these:
+    
         stage.setMaximized(true);
         stage.setFullScreen(true);
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+        stage.setFullScreenExitHint("");
     }
 
     private void applyScale(Parent root, double scale) {
