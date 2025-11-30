@@ -45,11 +45,6 @@
                 </VBox>
             </VBox>
         </center>
-        <bottom>
-            <HBox alignment="CENTER" styleClass="footer-bar">
-                <Label text="WELCOME TO TETRIS ADVENTURE!" styleClass="footer-text"/>
-            </HBox>
-        </bottom>
     </BorderPane>
     <stylesheets>
         <URL value="@window_style.css"/>

@@ -8,6 +8,7 @@ import com.comp2042.view.HomeController;
 import com.comp2042.view.HomeSelection;
 import com.comp2042.view.GuiController;
 import com.comp2042.view.ModeSelectionController;
+import com.comp2042.view.BackgroundVideoManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -56,6 +57,12 @@ public class Main extends Application {
                 try {
                     launchGame(primaryStage, selection);
                 } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }, () -> {
+                try {
+                    showHome(primaryStage);
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             });
@@ -109,20 +116,24 @@ public class Main extends Application {
     }
 
     private void setSceneAndMaximize(Stage stage, Parent root) {
-        Scene scene = new Scene(
-                root,
-                GameConstants.initialWindowWidth(),
-                GameConstants.initialWindowHeight()
-        );
-        stage.setScene(scene);
-        stage.setMinWidth(GameConstants.initialWindowWidth());
-        stage.setMinHeight(GameConstants.initialWindowHeight());
+        Scene scene = stage.getScene();
+        if (scene == null) {
+            scene = new Scene(
+                    root,
+                    GameConstants.initialWindowWidth(),
+                    GameConstants.initialWindowHeight()
+            );
+            stage.setScene(scene);
+            stage.setMinWidth(GameConstants.initialWindowWidth());
+            stage.setMinHeight(GameConstants.initialWindowHeight());
 
-    
-        stage.setMaximized(true);
-        stage.setFullScreen(true);
-        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
-        stage.setFullScreenExitHint("");
+            stage.setMaximized(true);
+            stage.setFullScreen(true);
+            stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+            stage.setFullScreenExitHint("");
+        } else {
+            scene.setRoot(root);
+        }
     }
 
     private void applyScale(Parent root, double scale) {
@@ -130,6 +141,11 @@ public class Main extends Application {
             root.setScaleX(scale);
             root.setScaleY(scale);
         }
+    }
+
+    @Override
+    public void stop() {
+        BackgroundVideoManager.dispose();
     }
 
     public static void main(String[] args) {
