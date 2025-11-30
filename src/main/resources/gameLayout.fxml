@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <?import com.comp2042.view.GameOverPanel?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -6,28 +7,61 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
-<Pane fx:id="rootPane" fx:controller="com.comp2042.view.GuiController"
+
+<Pane fx:id="rootPane"
+      fx:controller="com.comp2042.view.GuiController"
       xmlns:fx="http://javafx.com/fxml">
-    <BorderPane styleClass="gameBoard" fx:id="gameBoard"/>
+
+    <BorderPane fx:id="gameBoard" styleClass="gameBoard"/>
     <Pane fx:id="gridLinesPane"/>
     <GridPane fx:id="gamePanel"/>
     <Pane fx:id="ghostPane"/>
     <GridPane fx:id="brickPanel"/>
-    
+
+    <VBox fx:id="timerBox" styleClass="sectionBox" alignment="CENTER" spacing="6">
+        <Label fx:id="timerTitle"
+               text="TIME LEFT"
+               style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <Text fx:id="timerValue" text="--:--" styleClass="scoreClass"/>
+    </VBox>
+
     <VBox fx:id="sidePanel" alignment="TOP_CENTER" spacing="16">
+
         <VBox fx:id="scoreBox" styleClass="sectionBox" alignment="CENTER" spacing="8">
-            <Label text="SCORE" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Label text="SCORE"
+                   style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
             <Text fx:id="scoreValue" text="0" styleClass="scoreClass"/>
         </VBox>
-        <VBox fx:id="nextBricksContainer" alignment="TOP_CENTER" spacing="8" styleClass="sectionBox">
-            <Label text="NEXT 3" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+
+        <VBox fx:id="bestScoreBox" styleClass="sectionBox" alignment="CENTER" spacing="6">
+            <Label fx:id="bestScoreTitle"
+                   text="BEST SCORE"
+                   style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Text fx:id="bestScoreValue" text="0" styleClass="scoreClass"/>
+        </VBox>
+
+        <VBox fx:id="nextBricksContainer"
+              alignment="TOP_CENTER"
+              spacing="8"
+              styleClass="sectionBox">
+            <Label text="NEXT 3"
+                   style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
             <VBox fx:id="nextBricksList" spacing="10" alignment="CENTER"/>
         </VBox>
+
         <VBox styleClass="sectionBox" alignment="CENTER">
-            <ToggleButton fx:id="pauseButton" text="Pause" onAction="#pauseGame" focusTraversable="false" prefWidth="120"/>
+            <ToggleButton fx:id="pauseButton"
+                          text="Pause"
+                          onAction="#pauseGame"
+                          focusTraversable="false"
+                          prefWidth="120"/>
         </VBox>
+
         <VBox styleClass="sectionBox" alignment="CENTER">
-            <Button text="New Game" onAction="#newGame" focusTraversable="false" prefWidth="120"/>
+            <Button text="New Game"
+                    onAction="#newGame"
+                    focusTraversable="false"
+                    prefWidth="120"/>
         </VBox>
     </VBox>
 
@@ -36,13 +70,19 @@
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>
     </Group>
-    
-    <StackPane fx:id="bombToolbar" alignment="CENTER" styleClass="bombToolbarBox">
+
+    <StackPane fx:id="bombToolbar"
+               alignment="CENTER"
+               styleClass="bombToolbarBox">
         <Label fx:id="bombEmoji" text="💣" styleClass="bombEmojiLabel"/>
-        <Label fx:id="bombCountLabel" text="0" styleClass="bombCountBadge" 
-               StackPane.alignment="TOP_RIGHT" translateX="12" translateY="-8"/>
+        <Label fx:id="bombCountLabel"
+               text="0"
+               styleClass="bombCountBadge"
+               StackPane.alignment="TOP_RIGHT"
+               translateX="12"
+               translateY="-8"/>
     </StackPane>
-    
+
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>

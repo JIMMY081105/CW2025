@@ -101,6 +101,7 @@ public class Main extends Application {
         }
 
         if (selection.mode() == HomeSelection.Mode.COUNTRY_EXPLORE) {
+            guiController.configureTimeAttack(0);
             String imagePath = switch (selection.option()) {
                 case "China" -> "China/1.jpg";
                 case "America" -> "background_image.png";
@@ -110,10 +111,22 @@ public class Main extends Application {
             guiController.applyBackgroundImage(imagePath);
         }
 
-        if (selection.mode() == HomeSelection.Mode.TIME_RACING) {
-            guiController.showModeLabel("Time Racing: " + selection.option());
+    if (selection.mode() == HomeSelection.Mode.TIME_RACING) {
+        guiController.showModeLabel("Time Racing: " + selection.option());
+
+        int minutes = switch (selection.option()) {
+            case "1 Minute Sprint" -> 1;
+            case "3 Minute Rush" -> 3;
+            case "5 Minute Marathon" -> 5;
+            default -> 0;
+        };
+
+        if (minutes > 0) {
+            guiController.configureTimeAttack(minutes);
         }
     }
+}
+
 
     private void setSceneAndMaximize(Stage stage, Parent root) {
         Scene scene = stage.getScene();

@@ -16,6 +16,7 @@ public class GameLayoutManager {
     private final GridPane gamePanel;
     private final Pane gridLinesPane;
     private final VBox sidePanel;
+    private final VBox timerBox;
     private final VBox nextBricksContainer;
     private final VBox nextBricksList;
     private final Group notificationGroup;
@@ -27,6 +28,7 @@ public class GameLayoutManager {
                              GridPane gamePanel,
                              Pane gridLinesPane,
                              VBox sidePanel,
+                             VBox timerBox,
                              VBox nextBricksContainer,
                              VBox nextBricksList,
                              Group notificationGroup,
@@ -37,6 +39,7 @@ public class GameLayoutManager {
         this.gamePanel = gamePanel;
         this.gridLinesPane = gridLinesPane;
         this.sidePanel = sidePanel;
+        this.timerBox = timerBox;
         this.nextBricksContainer = nextBricksContainer;
         this.nextBricksList = nextBricksList;
         this.notificationGroup = notificationGroup;
@@ -65,6 +68,12 @@ public void applyInitialLayout() {
         }
         if (nextBricksList != null) {
             nextBricksList.setSpacing(GameConstants.NEXT_PREVIEW_SPACING);
+        }
+
+        if (timerBox != null) {
+            timerBox.setSpacing(GameConstants.SIDE_PANEL_SPACING / 2);
+            timerBox.setPrefWidth(GameConstants.SIDE_PANEL_WIDTH);
+            timerBox.setPadding(new Insets(GameConstants.SIDE_PANEL_PADDING));
         }
 
         double visualBuffer = 4.0;
@@ -129,6 +138,12 @@ public void positionContent(double availableWidth) {
         if (sidePanel != null) {
             sidePanel.setLayoutX(sidePanelLeft);
             sidePanel.setLayoutY(boardTop);
+        }
+
+        if (timerBox != null) {
+            double timerLeft = Math.max(GameConstants.SIDE_PANEL_PADDING, boardLeft - GameConstants.SIDE_PANEL_WIDTH - GameConstants.PANEL_GAP);
+            timerBox.setLayoutX(timerLeft);
+            timerBox.setLayoutY(boardTop);
         }
 
         if (notificationGroup != null) {
