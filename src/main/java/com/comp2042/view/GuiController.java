@@ -20,6 +20,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
@@ -668,14 +674,34 @@ public class GuiController implements Initializable {
             return;
         }
 
-        String style = String.format(
-                "-fx-background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('%s');"
-                        + "-fx-background-size: cover, cover;"
-                        + "-fx-background-position: center center, center center;"
-                        + "-fx-background-repeat: no-repeat, no-repeat;",
-                resourcePath
+        var resourceUrl = getClass().getClassLoader().getResource(resourcePath);
+        if (resourceUrl == null) {
+            System.err.println("Missing background resource: " + resourcePath);
+            return;
+        }
+
+        String url = resourceUrl.toExternalForm();
+
+        // Apply via JavaFX Background (respects sizing) and inline CSS (overrides .root background)
+        Image image = new Image(url, true);
+        BackgroundSize size = new BackgroundSize(
+                1.0, 1.0, true, true, false, true
         );
-        rootPane.setStyle(style);
+        BackgroundImage backgroundImage = new BackgroundImage(
+                image,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                size
+        );
+        rootPane.setBackground(new Background(backgroundImage));
+        rootPane.setStyle(
+                "-fx-background-image: url('" + url + "');"
+                        + "-fx-background-size: cover;"
+                        + "-fx-background-repeat: no-repeat;"
+                        + "-fx-background-position: center center;"
+                        + "-fx-background-color: transparent;"
+        );
     }
 
     public void showModeLabel(String text) {

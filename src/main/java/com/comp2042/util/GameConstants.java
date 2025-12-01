@@ -26,7 +26,7 @@ public final class GameConstants {
     public static final int BRICK_ARC_SIZE = 10;
     public static final int MANUAL_DOWN_SCORE = 1;
     public static final int MIN_GAME_TICK_MS = 120;
-    public static final int POINTS_PER_CHINA_STAGE = 1500;
+    public static final int POINTS_PER_CHINA_STAGE = 200;
 
     public static int visibleRows() {
         return BOARD_HEIGHT - HIDDEN_BUFFER_ROWS;
