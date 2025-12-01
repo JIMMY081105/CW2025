@@ -25,6 +25,8 @@ public final class GameConstants {
     public static final int HIDDEN_BUFFER_ROWS = 2;
     public static final int BRICK_ARC_SIZE = 10;
     public static final int MANUAL_DOWN_SCORE = 1;
+    public static final int MIN_GAME_TICK_MS = 120;
+    public static final int POINTS_PER_CHINA_STAGE = 1500;
 
     public static int visibleRows() {
         return BOARD_HEIGHT - HIDDEN_BUFFER_ROWS;
@@ -44,16 +46,15 @@ public final class GameConstants {
     }
 
     public static double gridContentWidth() {
-        return BOARD_WIDTH * BRICK_SIZE + (BOARD_WIDTH - 1) * GRID_GAP;
+        return boardPixelWidth();
     }
 
     public static double gridContentHeight() {
-        int rows = visibleRows();
-        return rows * BRICK_SIZE + (rows - 1) * GRID_GAP;
+        return boardPixelHeight();
     }
 
     public static double gridCenterOffsetX() {
-        return (boardPixelWidth() - gridContentWidth()) / 2;
+        return 0;
     }
 
     public static double gridCenterOffsetY() {
@@ -85,8 +86,10 @@ public final class GameConstants {
     }
 
     public static double initialWindowWidth() {
-        double baseWidth = BOARD_LEFT_PADDING + contentWidth() + PANEL_GAP;
-        return Math.max(baseWidth, minimumCenteredWindowWidth());
+        return Math.max(
+                contentWidth() + 2 * SIDE_PANEL_PADDING,
+                minimumCenteredWindowWidth()
+        );
     }
 
     public static double initialWindowHeight() {

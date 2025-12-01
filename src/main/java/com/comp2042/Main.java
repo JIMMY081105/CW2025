@@ -23,10 +23,9 @@ import java.util.ResourceBundle;
 
 public class Main extends Application {
 
-    // Use different scales for different screens
     private static final double HOME_UI_SCALE = 1.3;
     private static final double SELECTION_UI_SCALE = 1.3;
-    private static final double GAME_UI_SCALE = 1.0; // <-- game stays at natural size
+    private static final double GAME_UI_SCALE = 1.0; 
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -49,6 +48,15 @@ public class Main extends Application {
 
     private void showModeSelection(Stage primaryStage, HomeSelection.Mode mode) {
         try {
+            if (mode == HomeSelection.Mode.COUNTRY_EXPLORE) {
+                try {
+                    launchGame(primaryStage, new HomeSelection(HomeSelection.Mode.COUNTRY_EXPLORE, "China"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+
             URL selectionLocation = getClass().getClassLoader().getResource("selection_layout.fxml");
             FXMLLoader selectionLoader = new FXMLLoader(selectionLocation);
             Parent selectionRoot = selectionLoader.load();
@@ -101,31 +109,25 @@ public class Main extends Application {
         }
 
         if (selection.mode() == HomeSelection.Mode.COUNTRY_EXPLORE) {
-            guiController.configureTimeAttack(0);
-            String imagePath = switch (selection.option()) {
-                case "China" -> "China/1.jpg";
-                case "America" -> "background_image.png";
-                case "Turkey" -> "background_image.png";
-                default -> "background_image.png";
-            };
-            guiController.applyBackgroundImage(imagePath);
+            guiController.configureExploreChinaMode();
+            return;
         }
 
-    if (selection.mode() == HomeSelection.Mode.TIME_RACING) {
-        guiController.showModeLabel("Time Racing: " + selection.option());
+        if (selection.mode() == HomeSelection.Mode.TIME_RACING) {
+            guiController.showModeLabel("Time Racing: " + selection.option());
 
-        int minutes = switch (selection.option()) {
-            case "1 Minute Sprint" -> 1;
-            case "3 Minute Rush" -> 3;
-            case "5 Minute Marathon" -> 5;
-            default -> 0;
-        };
+            int minutes = switch (selection.option()) {
+                case "1 Minute Sprint" -> 1;
+                case "3 Minute Rush" -> 3;
+                case "5 Minute Marathon" -> 5;
+                default -> 0;
+            };
 
-        if (minutes > 0) {
-            guiController.configureTimeAttack(minutes);
+            if (minutes > 0) {
+                guiController.configureTimeAttack(minutes);
+            }
         }
     }
-}
 
 
     private void setSceneAndMaximize(Stage stage, Parent root) {

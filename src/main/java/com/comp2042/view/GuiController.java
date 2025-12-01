@@ -1,6 +1,7 @@
 package com.comp2042.view;
 
 import com.comp2042.data.DownData;
+import com.comp2042.data.ChinaStageDescriptionProvider;
 import com.comp2042.data.ViewData;
 import com.comp2042.event.EventSource;
 import com.comp2042.event.EventType;
@@ -34,6 +35,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -108,6 +110,15 @@ public class GuiController implements Initializable {
     @FXML
     private Text bestScoreValue;
 
+    @FXML
+    private VBox chinaDescriptionBox;
+
+    @FXML
+    private Text chinaStateTitle;
+
+    @FXML
+    private Text chinaStateDescription;
+
     private InputEventListener eventListener;
     private Board board;
 
@@ -138,6 +149,12 @@ public class GuiController implements Initializable {
     private static int bestScore1Min = 0;
     private static int bestScore3Min = 0;
     private static int bestScore5Min = 0;
+
+    private final java.util.List<ChinaStageDescriptionProvider.ChinaStage> chinaStages =
+            ChinaStageDescriptionProvider.getStages();
+    private boolean chinaExploreMode = false;
+    private int currentChinaStageIndex = 0;
+    private int currentTickMillis = GameConstants.GAME_TICK_MS;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -195,6 +212,10 @@ public class GuiController implements Initializable {
         if (bestScoreBox != null) {
             bestScoreBox.setVisible(false);
             bestScoreBox.setManaged(false);
+        }
+        if (chinaDescriptionBox != null) {
+            chinaDescriptionBox.setVisible(false);
+            chinaDescriptionBox.setManaged(false);
         }
 
         setupBombDragAndDrop();
@@ -456,6 +477,7 @@ public class GuiController implements Initializable {
 
         integerProperty.addListener((obs, oldVal, newVal) -> {
             checkBombMilestone(newVal.intValue());
+            updateChinaStageForScore(newVal.intValue());
         });
     }
 
@@ -468,6 +490,10 @@ public class GuiController implements Initializable {
         if (timeAttackEnabled) {
             resetTimeAttackTimer();
             startTimeAttackTimer();
+        }
+
+        if (chinaExploreMode) {
+            applyChinaStage(currentChinaStageIndex);
         }
     }
 
@@ -631,7 +657,7 @@ public class GuiController implements Initializable {
     private void ensureGameLoopInitialised() {
         if (gameLoop == null) {
             gameLoop = new GameLoop(
-                    GameConstants.GAME_TICK_MS,
+                    currentTickMillis,
                     () -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
             );
         }
@@ -653,6 +679,24 @@ public class GuiController implements Initializable {
     }
 
     public void showModeLabel(String text) {
+    }
+
+    public void configureExploreChinaMode() {
+        chinaExploreMode = true;
+        currentChinaStageIndex = 0;
+
+        // disable time-attack UI
+        configureTimeAttack(0);
+        if (timerBox != null) {
+            timerBox.setVisible(false);
+            timerBox.setManaged(false);
+        }
+        if (bestScoreBox != null) {
+            bestScoreBox.setVisible(false);
+            bestScoreBox.setManaged(false);
+        }
+
+        applyChinaStage(currentChinaStageIndex);
     }
 
     public void configureTimeAttack(int minutes) {
@@ -687,6 +731,73 @@ public class GuiController implements Initializable {
 
         if (gameLoop != null && gameLoop.isRunning()) {
             startTimeAttackTimer();
+        }
+    }
+
+    private void applyChinaStage(int stageIndex) {
+        if (!chinaExploreMode || chinaStages.isEmpty()) {
+            return;
+        }
+
+        int safeIndex = Math.min(stageIndex, chinaStages.size() - 1);
+        currentChinaStageIndex = safeIndex;
+        ChinaStageDescriptionProvider.ChinaStage stage = chinaStages.get(safeIndex);
+
+        applyBackgroundImage(stage.getBackgroundResource());
+
+        if (chinaDescriptionBox != null) {
+            chinaDescriptionBox.setVisible(true);
+            chinaDescriptionBox.setManaged(true);
+        }
+        if (chinaStateTitle != null) {
+            chinaStateTitle.setText(stage.getName());
+        }
+        if (chinaStateDescription != null) {
+            chinaStateDescription.setText(stage.getDescription());
+        }
+
+        // speed up slightly per stage
+        int newTick = Math.max(
+                GameConstants.MIN_GAME_TICK_MS,
+                GameConstants.GAME_TICK_MS - (safeIndex * 10)
+        );
+        updateGameLoopSpeed(newTick);
+    }
+
+    private void updateChinaStageForScore(int score) {
+        if (!chinaExploreMode || chinaStages.isEmpty()) {
+            return;
+        }
+
+        int targetIndex = Math.min(
+                score / GameConstants.POINTS_PER_CHINA_STAGE,
+                chinaStages.size() - 1
+        );
+
+        if (targetIndex > currentChinaStageIndex) {
+            applyChinaStage(targetIndex);
+        }
+    }
+
+    private void updateGameLoopSpeed(int newTickMillis) {
+        int clamped = Math.max(GameConstants.MIN_GAME_TICK_MS, newTickMillis);
+        if (clamped == currentTickMillis) {
+            return;
+        }
+        currentTickMillis = clamped;
+
+        if (gameLoop == null) {
+            return;
+        }
+
+        boolean wasRunning = gameLoop.isRunning() && !isPause.get() && !isGameOver.get();
+        gameLoop.stop();
+        gameLoop = new GameLoop(
+                currentTickMillis,
+                () -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+        );
+        if (wasRunning) {
+            gameLoop.start();
         }
     }
 

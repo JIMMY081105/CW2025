@@ -6,6 +6,7 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.VBox?>
 <?import java.net.URL?>
 
 <Pane fx:id="rootPane"
@@ -64,6 +65,24 @@
                     prefWidth="120"/>
         </VBox>
     </VBox>
+
+    <VBox fx:id="chinaDescriptionBox"
+        layoutX="40"
+        layoutY="80"
+        spacing="8"
+        alignment="TOP_LEFT"
+        style="-fx-background-color: rgba(0,0,0,0.6); -fx-padding: 12; -fx-background-radius: 10;">
+        <Text fx:id="chinaStateTitle"
+            text="Stage 1"
+            fill="WHITE"
+            style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        <Text fx:id="chinaStateDescription"
+            text="TODO: description goes here."
+            wrappingWidth="230"
+            fill="WHITE"
+            style="-fx-font-size: 13px;"/>
+    </VBox>
+
 
     <Group fx:id="groupNotification">
         <VBox alignment="CENTER">

@@ -23,8 +23,8 @@
                             <HBox alignment="CENTER_LEFT" spacing="18" styleClass="mode-content">
                                 <Label text="EC" styleClass="mode-badge"/>
                                 <VBox alignment="CENTER_LEFT" spacing="4">
-                                    <Label text="Explore Countries" styleClass="mode-title"/>
-                                    <Label text="Travel the globe and unlock new grids" styleClass="mode-subtitle"/>
+                                    <Label text="Explore China" styleClass="mode-title"/>
+                                    <Label text="Jump straight into the China map" styleClass="mode-subtitle"/>
                                 </VBox>
                             </HBox>
                         </graphic>

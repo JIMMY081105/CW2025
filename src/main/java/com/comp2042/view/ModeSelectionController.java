@@ -70,25 +70,7 @@ public class ModeSelectionController {
         this.selectionHandler = selectionHandler;
         this.backHandler = backHandler;
 
-        if (mode == HomeSelection.Mode.COUNTRY_EXPLORE) {
-            setupCountryExplore();
-        } else {
-            setupTimeRacing();
-        }
-    }
-
-    private void setupCountryExplore() {
-        optionOneTitle.setText("China");
-        optionTwoTitle.setText("America");
-        optionThreeTitle.setText("Turkey");
-
-        badgeOne.setText("CN");
-        badgeTwo.setText("US");
-        badgeThree.setText("TR");
-
-        optionOneSubtitle.setText("Play under neon skylines in Asia");
-        optionTwoSubtitle.setText("High-speed grids in the West");
-        optionThreeSubtitle.setText("Caves, balloons and ancient stones");
+        setupTimeRacing();
     }
 
     private void setupTimeRacing() {
