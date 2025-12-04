@@ -67,12 +67,6 @@ public class GameController implements InputEventListener {
         return board.getViewData();
     }
 
-    @Override
-    public ViewData createNewGame() {
-        board.newGame();
-        return board.getViewData();
-    }
-
     private int dropPieceToBottom() {
         int steps = 0;
         while (board.moveBrickDown()) {

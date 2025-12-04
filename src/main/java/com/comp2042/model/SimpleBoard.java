@@ -132,14 +132,6 @@ updateBoardMatrix(new int[height][width]);
     }
 
     @Override
-    public void newGame() {
-        score.reset();
-        isGameOver.set(false);
-        updateBoardMatrix(new int[height][width]);
-        createNewBrick();
-    }
-
-    @Override
     public void explodeBomb(int centerX, int centerY) {
         int[][] exploded = MatrixOperations.explodeBomb(currentGameMatrix, centerX, centerY);
         updateBoardMatrix(exploded);

@@ -526,10 +526,6 @@ public class GuiController implements Initializable {
                 keyEvent.consume();
             }
         }
-
-        if (keyEvent.getCode() == KeyCode.N) {
-            newGame(null);
-        }
     }
 
     private void moveDown(MoveEvent event) {
@@ -595,41 +591,6 @@ public class GuiController implements Initializable {
             gameOverPanel.setVisible(true);
         }
         isGameOver.set(true);
-    }
-
-    public void newGame(ActionEvent actionEvent) {
-        if (gameLoop != null) {
-            gameLoop.stop();
-        }
-        if (timeAttackTimeline != null) {
-            timeAttackTimeline.stop();
-        }
-
-        if (gameOverPanel != null) {
-            gameOverPanel.setVisible(false);
-        }
-        isPause.set(false);
-        isGameOver.set(false);
-        if (pauseButton != null) {
-            pauseButton.setText("Pause");
-        }
-
-        bombCount.set(0);
-        lastBombMilestone = 0;
-        updateBombCountLabel();
-
-        ViewData viewData = eventListener.createNewGame();
-        boardRenderer.initialiseBoard(board.getBoardMatrix(), viewData);
-        nextBricksRenderer.renderNextBricks(viewData.getNextBricksData());
-        gamePanel.requestFocus();
-
-        ensureGameLoopInitialised();
-        gameLoop.start();
-
-        if (timeAttackEnabled) {
-            resetTimeAttackTimer();
-            startTimeAttackTimer();
-        }
     }
 
     public void pauseGame(ActionEvent actionEvent) {
