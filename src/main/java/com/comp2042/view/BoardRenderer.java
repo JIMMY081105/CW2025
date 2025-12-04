@@ -8,6 +8,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 public class BoardRenderer {
@@ -189,52 +190,39 @@ private void createBackgroundCells(int[][] boardMatrix) {
 
         double step = GameConstants.brickStep();
         double brickSize = GameConstants.BRICK_SIZE;
-        Color ghostColor = Color.rgb(255, 255, 255, 0.5);
-        double strokeWidth = 1.0;
-
-        boolean[][] filled = new boolean[brickData.length][brickData[0].length];
-        for (int row = 0; row < brickData.length; row++) {
-            for (int col = 0; col < brickData[row].length; col++) {
-                filled[row][col] = brickData[row][col] != 0;
-            }
-        }
+        Color ghostOutline = Color.rgb(180, 220, 255, 0.65);
+        Color ghostDetail = Color.rgb(180, 220, 255, 0.4);
+        double strokeWidth = 1.5;
+        double cornerRadius = Math.max(2, GameConstants.BRICK_ARC_SIZE - 4);
+        double inset = strokeWidth * 0.5; // let diamond touch the square stroke from inside
 
         for (int row = 0; row < brickData.length; row++) {
             for (int col = 0; col < brickData[row].length; col++) {
-                if (!filled[row][col]) {
+                if (brickData[row][col] == 0) {
                     continue;
                 }
 
                 double cellX = col * step;
                 double cellY = row * step;
 
-                if (row == 0 || !filled[row - 1][col]) {
-                    Line topLine = new Line(cellX, cellY, cellX + brickSize, cellY);
-                    topLine.setStroke(ghostColor);
-                    topLine.setStrokeWidth(strokeWidth);
-                    ghostPane.getChildren().add(topLine);
-                }
+                Rectangle outline = new Rectangle(cellX, cellY, brickSize, brickSize);
+                outline.setFill(Color.TRANSPARENT);
+                outline.setStroke(ghostOutline);
+                outline.setStrokeWidth(strokeWidth);
+                outline.setArcWidth(cornerRadius);
+                outline.setArcHeight(cornerRadius);
+                ghostPane.getChildren().add(outline);
 
-                if (row == brickData.length - 1 || !filled[row + 1][col]) {
-                    Line bottomLine = new Line(cellX, cellY + brickSize, cellX + brickSize, cellY + brickSize);
-                    bottomLine.setStroke(ghostColor);
-                    bottomLine.setStrokeWidth(strokeWidth);
-                    ghostPane.getChildren().add(bottomLine);
-                }
-
-                if (col == 0 || !filled[row][col - 1]) {
-                    Line leftLine = new Line(cellX, cellY, cellX, cellY + brickSize);
-                    leftLine.setStroke(ghostColor);
-                    leftLine.setStrokeWidth(strokeWidth);
-                    ghostPane.getChildren().add(leftLine);
-                }
-
-                if (col == brickData[row].length - 1 || !filled[row][col + 1]) {
-                    Line rightLine = new Line(cellX + brickSize, cellY, cellX + brickSize, cellY + brickSize);
-                    rightLine.setStroke(ghostColor);
-                    rightLine.setStrokeWidth(strokeWidth);
-                    ghostPane.getChildren().add(rightLine);
-                }
+                Polygon diamond = new Polygon(
+                        cellX + brickSize / 2, cellY + inset,
+                        cellX + brickSize - inset, cellY + brickSize / 2,
+                        cellX + brickSize / 2, cellY + brickSize - inset,
+                        cellX + inset, cellY + brickSize / 2
+                );
+                diamond.setFill(Color.TRANSPARENT);
+                diamond.setStroke(ghostDetail);
+                diamond.setStrokeWidth(strokeWidth);
+                ghostPane.getChildren().add(diamond);
             }
         }
 
