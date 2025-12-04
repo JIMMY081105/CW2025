@@ -3,6 +3,7 @@ package com.comp2042.view;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.MediaView;
+import javafx.scene.text.Font;
 
 import java.util.function.Consumer;
 
@@ -22,11 +23,19 @@ public class HomeController {
 
     @FXML
     private void initialize() {
+        loadFonts();
         initBackgroundVideo();
     }
 
     private void initBackgroundVideo() {
         BackgroundVideoManager.attach(backgroundVideo, homeRoot);
+    }
+
+    private void loadFonts() {
+        Font.loadFont(
+                getClass().getClassLoader().getResource("digital.ttf").toExternalForm(),
+                38
+        );
     }
 
     @FXML

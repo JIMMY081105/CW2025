@@ -5,98 +5,141 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.media.MediaView?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.layout.VBox?>
 <?import java.net.URL?>
 
-<Pane fx:id="rootPane"
-      fx:controller="com.comp2042.view.GuiController"
-      xmlns:fx="http://javafx.com/fxml">
+<StackPane fx:id="rootPane"
+           fx:controller="com.comp2042.view.GuiController"
+           xmlns:fx="http://javafx.com/fxml">
 
-    <BorderPane fx:id="gameBoard" styleClass="gameBoard"/>
-    <Pane fx:id="gridLinesPane"/>
-    <GridPane fx:id="gamePanel"/>
-    <Pane fx:id="ghostPane"/>
-    <GridPane fx:id="brickPanel"/>
+    <Pane fx:id="gameLayer">
+        <BorderPane fx:id="gameBoard" styleClass="gameBoard"/>
+        <Pane fx:id="gridLinesPane"/>
+        <GridPane fx:id="gamePanel"/>
+        <Pane fx:id="ghostPane"/>
+        <GridPane fx:id="brickPanel"/>
 
-    <VBox fx:id="timerBox" styleClass="sectionBox" alignment="CENTER" spacing="6">
-        <Label fx:id="timerTitle"
-               text="TIME LEFT"
-               style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-        <Text fx:id="timerValue" text="--:--" styleClass="scoreClass"/>
-    </VBox>
-
-    <VBox fx:id="sidePanel" alignment="TOP_CENTER" spacing="16">
-
-        <VBox fx:id="scoreBox" styleClass="sectionBox" alignment="CENTER" spacing="8">
-            <Label text="SCORE"
+        <VBox fx:id="timerBox" styleClass="sectionBox" alignment="CENTER" spacing="6">
+            <Label fx:id="timerTitle"
+                   text="TIME LEFT"
                    style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <Text fx:id="scoreValue" text="0" styleClass="scoreClass"/>
+            <Text fx:id="timerValue" text="--:--" styleClass="scoreClass"/>
         </VBox>
 
-        <VBox fx:id="bestScoreBox" styleClass="sectionBox" alignment="CENTER" spacing="6">
-            <Label fx:id="bestScoreTitle"
-                   text="BEST SCORE"
-                   style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <Text fx:id="bestScoreValue" text="0" styleClass="scoreClass"/>
-        </VBox>
+        <VBox fx:id="sidePanel" alignment="TOP_CENTER" spacing="16">
 
-        <VBox fx:id="nextBricksContainer"
-              alignment="TOP_CENTER"
-              spacing="8"
-              styleClass="sectionBox">
-            <Label text="NEXT 3"
-                   style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <VBox fx:id="nextBricksList" spacing="10" alignment="CENTER"/>
-        </VBox>
+            <VBox fx:id="scoreBox" styleClass="sectionBox" alignment="CENTER" spacing="8">
+                <Label text="SCORE"
+                       style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Text fx:id="scoreValue" text="0" styleClass="scoreClass"/>
+            </VBox>
 
-        <VBox styleClass="sectionBox" alignment="CENTER">
-            <ToggleButton fx:id="pauseButton"
-                          text="Pause"
-                          onAction="#pauseGame"
-                          focusTraversable="false"
-                          prefWidth="120"
-                          styleClass="pause-button"/>
+            <VBox fx:id="bestScoreBox" styleClass="sectionBox" alignment="CENTER" spacing="6">
+                <Label fx:id="bestScoreTitle"
+                       text="BEST SCORE"
+                       style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Text fx:id="bestScoreValue" text="0" styleClass="scoreClass"/>
+            </VBox>
+
+            <VBox fx:id="nextBricksContainer"
+                  alignment="TOP_CENTER"
+                  spacing="8"
+                  styleClass="sectionBox">
+                <Label text="NEXT 3"
+                       style="-fx-font-size: 16px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <VBox fx:id="nextBricksList" spacing="10" alignment="CENTER"/>
+            </VBox>
+
+            <VBox styleClass="sectionBox" alignment="CENTER">
+                <ToggleButton fx:id="pauseButton"
+                              text="Pause"
+                              onAction="#pauseGame"
+                              focusTraversable="false"
+                              prefWidth="120"
+                              styleClass="pause-button"/>
+            </VBox>
         </VBox>
-    </VBox>
 
     <VBox fx:id="chinaDescriptionBox"
         layoutX="40"
         layoutY="80"
-        spacing="8"
+        spacing="12"
         alignment="TOP_LEFT"
-        style="-fx-background-color: rgba(0,0,0,0.6); -fx-padding: 12; -fx-background-radius: 10;">
+        prefWidth="300"
+        styleClass="china-box">
         <Text fx:id="chinaStateTitle"
             text="Stage 1"
-            fill="WHITE"
-            style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+            styleClass="china-title"/>
         <Text fx:id="chinaStateDescription"
             text="TODO: description goes here."
-            wrappingWidth="230"
-            fill="WHITE"
-            style="-fx-font-size: 15px;"/>
+            wrappingWidth="260"
+            styleClass="china-description"/>
     </VBox>
 
+        <Group fx:id="groupNotification">
+            <VBox alignment="CENTER">
+                <GameOverPanel fx:id="gameOverPanel"/>
+            </VBox>
+        </Group>
 
-    <Group fx:id="groupNotification">
-        <VBox alignment="CENTER">
-            <GameOverPanel fx:id="gameOverPanel"/>
-        </VBox>
-    </Group>
+        <StackPane fx:id="bombToolbar"
+                   alignment="CENTER"
+                   styleClass="bombToolbarBox">
+            <Label fx:id="bombEmoji" text="dY'ś" styleClass="bombEmojiLabel"/>
+            <Label fx:id="bombCountLabel"
+                   text="0"
+                   styleClass="bombCountBadge"
+                   StackPane.alignment="TOP_RIGHT"
+                   translateX="12"
+                   translateY="-8"/>
+        </StackPane>
+    </Pane>
 
-    <StackPane fx:id="bombToolbar"
-               alignment="CENTER"
-               styleClass="bombToolbarBox">
-        <Label fx:id="bombEmoji" text="💣" styleClass="bombEmojiLabel"/>
-        <Label fx:id="bombCountLabel"
-               text="0"
-               styleClass="bombCountBadge"
-               StackPane.alignment="TOP_RIGHT"
-               translateX="12"
-               translateY="-8"/>
+    <StackPane fx:id="endOverlay"
+               visible="false"
+               managed="false"
+               styleClass="end-overlay">
+        <MediaView fx:id="endBackgroundVideo" preserveRatio="true"/>
+        <StackPane styleClass="end-overlay-scrim">
+            <VBox alignment="CENTER" spacing="18" styleClass="end-overlay-content">
+                <Label fx:id="endTitle" text="Game Over" styleClass="end-title"/>
+                <Label fx:id="endSubtitle"
+                       text="Choose what to do next."
+                       styleClass="end-subtitle"
+                       wrapText="true"
+                       maxWidth="520"/>
+                <VBox spacing="14" alignment="CENTER" styleClass="mode-stack end-actions">
+                    <Button onAction="#handleBackToMain"
+                            styleClass="mode-button">
+                        <graphic>
+                            <HBox alignment="CENTER_LEFT" spacing="18" styleClass="mode-content">
+                                <Label text="MB" styleClass="mode-badge"/>
+                                <VBox alignment="CENTER_LEFT" spacing="4">
+                                    <Label text="Back to Mainboard" styleClass="mode-title"/>
+                                    <Label text="Return to the home screen" styleClass="mode-subtitle"/>
+                                </VBox>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#handleRestartGame"
+                            styleClass="mode-button">
+                        <graphic>
+                            <HBox alignment="CENTER_LEFT" spacing="18" styleClass="mode-content">
+                                <Label text="NG" styleClass="mode-badge"/>
+                                <VBox alignment="CENTER_LEFT" spacing="4">
+                                    <Label text="New Game" styleClass="mode-title"/>
+                                    <Label text="Replay this mode from the start" styleClass="mode-subtitle"/>
+                                </VBox>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                </VBox>
+            </VBox>
+        </StackPane>
     </StackPane>
 
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>
-</Pane>
+</StackPane>

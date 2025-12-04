@@ -17,6 +17,7 @@ public class SimpleBoard implements Board {
 
     private final int width;
     private final int height;
+    
     private final BrickGenerator brickGenerator;
     private final ActivePiece activePiece;
     private final Score score;

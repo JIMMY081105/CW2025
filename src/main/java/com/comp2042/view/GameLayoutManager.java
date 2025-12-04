@@ -22,6 +22,7 @@ public class GameLayoutManager {
     private final Group notificationGroup;
     private final BoardRenderer boardRenderer;
     private final StackPane bombToolbar;
+    private final VBox chinaDescriptionBox;
 
     public GameLayoutManager(Pane rootPane,
                              BorderPane gameBoard,
@@ -33,7 +34,8 @@ public class GameLayoutManager {
                              VBox nextBricksList,
                              Group notificationGroup,
                              BoardRenderer boardRenderer,
-                             StackPane bombToolbar) {
+                             StackPane bombToolbar,
+                             VBox chinaDescriptionBox) {
         this.rootPane = rootPane;
         this.gameBoard = gameBoard;
         this.gamePanel = gamePanel;
@@ -45,6 +47,7 @@ public class GameLayoutManager {
         this.notificationGroup = notificationGroup;
         this.boardRenderer = boardRenderer;
         this.bombToolbar = bombToolbar;
+        this.chinaDescriptionBox = chinaDescriptionBox;
     }
 
 public void applyInitialLayout() {
@@ -99,6 +102,13 @@ public void applyInitialLayout() {
         if (bombToolbar != null) {
             bombToolbar.setPadding(new Insets(8));
         }
+
+        if (chinaDescriptionBox != null) {
+            chinaDescriptionBox.setPrefWidth(bufferedWidth);
+            chinaDescriptionBox.setPrefHeight(bufferedHeight);
+            chinaDescriptionBox.setMinSize(bufferedWidth, bufferedHeight);
+            chinaDescriptionBox.setMaxSize(bufferedWidth, bufferedHeight);
+        }
     }
 
 public void positionContent(double availableWidth) {
@@ -129,6 +139,8 @@ public void positionContent(double availableWidth) {
         }
 
         double visualBuffer = 4.0;
+        double bufferedWidth = GameConstants.boardAreaWidth() + (visualBuffer * 2);
+        double bufferedHeight = GameConstants.boardAreaHeight() + (visualBuffer * 2);
         if (gameBoard != null) {
             gameBoard.setLayoutX(boardLeft - GameConstants.BOARD_FRAME_THICKNESS - visualBuffer);
             gameBoard.setLayoutY(boardTop - GameConstants.BOARD_FRAME_THICKNESS - visualBuffer);
@@ -155,6 +167,14 @@ public void positionContent(double availableWidth) {
             double bombToolbarX = boardLeft + (GameConstants.boardPixelWidth() - 50) / 2;
             bombToolbar.setLayoutX(bombToolbarX);
             bombToolbar.setLayoutY(bombToolbarY);
+        }
+
+        if (chinaDescriptionBox != null) {
+            double descLeft = Math.max(GameConstants.SIDE_PANEL_PADDING, boardLeft - bufferedWidth - GameConstants.PANEL_GAP);
+            chinaDescriptionBox.setLayoutX(descLeft);
+            chinaDescriptionBox.setLayoutY(boardTop - GameConstants.BOARD_FRAME_THICKNESS - visualBuffer);
+            chinaDescriptionBox.setPrefWidth(bufferedWidth);
+            chinaDescriptionBox.setPrefHeight(bufferedHeight);
         }
     }
 }

@@ -9,8 +9,10 @@ import com.comp2042.event.InputEventListener;
 import com.comp2042.event.MoveEvent;
 import com.comp2042.model.Board;
 import com.comp2042.util.GameConstants;
+import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -37,6 +39,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.media.MediaView;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -125,6 +129,18 @@ public class GuiController implements Initializable {
     @FXML
     private Text chinaStateDescription;
 
+    @FXML
+    private StackPane endOverlay;
+
+    @FXML
+    private MediaView endBackgroundVideo;
+
+    @FXML
+    private Label endTitle;
+
+    @FXML
+    private Label endSubtitle;
+
     private InputEventListener eventListener;
     private Board board;
 
@@ -161,6 +177,10 @@ public class GuiController implements Initializable {
     private boolean chinaExploreMode = false;
     private int currentChinaStageIndex = 0;
     private int currentTickMillis = GameConstants.GAME_TICK_MS;
+    private boolean endScreenShown = false;
+
+    private Runnable backToHomeHandler;
+    private Runnable restartHandler;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -182,7 +202,8 @@ public class GuiController implements Initializable {
                 nextBricksList,
                 groupNotification,
                 boardRenderer,
-                bombToolbar
+                bombToolbar,
+                chinaDescriptionBox
         );
         vibrationEffect = new BoardVibrationEffect(gameBoard, scoreBox, nextBricksContainer);
 
@@ -227,6 +248,8 @@ public class GuiController implements Initializable {
         setupBombDragAndDrop();
         updateBombCountLabel();
 
+        setupEndOverlay();
+
     }
 
     private void setupBombDragAndDrop() {
@@ -239,6 +262,24 @@ public class GuiController implements Initializable {
         bombToolbar.setOnMouseReleased(this::handleBombMouseReleased);
 
         bombCount.addListener((obs, oldVal, newVal) -> updateBombCountLabel());
+    }
+
+    private void setupEndOverlay() {
+        if (endOverlay == null) {
+            return;
+        }
+
+        endOverlay.setVisible(false);
+        endOverlay.setManaged(false);
+
+        if (rootPane != null) {
+            endOverlay.prefWidthProperty().bind(rootPane.widthProperty());
+            endOverlay.prefHeightProperty().bind(rootPane.heightProperty());
+        }
+
+        if (endBackgroundVideo != null) {
+            BackgroundVideoManager.attach(endBackgroundVideo, endOverlay);
+        }
     }
 
     private void handleBombMousePressed(MouseEvent event) {
@@ -455,10 +496,15 @@ public class GuiController implements Initializable {
 
         ChangeListener<Boolean> gameOverListener = (obs, oldVal, newVal) -> {
             if (newVal != null && newVal) {
-                gameOver();
+                handleGameEnd("Game Over", "The bricks reached the ceiling.");
             } else if (gameOverPanel != null) {
                 gameOverPanel.setVisible(false);
                 isGameOver.set(false);
+                endScreenShown = false;
+                if (endOverlay != null) {
+                    endOverlay.setVisible(false);
+                    endOverlay.setManaged(false);
+                }
             }
         };
 
@@ -472,6 +518,11 @@ public class GuiController implements Initializable {
 
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
+    }
+
+    public void setNavigationHandlers(Runnable backToHomeHandler, Runnable restartHandler) {
+        this.backToHomeHandler = backToHomeHandler;
+        this.restartHandler = restartHandler;
     }
 
     public void bindScore(IntegerProperty integerProperty) {
@@ -578,6 +629,16 @@ public class GuiController implements Initializable {
     }
 
     public void gameOver() {
+        handleGameEnd("Game Over", "The bricks reached the ceiling.");
+    }
+
+    private void handleGameEnd(String title, String subtitle) {
+        if (isGameOver.get() || endScreenShown) {
+            return;
+        }
+        isGameOver.set(true);
+        endScreenShown = true;
+
         if (gameLoop != null) {
             gameLoop.stop();
         }
@@ -588,9 +649,51 @@ public class GuiController implements Initializable {
             updateBestScoreIfNeeded();
         }
         if (gameOverPanel != null) {
-            gameOverPanel.setVisible(true);
+            gameOverPanel.setVisible(false);
         }
-        isGameOver.set(true);
+
+        showEndScreen(title, subtitle);
+    }
+
+    private void showEndScreen(String title, String subtitle) {
+        if (endOverlay == null) {
+            if (gameOverPanel != null) {
+                gameOverPanel.setVisible(true);
+            }
+            return;
+        }
+
+        if (endTitle != null && title != null) {
+            endTitle.setText(title);
+        }
+        if (endSubtitle != null && subtitle != null) {
+            endSubtitle.setText(subtitle);
+        }
+
+        endOverlay.setVisible(true);
+        endOverlay.setManaged(true);
+        endOverlay.toFront();
+
+        if (endBackgroundVideo != null) {
+            BackgroundVideoManager.attach(endBackgroundVideo, endOverlay);
+            MediaPlayer player = endBackgroundVideo.getMediaPlayer();
+            if (player != null && player.getStatus() != MediaPlayer.Status.PLAYING) {
+                player.seek(player.getStartTime());
+                player.play();
+            }
+        }
+
+        double width = GameConstants.initialWindowWidth();
+        if (rootPane != null && rootPane.getWidth() > 0) {
+            width = rootPane.getWidth();
+        }
+
+        endOverlay.setTranslateX(-width);
+        TranslateTransition slideIn = new TranslateTransition(Duration.millis(520), endOverlay);
+        slideIn.setFromX(-width);
+        slideIn.setToX(0);
+        slideIn.setInterpolator(Interpolator.EASE_OUT);
+        slideIn.play();
     }
 
     public void pauseGame(ActionEvent actionEvent) {
@@ -619,6 +722,20 @@ public class GuiController implements Initializable {
         }
 
         gamePanel.requestFocus();
+    }
+
+    @FXML
+    private void handleBackToMain(ActionEvent actionEvent) {
+        if (backToHomeHandler != null) {
+            backToHomeHandler.run();
+        }
+    }
+
+    @FXML
+    private void handleRestartGame(ActionEvent actionEvent) {
+        if (restartHandler != null) {
+            restartHandler.run();
+        }
     }
 
     private void ensureGameLoopInitialised() {
@@ -764,6 +881,20 @@ public class GuiController implements Initializable {
         if (targetIndex > currentChinaStageIndex) {
             applyChinaStage(targetIndex);
         }
+
+        checkChinaCompletion(score);
+    }
+
+    private void checkChinaCompletion(int score) {
+        if (!chinaExploreMode || chinaStages.isEmpty() || endScreenShown) {
+            return;
+        }
+
+        boolean atFinalStage = currentChinaStageIndex >= chinaStages.size() - 1;
+        int completionScore = GameConstants.POINTS_PER_CHINA_STAGE * chinaStages.size();
+        if (atFinalStage && score >= completionScore) {
+            handleGameEnd("Journey Complete", "You finished every China stage!");
+        }
     }
 
     private void updateGameLoopSpeed(int newTickMillis) {
@@ -818,7 +949,7 @@ public class GuiController implements Initializable {
         updateTimerLabel();
         if (remainingSeconds == 0) {
             if (!isGameOver.get()) {
-                gameOver();
+                handleGameEnd("Time's Up", "The clock reached zero. Try another run!");
             }
         }
     }

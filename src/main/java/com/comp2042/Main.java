@@ -100,6 +100,23 @@ public class Main extends Application {
         guiController.bind(board);
         guiController.bindScore(board.scoreProperty());
 
+        guiController.setNavigationHandlers(
+                () -> {
+                    try {
+                        showHome(primaryStage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                },
+                () -> {
+                    try {
+                        launchGame(primaryStage, selection);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
+
         applySelectionToGame(selection, guiController);
     }
 

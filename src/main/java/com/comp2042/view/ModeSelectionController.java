@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.MediaView;
+import javafx.scene.text.Font;
 
 import java.util.function.Consumer;
 
@@ -58,11 +59,19 @@ public class ModeSelectionController {
 
     @FXML
     private void initialize() {
+        loadFonts();
         initBackgroundVideo();
     }
 
     private void initBackgroundVideo() {
         BackgroundVideoManager.attach(backgroundVideo, selectionRoot);
+    }
+
+    private void loadFonts() {
+        Font.loadFont(
+                getClass().getClassLoader().getResource("digital.ttf").toExternalForm(),
+                38
+        );
     }
 
     public void configure(HomeSelection.Mode mode, Consumer<HomeSelection> selectionHandler, Runnable backHandler) {
