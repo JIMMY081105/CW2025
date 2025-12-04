@@ -312,3 +312,27 @@
     -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
+
+.pause-button {
+    -fx-background-color: #000000;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 18;
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(255, 255, 255, 0.4);
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+
+.pause-button:hover {
+    -fx-background-color: #0a0a0a;
+    -fx-border-color: rgba(255, 255, 255, 0.85);
+}
+
+.pause-button:selected {
+    -fx-background-color: #111111;
+    -fx-border-color: #0ef5ff;
+    -fx-text-fill: #eaffff;
+}
