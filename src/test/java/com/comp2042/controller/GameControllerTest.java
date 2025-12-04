@@ -30,7 +30,6 @@ class GameControllerTest {
         int createNewBrickCalls;
         int mergeCalls;
         int clearRowsCalls;
-        int newGameCalls;
 
         boolean nextMoveDownResult = true;
 
@@ -105,10 +104,6 @@ class GameControllerTest {
             return score;
         }
 
-        @Override
-        public void newGame() {
-            newGameCalls++;
-        }
 
         @Override
         public BooleanProperty isGameOverProperty() {
@@ -226,15 +221,5 @@ class GameControllerTest {
         assertSame(board.viewDataToReturn, result);
     }
 
-    @Test
-    void createNewGame_DelegatesToBoardAndReturnsViewData() {
-        FakeBoard board = new FakeBoard();
-        GameController controller = new GameController(board);
 
-        ViewData result = controller.createNewGame();
-
-        assertEquals(1, board.newGameCalls,
-                "createNewGame should call board.newGame()");
-        assertSame(board.viewDataToReturn, result);
-    }
 }

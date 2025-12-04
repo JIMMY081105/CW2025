@@ -34,26 +34,6 @@ class SimpleBoardTest {
         assertTrue(board.isGameOverProperty().get());
     }
 
-    @Test
-    void newGame_ClearsBoardScoreAndGameOverFlag() {
-        SimpleBoard board = new SimpleBoard(GameConstants.BOARD_WIDTH, GameConstants.BOARD_HEIGHT);
-
-        int[][] matrix = board.getBoardMatrix();
-        matrix[5][5] = 1;
-        board.getScore().add(100);
-        board.isGameOverProperty().set(true);
-
-        board.newGame();
-
-        int[][] newMatrix = board.getBoardMatrix();
-        for (int y = 0; y < newMatrix.length; y++) {
-            for (int x = 0; x < newMatrix[y].length; x++) {
-                assertEquals(0, newMatrix[y][x]);
-            }
-        }
-        assertEquals(0, board.scoreProperty().get());
-        assertFalse(board.isGameOverProperty().get());
-    }
 
     @Test
     void moveBrickLeftRightDown_UpdatesViewDataPosition() {
