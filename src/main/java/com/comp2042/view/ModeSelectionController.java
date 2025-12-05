@@ -79,6 +79,7 @@ public class ModeSelectionController {
         this.selectionHandler = selectionHandler;
         this.backHandler = backHandler;
 
+        BackgroundMusicManager.playMainMusic();
         setupTimeRacing();
     }
 

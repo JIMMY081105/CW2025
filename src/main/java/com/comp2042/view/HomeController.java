@@ -29,6 +29,7 @@ public class HomeController {
 
     private void initBackgroundVideo() {
         BackgroundVideoManager.attach(backgroundVideo, homeRoot);
+        BackgroundMusicManager.playMainMusic();
     }
 
     private void loadFonts() {

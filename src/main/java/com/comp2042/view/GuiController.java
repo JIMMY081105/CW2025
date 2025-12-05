@@ -796,6 +796,7 @@ public class GuiController implements Initializable {
         chinaExploreMode = true;
         currentChinaStageIndex = 0;
 
+        BackgroundMusicManager.playExploreChinaMusic();
         configureTimeAttack(0);
         if (timerBox != null) {
             timerBox.setVisible(false);
@@ -839,6 +840,9 @@ public class GuiController implements Initializable {
         updateTimerLabel();
         refreshBestScoreDisplay();
         applyTimeAttackBackground();
+        if (timeAttackEnabled) {
+            BackgroundMusicManager.playTimeRacingMusic();
+        }
 
         if (gameLoop != null && gameLoop.isRunning()) {
             startTimeAttackTimer();

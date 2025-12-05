@@ -9,6 +9,7 @@ import com.comp2042.view.HomeSelection;
 import com.comp2042.view.GuiController;
 import com.comp2042.view.ModeSelectionController;
 import com.comp2042.view.BackgroundVideoManager;
+import com.comp2042.view.BackgroundMusicManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -126,6 +127,7 @@ public class Main extends Application {
         }
 
         if (selection.mode() == HomeSelection.Mode.COUNTRY_EXPLORE) {
+            BackgroundMusicManager.playExploreChinaMusic();
             guiController.configureExploreChinaMode();
             return;
         }
@@ -141,6 +143,7 @@ public class Main extends Application {
             };
 
             if (minutes > 0) {
+                BackgroundMusicManager.playTimeRacingMusic();
                 guiController.configureTimeAttack(minutes);
             }
         }
@@ -178,6 +181,7 @@ public class Main extends Application {
     @Override
     public void stop() {
         BackgroundVideoManager.dispose();
+        BackgroundMusicManager.stop();
     }
 
     public static void main(String[] args) {
