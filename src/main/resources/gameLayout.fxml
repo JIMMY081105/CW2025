@@ -86,7 +86,7 @@
         <StackPane fx:id="bombToolbar"
                    alignment="CENTER"
                    styleClass="bombToolbarBox">
-            <Label fx:id="bombEmoji" text="dY'ś" styleClass="bombEmojiLabel"/>
+            <Label fx:id="bombEmoji" text="💣" styleClass="bombEmojiLabel"/>
             <Label fx:id="bombCountLabel"
                    text="0"
                    styleClass="bombCountBadge"

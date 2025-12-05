@@ -100,7 +100,7 @@
 }
 
 .bombToolbarBox {
-    -fx-background-color: rgba(10, 20, 30, 0.65);     
+    -fx-background-color: rgba(10, 20, 30, 0.70);
     -fx-border-color: rgba(255, 140, 0, 0.8);
     -fx-border-width: 2px;
     -fx-border-style: solid;
@@ -287,7 +287,7 @@
 .mode-subtitle {
     -fx-text-fill: rgba(210, 230, 255, 0.85);
     -fx-font-size: 14px;
-    -fx-font-family: "Arial";
+    -fx-font-family: "Let's go Digital";
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 8, 0.2, 0, 1);
 }
 
