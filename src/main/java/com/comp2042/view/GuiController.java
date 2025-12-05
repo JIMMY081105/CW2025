@@ -38,21 +38,24 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.media.MediaView;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class GuiController implements Initializable {
+
     @FXML
     private Pane rootPane;
+
+    @FXML
+    private Pane gameLayer;   // 🔹 new: same parent as gamePanel / ghostPane / brickPanel
 
     @FXML
     private BorderPane gameBoard;
@@ -249,7 +252,6 @@ public class GuiController implements Initializable {
         updateBombCountLabel();
 
         setupEndOverlay();
-
     }
 
     private void setupBombDragAndDrop() {
@@ -357,7 +359,10 @@ public class GuiController implements Initializable {
 
         bombTargetOverlay = new Pane();
         bombTargetOverlay.setMouseTransparent(true);
-        bombTargetOverlay.setPrefSize(GameConstants.gridContentWidth(), GameConstants.gridContentHeight());
+        bombTargetOverlay.setPrefSize(
+                GameConstants.gridContentWidth(),
+                GameConstants.gridContentHeight()
+        );
 
         if (gamePanel != null) {
             double offsetX = GameConstants.gridCenterOffsetX();
@@ -366,14 +371,16 @@ public class GuiController implements Initializable {
             bombTargetOverlay.setLayoutY(gamePanel.getLayoutY() + offsetY);
         }
 
-        if (rootPane != null) {
-            rootPane.getChildren().add(bombTargetOverlay);
+        // 🔹 IMPORTANT: overlay shares the same parent as gamePanel (gameLayer)
+        if (gameLayer != null) {
+            gameLayer.getChildren().add(bombTargetOverlay);
+            bombTargetOverlay.toFront();
         }
     }
 
     private void removeBombTargetOverlay() {
-        if (bombTargetOverlay != null && rootPane != null) {
-            rootPane.getChildren().remove(bombTargetOverlay);
+        if (bombTargetOverlay != null && gameLayer != null) {
+            gameLayer.getChildren().remove(bombTargetOverlay);
             bombTargetOverlay = null;
         }
     }
@@ -760,7 +767,6 @@ public class GuiController implements Initializable {
 
         String url = resourceUrl.toExternalForm();
 
-        // Apply via JavaFX Background (respects sizing) and inline CSS (overrides .root background)
         Image image = new Image(url, true);
         BackgroundSize size = new BackgroundSize(
                 1.0, 1.0, true, true, false, true
@@ -783,13 +789,13 @@ public class GuiController implements Initializable {
     }
 
     public void showModeLabel(String text) {
+        // no-op for now
     }
 
     public void configureExploreChinaMode() {
         chinaExploreMode = true;
         currentChinaStageIndex = 0;
 
-        // disable time-attack UI
         configureTimeAttack(0);
         if (timerBox != null) {
             timerBox.setVisible(false);
@@ -860,7 +866,6 @@ public class GuiController implements Initializable {
             chinaStateDescription.setText(stage.getDescription());
         }
 
-        // speed up slightly per stage
         int newTick = Math.max(
                 GameConstants.MIN_GAME_TICK_MS,
                 GameConstants.GAME_TICK_MS - (safeIndex * 10)
