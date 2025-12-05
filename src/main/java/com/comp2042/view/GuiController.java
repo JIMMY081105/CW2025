@@ -838,9 +838,29 @@ public class GuiController implements Initializable {
 
         updateTimerLabel();
         refreshBestScoreDisplay();
+        applyTimeAttackBackground();
 
         if (gameLoop != null && gameLoop.isRunning()) {
             startTimeAttackTimer();
+        }
+    }
+
+    private void applyTimeAttackBackground() {
+        if (!timeAttackEnabled) {
+            return;
+        }
+
+        String resourcePath = null;
+        if (timeAttackMinutes == 1) {
+            resourcePath = "Time stages/1.jpg";
+        } else if (timeAttackMinutes == 3) {
+            resourcePath = "Time stages/3.jpg";
+        } else if (timeAttackMinutes == 5) {
+            resourcePath = "Time stages/5.jpg";
+        }
+
+        if (resourcePath != null) {
+            applyBackgroundImage(resourcePath);
         }
     }
 
