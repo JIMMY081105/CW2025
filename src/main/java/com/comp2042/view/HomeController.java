@@ -22,6 +22,11 @@ public class HomeController {
     }
 
     @FXML
+    private void exitGame() {
+        javafx.application.Platform.exit();
+    }
+
+    @FXML
     private void initialize() {
         loadFonts();
         initBackgroundVideo();

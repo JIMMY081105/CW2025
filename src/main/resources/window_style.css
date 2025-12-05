@@ -260,6 +260,28 @@
     -fx-translate-y: 1;
 }
 
+.exit-row {
+    -fx-padding: 0 24 0 0;
+}
+
+.exit-button {
+    -fx-pref-width: 180;
+    -fx-max-width: 180;
+    -fx-padding: 12 16;
+    -fx-border-color: rgba(0, 255, 191, 0.9);
+    -fx-background-color:
+        linear-gradient(from 0% 0% to 100% 120%, rgba(20, 34, 48, 0.9) 0%, rgba(24, 46, 74, 0.92) 55%, rgba(48, 92, 128, 0.98) 100%),
+        linear-gradient(from 0% 100% to 100% 0%, rgba(0, 255, 220, 0.35), rgba(0, 255, 191, 0.05));
+    -fx-effect: dropshadow(gaussian, rgba(0, 255, 220, 0.55), 20, 0.3, 8, 10);
+}
+
+.exit-title {
+    -fx-text-fill: #0ef5ff;
+    -fx-font-size: 20px;
+    -fx-font-family: "Let's go Digital";
+    -fx-font-weight: bold;
+}
+
 .mode-content {
     -fx-padding: 4 8;
 }

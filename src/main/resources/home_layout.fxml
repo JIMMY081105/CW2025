@@ -42,6 +42,17 @@
                             </HBox>
                         </graphic>
                     </Button>
+                    <HBox alignment="CENTER_RIGHT" styleClass="exit-row">
+                        <Button fx:id="exitButton"
+                                onAction="#exitGame"
+                                styleClass="mode-button exit-button">
+                            <graphic>
+                                <HBox alignment="CENTER" spacing="10" styleClass="mode-content">
+                                    <Label text="Exit Game" styleClass="exit-title"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                    </HBox>
                 </VBox>
             </VBox>
         </center>
