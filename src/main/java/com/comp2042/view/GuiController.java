@@ -745,6 +745,21 @@ public class GuiController implements Initializable {
         }
     }
 
+    @FXML
+    private void handleExitGame(ActionEvent actionEvent) {
+        if (gameLoop != null) {
+            gameLoop.pause();
+        }
+        if (timeAttackEnabled && timeAttackTimeline != null) {
+            timeAttackTimeline.pause();
+        }
+        isPause.set(true);
+        if (pauseButton != null) {
+            pauseButton.setText("Resume");
+        }
+        showEndScreen("Exit Game", "Choose what to do next.");
+    }
+
     private void ensureGameLoopInitialised() {
         if (gameLoop == null) {
             gameLoop = new GameLoop(

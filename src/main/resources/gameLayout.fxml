@@ -51,13 +51,21 @@
                 <VBox fx:id="nextBricksList" spacing="10" alignment="CENTER"/>
             </VBox>
 
-            <VBox styleClass="sectionBox" alignment="CENTER">
+            <VBox styleClass="sectionBox" alignment="CENTER" spacing="8">
                 <ToggleButton fx:id="pauseButton"
                               text="Pause"
                               onAction="#pauseGame"
                               focusTraversable="false"
                               prefWidth="120"
                               styleClass="pause-button"/>
+            </VBox>
+
+            <VBox styleClass="sectionBox" alignment="CENTER" spacing="8">
+                <Button text="Exit Game"
+                        onAction="#handleExitGame"
+                        focusTraversable="false"
+                        prefWidth="120"
+                        styleClass="pause-button"/>
             </VBox>
         </VBox>
 
