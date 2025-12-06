@@ -1,17 +1,13 @@
 package com.comp2042.data;
 
-import com.comp2042.util.MatrixOperations;
-
 public final class ClearRow {
 
     private final int linesRemoved;
     private final int[][] newMatrix;
-    private final int scoreBonus;
 
-    public ClearRow(int linesRemoved, int[][] newMatrix, int scoreBonus) {
+    public ClearRow(int linesRemoved, int[][] newMatrix) {
         this.linesRemoved = linesRemoved;
         this.newMatrix = newMatrix;
-        this.scoreBonus = scoreBonus;
     }
 
     public int getLinesRemoved() {
@@ -19,10 +15,6 @@ public final class ClearRow {
     }
 
     public int[][] getNewMatrix() {
-        return MatrixOperations.copy(newMatrix);
-    }
-
-    public int getScoreBonus() {
-        return scoreBonus;
+        return newMatrix;
     }
 }

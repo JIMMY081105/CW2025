@@ -39,13 +39,8 @@ class GameControllerTest {
 
         private final Score score = new Score();
         private final BooleanProperty gameOver = new SimpleBooleanProperty(false);
-
-        // keep an internal backing matrix + property, just like a real board
-        private int[][] internalMatrix =
-                new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
-
         private final ObjectProperty<int[][]> boardMatrix =
-                new SimpleObjectProperty<>(internalMatrix);
+                new SimpleObjectProperty<>(new int[0][0]);
 
         FakeBoard() {
             int[][] currentBrick = new int[][]{{1}};
@@ -57,7 +52,7 @@ class GameControllerTest {
                     10,
                     Collections.singletonList(nextBrick)
             );
-            clearRowToReturn = new ClearRow(0, new int[][]{{0}}, 0);
+            clearRowToReturn = new ClearRow(0, new int[][]{{0}});
         }
 
         @Override
@@ -133,13 +128,8 @@ class GameControllerTest {
 
         @Override
         public void updateBoardMatrix(int[][] newMatrix) {
-            this.internalMatrix = newMatrix;
-            this.boardMatrix.set(newMatrix);
+            boardMatrix.set(newMatrix);
         }
-
-        // ❌ NOTE: no more @Override explodeBomb(...) here, because Board
-        // no longer declares that method in the SRP-friendly design.
-        // If you still have it, just delete it.
     }
 
     @Test
@@ -173,6 +163,8 @@ class GameControllerTest {
                 "Manual down from USER should increase score");
         assertNull(result.getClearRow());
         assertSame(board.viewDataToReturn, result.getViewData());
+        assertEquals(0, result.getScoreBonus(),
+                "No line clear -> scoreBonus in DownData should be 0");
     }
 
     @Test
@@ -181,10 +173,11 @@ class GameControllerTest {
         GameController controller = new GameController(board);
 
         board.nextMoveDownResult = false;
-        board.clearRowToReturn = new ClearRow(2, new int[][]{{0}}, 100);
+        board.clearRowToReturn = new ClearRow(2, new int[][]{{0}});
 
         int initialScore = board.getScore().scoreProperty().get();
         int initialCreateCalls = board.createNewBrickCalls;
+        int expectedBonus = GameConstants.SCORE_PER_LINE * 2 * 2;
 
         DownData result = controller.onDownEvent(
                 new MoveEvent(EventType.DOWN, EventSource.THREAD));
@@ -194,12 +187,14 @@ class GameControllerTest {
         assertEquals(1, board.clearRowsCalls, "clearRows should be called when piece stops");
         assertEquals(initialCreateCalls + 1, board.createNewBrickCalls,
                 "createNewBrick should be called after merging");
-        assertEquals(initialScore + 100,
+        assertEquals(initialScore + expectedBonus,
                 board.getScore().scoreProperty().get(),
-                "Score should increase by ClearRow.getScoreBonus()");
+                "Score should increase by strategy-computed bonus");
         assertNotNull(result.getClearRow());
         assertEquals(2, result.getClearRow().getLinesRemoved());
         assertSame(board.viewDataToReturn, result.getViewData());
+        assertEquals(expectedBonus, result.getScoreBonus(),
+                "DownData should expose the same line-clear bonus used for scoring");
     }
 
     @Test

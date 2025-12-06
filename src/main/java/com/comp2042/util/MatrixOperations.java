@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 public final class MatrixOperations {
 
     private MatrixOperations() {
-
     }
 
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
@@ -103,9 +102,7 @@ public final class MatrixOperations {
             currentMatrix = newMatrix;
         }
 
-        int scoreBonus = GameConstants.SCORE_PER_LINE * totalLinesRemoved * totalLinesRemoved;
-
-        return new ClearRow(totalLinesRemoved, currentMatrix, scoreBonus);
+        return new ClearRow(totalLinesRemoved, currentMatrix);
     }
 
     public static List<int[][]> deepCopyList(List<int[][]> list) {

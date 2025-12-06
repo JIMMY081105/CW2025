@@ -1,6 +1,5 @@
 package com.comp2042.model.scoring;
 
-import com.comp2042.data.ClearRow;
 import com.comp2042.util.GameConstants;
 
 public class ClassicScoringStrategy implements ScoringStrategy {
@@ -14,11 +13,10 @@ public class ClassicScoringStrategy implements ScoringStrategy {
     }
 
     @Override
-    public int scoreForLineClear(ClearRow clearRow) {
-        if (clearRow == null || clearRow.getLinesRemoved() <= 0) {
+    public int scoreForLineClear(int linesRemoved) {
+        if (linesRemoved <= 0) {
             return 0;
         }
-
-        return clearRow.getScoreBonus();
+        return GameConstants.SCORE_PER_LINE * linesRemoved * linesRemoved;
     }
 }

@@ -29,14 +29,21 @@ public class GameController implements InputEventListener {
     public DownData onDownEvent(MoveEvent event) {
         boolean canMove = board.moveBrickDown();
         ClearRow clearRow = null;
+        int lineClearBonus = 0;
 
         if (!canMove) {
-            clearRow = lockPieceAndHandleLineClear();
+            clearRow = lockPieceAndClearLines();
+            if (clearRow != null && clearRow.getLinesRemoved() > 0) {
+                lineClearBonus = scoringStrategy.scoreForLineClear(clearRow.getLinesRemoved());
+                if (lineClearBonus > 0) {
+                    board.getScore().add(lineClearBonus);
+                }
+            }
         } else {
             awardManualDownScore(event.getEventSource(), 1);
         }
 
-        return new DownData(clearRow, board.getViewData());
+        return new DownData(clearRow, board.getViewData(), lineClearBonus);
     }
 
     @Override
@@ -44,9 +51,16 @@ public class GameController implements InputEventListener {
         int steps = dropPieceToBottom();
         awardManualDownScore(event.getEventSource(), steps);
 
-        ClearRow clearRow = lockPieceAndHandleLineClear();
+        ClearRow clearRow = lockPieceAndClearLines();
+        int lineClearBonus = 0;
+        if (clearRow != null && clearRow.getLinesRemoved() > 0) {
+            lineClearBonus = scoringStrategy.scoreForLineClear(clearRow.getLinesRemoved());
+            if (lineClearBonus > 0) {
+                board.getScore().add(lineClearBonus);
+            }
+        }
 
-        return new DownData(clearRow, board.getViewData());
+        return new DownData(clearRow, board.getViewData(), lineClearBonus);
     }
 
     @Override
@@ -84,16 +98,10 @@ public class GameController implements InputEventListener {
             board.getScore().add(score);
         }
     }
-
-    private ClearRow lockPieceAndHandleLineClear() {
+    
+    private ClearRow lockPieceAndClearLines() {
         board.mergeBrickToBackground();
-
         ClearRow clearRow = board.clearRows();
-        int bonus = scoringStrategy.scoreForLineClear(clearRow);
-        if (bonus > 0) {
-            board.getScore().add(bonus);
-        }
-
         board.createNewBrick();
         return clearRow;
     }
