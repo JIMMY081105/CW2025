@@ -15,6 +15,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.junit.jupiter.api.Test;
+
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,13 +39,24 @@ class GameControllerTest {
 
         private final Score score = new Score();
         private final BooleanProperty gameOver = new SimpleBooleanProperty(false);
+
+        // keep an internal backing matrix + property, just like a real board
+        private int[][] internalMatrix =
+                new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
+
         private final ObjectProperty<int[][]> boardMatrix =
-                new SimpleObjectProperty<>(new int[0][0]);
+                new SimpleObjectProperty<>(internalMatrix);
 
         FakeBoard() {
             int[][] currentBrick = new int[][]{{1}};
             int[][] nextBrick = new int[][]{{2}};
-            viewDataToReturn = new ViewData(currentBrick, 0, 0, 10, Collections.singletonList(nextBrick));
+            viewDataToReturn = new ViewData(
+                    currentBrick,
+                    0,
+                    0,
+                    10,
+                    Collections.singletonList(nextBrick)
+            );
             clearRowToReturn = new ClearRow(0, new int[][]{{0}}, 0);
         }
 
@@ -104,7 +116,6 @@ class GameControllerTest {
             return score;
         }
 
-
         @Override
         public BooleanProperty isGameOverProperty() {
             return gameOver;
@@ -121,8 +132,14 @@ class GameControllerTest {
         }
 
         @Override
-        public void explodeBomb(int centerX, int centerY) {
+        public void updateBoardMatrix(int[][] newMatrix) {
+            this.internalMatrix = newMatrix;
+            this.boardMatrix.set(newMatrix);
         }
+
+        // ❌ NOTE: no more @Override explodeBomb(...) here, because Board
+        // no longer declares that method in the SRP-friendly design.
+        // If you still have it, just delete it.
     }
 
     @Test
@@ -220,6 +237,4 @@ class GameControllerTest {
         assertEquals(1, board.rotateLeftCalls);
         assertSame(board.viewDataToReturn, result);
     }
-
-
 }

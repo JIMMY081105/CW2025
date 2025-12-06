@@ -13,15 +13,15 @@ public interface Board {
     boolean moveBrickRight();
     boolean rotateLeftBrick();
     boolean createNewBrick();
+
     int[][] getBoardMatrix();
     ViewData getViewData();
     void mergeBrickToBackground();
     ClearRow clearRows();
     Score getScore();
-
     BooleanProperty isGameOverProperty();
     ObjectProperty<int[][]> boardMatrixProperty();
     IntegerProperty scoreProperty();
-    void explodeBomb(int centerX, int centerY);
-}
 
+    void updateBoardMatrix(int[][] newMatrix);
+}

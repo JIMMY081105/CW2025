@@ -4,6 +4,7 @@ import com.comp2042.model.Board;
 import com.comp2042.util.GameConstants;
 import com.comp2042.view.effect.BoardVibrationEffect;
 import com.comp2042.view.render.BoardRenderer;
+import com.comp2042.model.BombEffectService;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.geometry.Point2D;
@@ -238,8 +239,7 @@ public final class BombManager {
         }
 
         int actualY = gridY + GameConstants.HIDDEN_BUFFER_ROWS;
-        board.explodeBomb(gridX, actualY);
-
+        BombEffectService.applyBomb(board, gridX, actualY);
         if (boardRenderer != null) {
             boardRenderer.refreshBackground(board.getBoardMatrix());
         }

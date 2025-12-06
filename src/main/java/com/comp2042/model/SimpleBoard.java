@@ -14,7 +14,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 public class SimpleBoard implements Board {
-    
+
     private final BrickGenerator brickGenerator;
     private final ActivePiece activePiece;
     private final Score score;
@@ -33,7 +33,7 @@ public class SimpleBoard implements Board {
         this.activePiece = new ActivePiece();
         this.score = new Score();
 
-updateBoardMatrix(new int[height][width]);
+        updateBoardMatrix(new int[height][width]);
     }
 
     @Override
@@ -92,7 +92,6 @@ updateBoardMatrix(new int[height][width]);
 
     @Override
     public int[][] getBoardMatrix() {
-
         return currentGameMatrix;
     }
 
@@ -128,14 +127,7 @@ updateBoardMatrix(new int[height][width]);
     }
 
     @Override
-    public void explodeBomb(int centerX, int centerY) {
-        int[][] exploded = MatrixOperations.explodeBomb(currentGameMatrix, centerX, centerY);
-        updateBoardMatrix(exploded);
-        ClearRow clearRow = MatrixOperations.checkRemoving(exploded);
-        updateBoardMatrix(clearRow.getNewMatrix());
-    }
-
-private void updateBoardMatrix(int[][] newMatrix) {
+    public void updateBoardMatrix(int[][] newMatrix) {
         this.currentGameMatrix = newMatrix;
         this.boardMatrix.set(newMatrix);
     }
