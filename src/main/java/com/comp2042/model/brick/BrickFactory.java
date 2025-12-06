@@ -6,6 +6,8 @@ import java.util.function.Supplier;
 
 public final class BrickFactory {
 
+    private static boolean plusEnabled = true;
+
     private static final List<Supplier<Brick>> BRICK_SUPPLIERS = Arrays.asList(
             IBrick::new,
             JBrick::new,
@@ -22,13 +24,25 @@ public final class BrickFactory {
     }
 
     public static Brick createBrick(int id) {
-        if (id < 0 || id >= BRICK_SUPPLIERS.size()) {
+        List<Supplier<Brick>> activeSuppliers = getActiveSuppliers();
+        if (id < 0 || id >= activeSuppliers.size()) {
             throw new IllegalArgumentException("Invalid brick ID: " + id);
         }
-        return BRICK_SUPPLIERS.get(id).get();
+        return activeSuppliers.get(id).get();
     }
 
     public static int getBrickCount() {
-        return BRICK_SUPPLIERS.size();
+        return getActiveSuppliers().size();
+    }
+
+    public static void setPlusEnabled(boolean enabled) {
+        plusEnabled = enabled;
+    }
+
+    private static List<Supplier<Brick>> getActiveSuppliers() {
+        if (plusEnabled) {
+            return BRICK_SUPPLIERS;
+        }
+        return BRICK_SUPPLIERS.subList(0, BRICK_SUPPLIERS.size() - 1);
     }
 }

@@ -8,6 +8,7 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     private final Random random;
     private final List<Brick> brickQueue = new ArrayList<>();
+    private int lastBrickPoolSize;
 
     public RandomBrickGenerator() {
         this(new Random());
@@ -19,13 +20,24 @@ public class RandomBrickGenerator implements BrickGenerator {
     }
 
     private void initializeQueue() {
+        lastBrickPoolSize = BrickFactory.getBrickCount();
         for (int i = 0; i < 10; i++) {
             brickQueue.add(createRandomBrick());
         }
     }
 
+    private void refreshIfPoolChanged() {
+        int currentPoolSize = BrickFactory.getBrickCount();
+        if (currentPoolSize != lastBrickPoolSize) {
+            brickQueue.clear();
+            lastBrickPoolSize = currentPoolSize;
+            initializeQueue();
+        }
+    }
+
     @Override
     public Brick getBrick() {
+        refreshIfPoolChanged();
         if (brickQueue.isEmpty()) {
             initializeQueue();
         }
@@ -36,6 +48,7 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     @Override
     public Brick getNextBrick() {
+        refreshIfPoolChanged();
         if (brickQueue.isEmpty()) {
             initializeQueue();
         }

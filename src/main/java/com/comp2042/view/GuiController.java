@@ -8,6 +8,7 @@ import com.comp2042.event.EventType;
 import com.comp2042.event.InputEventListener;
 import com.comp2042.event.MoveEvent;
 import com.comp2042.model.Board;
+import com.comp2042.model.brick.BrickFactory;
 import com.comp2042.util.GameConstants;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -55,7 +56,7 @@ public class GuiController implements Initializable {
     private Pane rootPane;
 
     @FXML
-    private Pane gameLayer;   // 🔹 new: same parent as gamePanel / ghostPane / brickPanel
+    private Pane gameLayer;  
 
     @FXML
     private BorderPane gameBoard;
@@ -811,6 +812,7 @@ public class GuiController implements Initializable {
         chinaExploreMode = true;
         currentChinaStageIndex = 0;
 
+        BrickFactory.setPlusEnabled(false);
         BackgroundMusicManager.playExploreChinaMusic();
         configureTimeAttack(0);
         if (timerBox != null) {
@@ -858,6 +860,7 @@ public class GuiController implements Initializable {
         if (timeAttackEnabled) {
             BackgroundMusicManager.playTimeRacingMusic();
         }
+        BrickFactory.setPlusEnabled(timeAttackEnabled && minutes == 5);
 
         if (gameLoop != null && gameLoop.isRunning()) {
             startTimeAttackTimer();
@@ -892,6 +895,7 @@ public class GuiController implements Initializable {
         currentChinaStageIndex = safeIndex;
         ChinaStageDescriptionProvider.ChinaStage stage = chinaStages.get(safeIndex);
 
+        BrickFactory.setPlusEnabled(safeIndex >= 15);
         applyBackgroundImage(stage.getBackgroundResource());
 
         if (chinaDescriptionBox != null) {
