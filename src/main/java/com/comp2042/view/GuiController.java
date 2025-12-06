@@ -1,7 +1,6 @@
 package com.comp2042.view;
 
 import com.comp2042.data.DownData;
-import com.comp2042.data.ChinaStageDescriptionProvider;
 import com.comp2042.data.ViewData;
 import com.comp2042.event.EventSource;
 import com.comp2042.event.EventType;
@@ -10,10 +9,6 @@ import com.comp2042.event.MoveEvent;
 import com.comp2042.model.Board;
 import com.comp2042.model.brick.BrickFactory;
 import com.comp2042.util.GameConstants;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.animation.TranslateTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -23,29 +18,16 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-import javafx.scene.image.Image;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -56,7 +38,7 @@ public class GuiController implements Initializable {
     private Pane rootPane;
 
     @FXML
-    private Pane gameLayer;  
+    private Pane gameLayer;
 
     @FXML
     private BorderPane gameBoard;
@@ -153,10 +135,6 @@ public class GuiController implements Initializable {
 
     private final IntegerProperty bombCount = new SimpleIntegerProperty(0);
     private int lastBombMilestone = 0;
-    private static final int POINTS_PER_BOMB = 1000;
-
-    private Pane bombTargetOverlay;
-    private boolean isDraggingBomb = false;
 
     private GameLoop gameLoop;
 
@@ -165,21 +143,11 @@ public class GuiController implements Initializable {
     private GameLayoutManager layoutManager;
     private BoardVibrationEffect vibrationEffect;
 
-    private boolean timeAttackEnabled = false;
-    private int timeAttackMinutes = 0;
-    private int timeAttackDurationSeconds = 0;
-    private int remainingSeconds = 0;
-    private Timeline timeAttackTimeline;
-    private IntegerProperty boundScoreProperty;
+    private BombManager bombManager;
+    private TimeAttackManager timeAttackManager;
+    private ChinaStageManager chinaStageManager;
+    private GameInputHandler inputHandler;
 
-    private static int bestScore1Min = 0;
-    private static int bestScore3Min = 0;
-    private static int bestScore5Min = 0;
-
-    private final java.util.List<ChinaStageDescriptionProvider.ChinaStage> chinaStages =
-            ChinaStageDescriptionProvider.getStages();
-    private boolean chinaExploreMode = false;
-    private int currentChinaStageIndex = 0;
     private int currentTickMillis = GameConstants.GAME_TICK_MS;
     private boolean endScreenShown = false;
 
@@ -214,16 +182,6 @@ public class GuiController implements Initializable {
         layoutManager.applyInitialLayout();
         nextBricksRenderer.initialisePanels();
 
-        if (gamePanel != null) {
-            gamePanel.setFocusTraversable(true);
-            gamePanel.requestFocus();
-            gamePanel.setOnKeyPressed(this::handleKeyPressed);
-        }
-
-        if (gameOverPanel != null) {
-            gameOverPanel.setVisible(false);
-        }
-
         if (rootPane != null) {
             rootPane.widthProperty().addListener((obs, oldWidth, newWidth) -> {
                 layoutManager.positionContent(newWidth.doubleValue());
@@ -249,235 +207,100 @@ public class GuiController implements Initializable {
             chinaDescriptionBox.setManaged(false);
         }
 
-        setupBombDragAndDrop();
-        updateBombCountLabel();
+        timeAttackManager = new TimeAttackManager(
+                timerTitle,
+                timerValue,
+                bestScoreTitle,
+                bestScoreValue,
+                isPause,
+                isGameOver
+        );
+        timeAttackManager.setOnTimeOver(() ->
+                handleGameEnd("Time's Up", "The clock reached zero. Try another run!")
+        );
 
-        setupEndOverlay();
-    }
+        chinaStageManager = new ChinaStageManager(
+                chinaDescriptionBox,
+                chinaStateTitle,
+                chinaStateDescription,
+                layoutManager::applyBackgroundImage,
+                this::updateGameLoopSpeed,
+                () -> handleGameEnd("Journey Complete", "You finished every China stage!")
+        );
 
-    private void setupBombDragAndDrop() {
-        if (bombToolbar == null) {
-            return;
-        }
+        bombManager = new BombManager(
+                bombToolbar,
+                bombEmoji,
+                bombCountLabel,
+                gameLayer,
+                gamePanel,
+                bombCount,
+                isGameOver,
+                boardRenderer,
+                vibrationEffect,
+                this::pauseForBombDrag,
+                this::resumeAfterBombDrag
+        );
+        bombManager.initialise();
 
-        bombToolbar.setOnMousePressed(this::handleBombMousePressed);
-        bombToolbar.setOnMouseDragged(this::handleBombMouseDragged);
-        bombToolbar.setOnMouseReleased(this::handleBombMouseReleased);
+        layoutManager.setupEndOverlay(endOverlay, endBackgroundVideo, endTitle, endSubtitle);
 
-        bombCount.addListener((obs, oldVal, newVal) -> updateBombCountLabel());
-    }
-
-    private void setupEndOverlay() {
-        if (endOverlay == null) {
-            return;
-        }
-
-        endOverlay.setVisible(false);
-        endOverlay.setManaged(false);
-
-        if (rootPane != null) {
-            endOverlay.prefWidthProperty().bind(rootPane.widthProperty());
-            endOverlay.prefHeightProperty().bind(rootPane.heightProperty());
-        }
-
-        if (endBackgroundVideo != null) {
-            BackgroundVideoManager.attach(endBackgroundVideo, endOverlay);
-        }
-    }
-
-    private void handleBombMousePressed(MouseEvent event) {
-        if (isGameOver.get() || bombCount.get() <= 0) {
-            return;
-        }
-
-        isDraggingBomb = true;
-
-        if (gameLoop != null && !isPause.get()) {
-            gameLoop.pause();
-        }
-        if (timeAttackEnabled && timeAttackTimeline != null && !isPause.get()) {
-            timeAttackTimeline.pause();
-        }
-
-        createBombTargetOverlay();
-
-        if (bombToolbar != null) {
-            bombToolbar.setOpacity(0.5);
-        }
-    }
-
-    private void handleBombMouseDragged(MouseEvent event) {
-        if (!isDraggingBomb || bombTargetOverlay == null) {
-            return;
-        }
-
-        double sceneX = event.getSceneX();
-        double sceneY = event.getSceneY();
-
-        int[] gridPos = screenToGrid(sceneX, sceneY);
-        if (gridPos != null) {
-            updateTargetHighlight(gridPos[0], gridPos[1]);
-        } else {
-            clearTargetHighlight();
-        }
-    }
-
-    private void handleBombMouseReleased(MouseEvent event) {
-        if (!isDraggingBomb) {
-            return;
-        }
-
-        isDraggingBomb = false;
-
-        if (bombToolbar != null) {
-            bombToolbar.setOpacity(bombCount.get() > 0 ? 1.0 : 0.4);
-        }
-
-        double sceneX = event.getSceneX();
-        double sceneY = event.getSceneY();
-
-        int[] gridPos = screenToGrid(sceneX, sceneY);
-        if (gridPos != null && bombCount.get() > 0) {
-            placeBombAt(gridPos[0], gridPos[1]);
-        }
-
-        removeBombTargetOverlay();
-
-        if (gameLoop != null && !isPause.get()) {
-            gameLoop.start();
-        }
-        if (timeAttackEnabled && timeAttackTimeline != null && !isPause.get()) {
-            timeAttackTimeline.play();
-        }
-
-        gamePanel.requestFocus();
-    }
-
-    private void createBombTargetOverlay() {
-        if (bombTargetOverlay != null) {
-            removeBombTargetOverlay();
-        }
-
-        bombTargetOverlay = new Pane();
-        bombTargetOverlay.setMouseTransparent(true);
-        bombTargetOverlay.setPrefSize(
-                GameConstants.gridContentWidth(),
-                GameConstants.gridContentHeight()
+        inputHandler = new GameInputHandler(
+                isPause,
+                isGameOver,
+                event -> {
+                    if (eventListener != null) {
+                        refreshBrick(eventListener.onLeftEvent(event));
+                    }
+                },
+                event -> {
+                    if (eventListener != null) {
+                        refreshBrick(eventListener.onRightEvent(event));
+                    }
+                },
+                event -> {
+                    if (eventListener != null) {
+                        refreshBrick(eventListener.onRotateEvent(event));
+                    }
+                },
+                this::moveDown,
+                this::performHardDrop
         );
 
         if (gamePanel != null) {
-            double offsetX = GameConstants.gridCenterOffsetX();
-            double offsetY = GameConstants.gridCenterOffsetY();
-            bombTargetOverlay.setLayoutX(gamePanel.getLayoutX() + offsetX);
-            bombTargetOverlay.setLayoutY(gamePanel.getLayoutY() + offsetY);
+            gamePanel.setFocusTraversable(true);
+            gamePanel.requestFocus();
+            gamePanel.setOnKeyPressed(inputHandler::handleKeyPressed);
         }
 
-        // 🔹 IMPORTANT: overlay shares the same parent as gamePanel (gameLayer)
-        if (gameLayer != null) {
-            gameLayer.getChildren().add(bombTargetOverlay);
-            bombTargetOverlay.toFront();
+        if (gameOverPanel != null) {
+            gameOverPanel.setVisible(false);
         }
     }
 
-    private void removeBombTargetOverlay() {
-        if (bombTargetOverlay != null && gameLayer != null) {
-            gameLayer.getChildren().remove(bombTargetOverlay);
-            bombTargetOverlay = null;
+    private void pauseForBombDrag() {
+        if (gameLoop != null && !isPause.get()) {
+            gameLoop.pause();
+        }
+        if (timeAttackManager != null && timeAttackManager.isEnabled() && !isPause.get()) {
+            timeAttackManager.pause();
         }
     }
 
-    private void updateTargetHighlight(int gridX, int gridY) {
-        if (bombTargetOverlay == null) {
-            return;
+    private void resumeAfterBombDrag() {
+        if (gameLoop != null && !isPause.get()) {
+            gameLoop.start();
         }
-
-        bombTargetOverlay.getChildren().clear();
-
-        double step = GameConstants.brickStep();
-
-        for (int dy = -1; dy <= 1; dy++) {
-            for (int dx = -1; dx <= 1; dx++) {
-                int cellX = gridX + dx;
-                int cellY = gridY + dy;
-
-                if (cellX >= 0 && cellX < GameConstants.BOARD_WIDTH &&
-                        cellY >= 0 && cellY < GameConstants.visibleRows()) {
-
-                    Rectangle highlight = new Rectangle(
-                            cellX * step,
-                            cellY * step,
-                            GameConstants.BRICK_SIZE,
-                            GameConstants.BRICK_SIZE
-                    );
-                    highlight.setFill(Color.rgb(255, 100, 50, 0.4));
-                    highlight.setStroke(Color.rgb(255, 140, 0, 0.8));
-                    highlight.setStrokeWidth(2);
-                    highlight.setArcWidth(GameConstants.BRICK_ARC_SIZE);
-                    highlight.setArcHeight(GameConstants.BRICK_ARC_SIZE);
-                    bombTargetOverlay.getChildren().add(highlight);
-                }
-            }
+        if (timeAttackManager != null && timeAttackManager.isEnabled() && !isPause.get()) {
+            timeAttackManager.resume();
         }
-    }
-
-    private void clearTargetHighlight() {
-        if (bombTargetOverlay != null) {
-            bombTargetOverlay.getChildren().clear();
-        }
-    }
-
-    private int[] screenToGrid(double sceneX, double sceneY) {
-        if (gamePanel == null) {
-            return null;
-        }
-
-        javafx.geometry.Point2D localPoint = gamePanel.sceneToLocal(sceneX, sceneY);
-
-        double offsetX = GameConstants.gridCenterOffsetX();
-        double offsetY = GameConstants.gridCenterOffsetY();
-        double adjustedX = localPoint.getX() - offsetX;
-        double adjustedY = localPoint.getY() - offsetY;
-
-        double step = GameConstants.brickStep();
-        int gridX = (int) (adjustedX / step);
-        int gridY = (int) (adjustedY / step);
-
-        if (gridX >= 0 && gridX < GameConstants.BOARD_WIDTH &&
-                gridY >= 0 && gridY < GameConstants.visibleRows()) {
-            return new int[]{gridX, gridY};
-        }
-
-        return null;
-    }
-
-    private void placeBombAt(int gridX, int gridY) {
-        if (board == null || bombCount.get() <= 0) {
-            return;
-        }
-
-        int actualY = gridY + GameConstants.HIDDEN_BUFFER_ROWS;
-
-        board.explodeBomb(gridX, actualY);
-        boardRenderer.refreshBackground(board.getBoardMatrix());
-        vibrationEffect.vibrate();
-
-        bombCount.set(bombCount.get() - 1);
-        updateBombCountLabel();
-    }
-
-    private void updateBombCountLabel() {
-        if (bombCountLabel != null) {
-            bombCountLabel.setText(String.valueOf(bombCount.get()));
-            bombCountLabel.setVisible(bombCount.get() > 0);
-        }
-
-        if (bombToolbar != null) {
-            bombToolbar.setOpacity(bombCount.get() > 0 ? 1.0 : 0.4);
+        if (gamePanel != null) {
+            gamePanel.requestFocus();
         }
     }
 
     private void checkBombMilestone(int currentScore) {
-        int milestonesReached = currentScore / POINTS_PER_BOMB;
+        int milestonesReached = currentScore / GameConstants.POINTS_PER_BOMB;
         int newBombs = milestonesReached - lastBombMilestone;
 
         if (newBombs > 0) {
@@ -496,6 +319,10 @@ public class GuiController implements Initializable {
     public void bind(Board board) {
         this.board = board;
 
+        if (bombManager != null) {
+            bombManager.setBoard(board);
+        }
+
         ChangeListener<int[][]> boardMatrixListener = (obs, oldVal, newVal) -> {
             if (newVal != null) {
                 boardRenderer.refreshBackground(newVal);
@@ -505,13 +332,14 @@ public class GuiController implements Initializable {
         ChangeListener<Boolean> gameOverListener = (obs, oldVal, newVal) -> {
             if (newVal != null && newVal) {
                 handleGameEnd("Game Over", "The bricks reached the ceiling.");
-            } else if (gameOverPanel != null) {
-                gameOverPanel.setVisible(false);
+            } else {
+                if (gameOverPanel != null) {
+                    gameOverPanel.setVisible(false);
+                }
                 isGameOver.set(false);
                 endScreenShown = false;
-                if (endOverlay != null) {
-                    endOverlay.setVisible(false);
-                    endOverlay.setManaged(false);
+                if (layoutManager != null) {
+                    layoutManager.hideEndOverlay();
                 }
             }
         };
@@ -534,15 +362,20 @@ public class GuiController implements Initializable {
     }
 
     public void bindScore(IntegerProperty integerProperty) {
-        this.boundScoreProperty = integerProperty;
-
         if (scoreValue != null) {
             scoreValue.textProperty().bind(integerProperty.asString());
         }
 
+        if (timeAttackManager != null) {
+            timeAttackManager.bindScoreProperty(integerProperty);
+        }
+
         integerProperty.addListener((obs, oldVal, newVal) -> {
-            checkBombMilestone(newVal.intValue());
-            updateChinaStageForScore(newVal.intValue());
+            int newScore = newVal.intValue();
+            checkBombMilestone(newScore);
+            if (chinaStageManager != null && chinaStageManager.isEnabled()) {
+                chinaStageManager.handleScoreChanged(newScore);
+            }
         });
     }
 
@@ -552,38 +385,8 @@ public class GuiController implements Initializable {
         ensureGameLoopInitialised();
         gameLoop.start();
 
-        if (timeAttackEnabled) {
-            resetTimeAttackTimer();
-            startTimeAttackTimer();
-        }
-
-        if (chinaExploreMode) {
-            applyChinaStage(currentChinaStageIndex);
-        }
-    }
-
-    private void handleKeyPressed(KeyEvent keyEvent) {
-        if (!isPause.get() && !isGameOver.get()) {
-            if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
-                refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
-                keyEvent.consume();
-            }
-            if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
-                refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
-                keyEvent.consume();
-            }
-            if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
-                refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
-                keyEvent.consume();
-            }
-            if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
-                moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
-                keyEvent.consume();
-            }
-            if (keyEvent.getCode() == KeyCode.SPACE) {
-                performHardDrop(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
-                keyEvent.consume();
-            }
+        if (timeAttackManager != null && timeAttackManager.isEnabled()) {
+            timeAttackManager.start();
         }
     }
 
@@ -650,20 +453,13 @@ public class GuiController implements Initializable {
         if (gameLoop != null) {
             gameLoop.stop();
         }
-        if (timeAttackTimeline != null) {
-            timeAttackTimeline.stop();
-        }
-        if (timeAttackEnabled) {
-            updateBestScoreIfNeeded();
+        if (timeAttackManager != null) {
+            timeAttackManager.handleGameStopped();
         }
         if (gameOverPanel != null) {
             gameOverPanel.setVisible(false);
         }
 
-        showEndScreen(title, subtitle);
-    }
-
-    private void showEndScreen(String title, String subtitle) {
         if (endOverlay == null) {
             if (gameOverPanel != null) {
                 gameOverPanel.setVisible(true);
@@ -671,37 +467,7 @@ public class GuiController implements Initializable {
             return;
         }
 
-        if (endTitle != null && title != null) {
-            endTitle.setText(title);
-        }
-        if (endSubtitle != null && subtitle != null) {
-            endSubtitle.setText(subtitle);
-        }
-
-        endOverlay.setVisible(true);
-        endOverlay.setManaged(true);
-        endOverlay.toFront();
-
-        if (endBackgroundVideo != null) {
-            BackgroundVideoManager.attach(endBackgroundVideo, endOverlay);
-            MediaPlayer player = endBackgroundVideo.getMediaPlayer();
-            if (player != null && player.getStatus() != MediaPlayer.Status.PLAYING) {
-                player.seek(player.getStartTime());
-                player.play();
-            }
-        }
-
-        double width = GameConstants.initialWindowWidth();
-        if (rootPane != null && rootPane.getWidth() > 0) {
-            width = rootPane.getWidth();
-        }
-
-        endOverlay.setTranslateX(-width);
-        TranslateTransition slideIn = new TranslateTransition(Duration.millis(520), endOverlay);
-        slideIn.setFromX(-width);
-        slideIn.setToX(0);
-        slideIn.setInterpolator(Interpolator.EASE_OUT);
-        slideIn.play();
+        layoutManager.showEndScreen(title, subtitle);
     }
 
     public void pauseGame(ActionEvent actionEvent) {
@@ -715,16 +481,16 @@ public class GuiController implements Initializable {
             if (gameLoop != null) {
                 gameLoop.pause();
             }
-            if (timeAttackEnabled && timeAttackTimeline != null) {
-                timeAttackTimeline.pause();
+            if (timeAttackManager != null) {
+                timeAttackManager.pause();
             }
             pauseButton.setText("Resume");
         } else {
             if (gameLoop != null) {
                 gameLoop.start();
             }
-            if (timeAttackEnabled && timeAttackTimeline != null) {
-                timeAttackTimeline.play();
+            if (timeAttackManager != null) {
+                timeAttackManager.resume();
             }
             pauseButton.setText("Pause");
         }
@@ -751,14 +517,20 @@ public class GuiController implements Initializable {
         if (gameLoop != null) {
             gameLoop.pause();
         }
-        if (timeAttackEnabled && timeAttackTimeline != null) {
-            timeAttackTimeline.pause();
+        if (timeAttackManager != null) {
+            timeAttackManager.pause();
         }
         isPause.set(true);
         if (pauseButton != null) {
             pauseButton.setText("Resume");
         }
-        showEndScreen("Exit Game", "Choose what to do next.");
+        if (endOverlay == null) {
+            if (gameOverPanel != null) {
+                gameOverPanel.setVisible(true);
+            }
+            return;
+        }
+        layoutManager.showEndScreen("Exit Game", "Choose what to do next.");
     }
 
     private void ensureGameLoopInitialised() {
@@ -770,51 +542,19 @@ public class GuiController implements Initializable {
         }
     }
 
-    public void applyBackgroundImage(String resourcePath) {
-        if (rootPane == null || resourcePath == null || resourcePath.isBlank()) {
-            return;
-        }
-
-        var resourceUrl = getClass().getClassLoader().getResource(resourcePath);
-        if (resourceUrl == null) {
-            System.err.println("Missing background resource: " + resourcePath);
-            return;
-        }
-
-        String url = resourceUrl.toExternalForm();
-
-        Image image = new Image(url, true);
-        BackgroundSize size = new BackgroundSize(
-                1.0, 1.0, true, true, false, true
-        );
-        BackgroundImage backgroundImage = new BackgroundImage(
-                image,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER,
-                size
-        );
-        rootPane.setBackground(new Background(backgroundImage));
-        rootPane.setStyle(
-                "-fx-background-image: url('" + url + "');"
-                        + "-fx-background-size: cover;"
-                        + "-fx-background-repeat: no-repeat;"
-                        + "-fx-background-position: center center;"
-                        + "-fx-background-color: transparent;"
-        );
-    }
-
     public void showModeLabel(String text) {
-        // no-op for now
     }
 
     public void configureExploreChinaMode() {
-        chinaExploreMode = true;
-        currentChinaStageIndex = 0;
+        if (chinaStageManager == null) {
+            return;
+        }
 
         BrickFactory.setPlusEnabled(false);
         BackgroundMusicManager.playExploreChinaMusic();
+
         configureTimeAttack(0);
+
         if (timerBox != null) {
             timerBox.setVisible(false);
             timerBox.setManaged(false);
@@ -824,16 +564,17 @@ public class GuiController implements Initializable {
             bestScoreBox.setManaged(false);
         }
 
-        applyChinaStage(currentChinaStageIndex);
+        chinaStageManager.enableExploreMode();
     }
 
     public void configureTimeAttack(int minutes) {
-        timeAttackEnabled = minutes > 0;
-        timeAttackMinutes = minutes;
-        timeAttackDurationSeconds = minutes * 60;
-        remainingSeconds = timeAttackDurationSeconds;
+        if (timeAttackManager == null) {
+            return;
+        }
 
-        if (!timeAttackEnabled) {
+        timeAttackManager.configure(minutes);
+
+        if (minutes <= 0) {
             if (timerBox != null) {
                 timerBox.setVisible(false);
                 timerBox.setManaged(false);
@@ -854,94 +595,28 @@ public class GuiController implements Initializable {
             bestScoreBox.setManaged(true);
         }
 
-        updateTimerLabel();
-        refreshBestScoreDisplay();
-        applyTimeAttackBackground();
-        if (timeAttackEnabled) {
-            BackgroundMusicManager.playTimeRacingMusic();
-        }
-        BrickFactory.setPlusEnabled(timeAttackEnabled && minutes == 5);
+        applyTimeAttackBackground(minutes);
+
+        BackgroundMusicManager.playTimeRacingMusic();
+        BrickFactory.setPlusEnabled(minutes == 5);
 
         if (gameLoop != null && gameLoop.isRunning()) {
-            startTimeAttackTimer();
+            timeAttackManager.start();
         }
     }
 
-    private void applyTimeAttackBackground() {
-        if (!timeAttackEnabled) {
-            return;
-        }
-
+    private void applyTimeAttackBackground(int minutes) {
         String resourcePath = null;
-        if (timeAttackMinutes == 1) {
+        if (minutes == 1) {
             resourcePath = "Time stages/1.jpg";
-        } else if (timeAttackMinutes == 3) {
+        } else if (minutes == 3) {
             resourcePath = "Time stages/3.jpg";
-        } else if (timeAttackMinutes == 5) {
+        } else if (minutes == 5) {
             resourcePath = "Time stages/5.jpg";
         }
 
-        if (resourcePath != null) {
-            applyBackgroundImage(resourcePath);
-        }
-    }
-
-    private void applyChinaStage(int stageIndex) {
-        if (!chinaExploreMode || chinaStages.isEmpty()) {
-            return;
-        }
-
-        int safeIndex = Math.min(stageIndex, chinaStages.size() - 1);
-        currentChinaStageIndex = safeIndex;
-        ChinaStageDescriptionProvider.ChinaStage stage = chinaStages.get(safeIndex);
-
-        BrickFactory.setPlusEnabled(safeIndex >= 15);
-        applyBackgroundImage(stage.getBackgroundResource());
-
-        if (chinaDescriptionBox != null) {
-            chinaDescriptionBox.setVisible(true);
-            chinaDescriptionBox.setManaged(true);
-        }
-        if (chinaStateTitle != null) {
-            chinaStateTitle.setText(stage.getName());
-        }
-        if (chinaStateDescription != null) {
-            chinaStateDescription.setText(stage.getDescription());
-        }
-
-        int newTick = Math.max(
-                GameConstants.MIN_GAME_TICK_MS,
-                GameConstants.GAME_TICK_MS - (safeIndex * 10)
-        );
-        updateGameLoopSpeed(newTick);
-    }
-
-    private void updateChinaStageForScore(int score) {
-        if (!chinaExploreMode || chinaStages.isEmpty()) {
-            return;
-        }
-
-        int targetIndex = Math.min(
-                score / GameConstants.POINTS_PER_CHINA_STAGE,
-                chinaStages.size() - 1
-        );
-
-        if (targetIndex > currentChinaStageIndex) {
-            applyChinaStage(targetIndex);
-        }
-
-        checkChinaCompletion(score);
-    }
-
-    private void checkChinaCompletion(int score) {
-        if (!chinaExploreMode || chinaStages.isEmpty() || endScreenShown) {
-            return;
-        }
-
-        boolean atFinalStage = currentChinaStageIndex >= chinaStages.size() - 1;
-        int completionScore = GameConstants.POINTS_PER_CHINA_STAGE * chinaStages.size();
-        if (atFinalStage && score >= completionScore) {
-            handleGameEnd("Journey Complete", "You finished every China stage!");
+        if (resourcePath != null && layoutManager != null) {
+            layoutManager.applyBackgroundImage(resourcePath);
         }
     }
 
@@ -965,101 +640,5 @@ public class GuiController implements Initializable {
         if (wasRunning) {
             gameLoop.start();
         }
-    }
-
-    private void resetTimeAttackTimer() {
-        remainingSeconds = timeAttackDurationSeconds;
-        updateTimerLabel();
-    }
-
-    private void startTimeAttackTimer() {
-        if (!timeAttackEnabled) {
-            return;
-        }
-        if (timeAttackTimeline != null) {
-            timeAttackTimeline.stop();
-        }
-        timeAttackTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), e -> onTimeAttackTick())
-        );
-        timeAttackTimeline.setCycleCount(Timeline.INDEFINITE);
-        timeAttackTimeline.play();
-    }
-
-    private void onTimeAttackTick() {
-        if (!timeAttackEnabled || isPause.get() || isGameOver.get()) {
-            return;
-        }
-        remainingSeconds--;
-        if (remainingSeconds < 0) {
-            remainingSeconds = 0;
-        }
-        updateTimerLabel();
-        if (remainingSeconds == 0) {
-            if (!isGameOver.get()) {
-                handleGameEnd("Time's Up", "The clock reached zero. Try another run!");
-            }
-        }
-    }
-
-    private void updateTimerLabel() {
-        if (timerValue == null) {
-            return;
-        }
-        int minutes = remainingSeconds / 60;
-        int seconds = remainingSeconds % 60;
-        timerValue.setText(String.format("%02d:%02d", minutes, seconds));
-    }
-
-    private void updateBestScoreIfNeeded() {
-        if (!timeAttackEnabled || boundScoreProperty == null) {
-            return;
-        }
-        int currentScore = boundScoreProperty.get();
-        if (timeAttackMinutes == 1) {
-            if (currentScore > bestScore1Min) {
-                bestScore1Min = currentScore;
-            }
-        } else if (timeAttackMinutes == 3) {
-            if (currentScore > bestScore3Min) {
-                bestScore3Min = currentScore;
-            }
-        } else if (timeAttackMinutes == 5) {
-            if (currentScore > bestScore5Min) {
-                bestScore5Min = currentScore;
-            }
-        }
-        refreshBestScoreDisplay();
-    }
-
-    private void refreshBestScoreDisplay() {
-        if (bestScoreBox == null || bestScoreValue == null || bestScoreTitle == null) {
-            return;
-        }
-        if (!timeAttackEnabled) {
-            bestScoreBox.setVisible(false);
-            bestScoreBox.setManaged(false);
-            return;
-        }
-        bestScoreBox.setVisible(true);
-        bestScoreBox.setManaged(true);
-
-        int bestScore;
-        String label;
-        if (timeAttackMinutes == 1) {
-            bestScore = bestScore1Min;
-            label = "BEST 1 MIN";
-        } else if (timeAttackMinutes == 3) {
-            bestScore = bestScore3Min;
-            label = "BEST 3 MIN";
-        } else if (timeAttackMinutes == 5) {
-            bestScore = bestScore5Min;
-            label = "BEST 5 MIN";
-        } else {
-            bestScore = 0;
-            label = "BEST SCORE";
-        }
-        bestScoreTitle.setText(label);
-        bestScoreValue.setText(String.valueOf(bestScore));
     }
 }
