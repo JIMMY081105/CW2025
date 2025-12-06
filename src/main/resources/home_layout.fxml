@@ -8,7 +8,7 @@
 <?import javafx.scene.media.MediaView?>
 <?import java.net.URL?>
 <StackPane fx:id="homeRoot" xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.comp2042.view.HomeController"
+           fx:controller="com.comp2042.view.screen.HomeController"
            styleClass="home-root">
     <MediaView fx:id="backgroundVideo" preserveRatio="true"/>
     <BorderPane styleClass="home-overlay">

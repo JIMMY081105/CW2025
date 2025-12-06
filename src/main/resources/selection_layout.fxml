@@ -10,7 +10,7 @@
 
 <StackPane fx:id="selectionRoot"
            xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.comp2042.view.ModeSelectionController"
+           fx:controller="com.comp2042.view.screen.ModeSelectionController"
            styleClass="home-root">
 
     <MediaView fx:id="backgroundVideo" preserveRatio="true"/>

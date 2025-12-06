@@ -4,12 +4,12 @@ import com.comp2042.controller.GameController;
 import com.comp2042.model.Board;
 import com.comp2042.model.SimpleBoard;
 import com.comp2042.util.GameConstants;
-import com.comp2042.view.HomeController;
 import com.comp2042.view.HomeSelection;
-import com.comp2042.view.GuiController;
-import com.comp2042.view.ModeSelectionController;
-import com.comp2042.view.BackgroundVideoManager;
-import com.comp2042.view.BackgroundMusicManager;
+import com.comp2042.view.manager.BackgroundMusicManager;
+import com.comp2042.view.manager.BackgroundVideoManager;
+import com.comp2042.view.screen.GameScreenController;
+import com.comp2042.view.screen.HomeController;
+import com.comp2042.view.screen.ModeSelectionController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -91,17 +91,18 @@ public class Main extends Application {
         ResourceBundle resources = null;
         FXMLLoader fxmlLoader = new FXMLLoader(location, resources);
         Parent root = fxmlLoader.load();
-        GuiController guiController = fxmlLoader.getController();
+        GameScreenController gameScreenController = fxmlLoader.getController();
+
 
         applyScale(root, GAME_UI_SCALE); 
         setSceneAndMaximize(primaryStage, root);
 
         GameController gameController = new GameController(board);
-        guiController.setEventListener(gameController);
-        guiController.bind(board);
-        guiController.bindScore(board.scoreProperty());
+        gameScreenController.setEventListener(gameController);
+        gameScreenController.bind(board);
+        gameScreenController.bindScore(board.scoreProperty());
 
-        guiController.setNavigationHandlers(
+        gameScreenController.setNavigationHandlers(
                 () -> {
                     try {
                         showHome(primaryStage);
@@ -118,22 +119,22 @@ public class Main extends Application {
                 }
         );
 
-        applySelectionToGame(selection, guiController);
+        applySelectionToGame(selection, gameScreenController);
     }
 
-    private void applySelectionToGame(HomeSelection selection, GuiController guiController) {
+    private void applySelectionToGame(HomeSelection selection, GameScreenController gameScreenController) {
         if (selection == null) {
             return;
         }
 
         if (selection.mode() == HomeSelection.Mode.COUNTRY_EXPLORE) {
             BackgroundMusicManager.playExploreChinaMusic();
-            guiController.configureExploreChinaMode();
+            gameScreenController.configureExploreChinaMode();
             return;
         }
 
         if (selection.mode() == HomeSelection.Mode.TIME_RACING) {
-            guiController.showModeLabel("Time Racing: " + selection.option());
+            gameScreenController.showModeLabel("Time Racing: " + selection.option());
 
             int minutes = switch (selection.option()) {
                 case "1 Minute Sprint" -> 1;
@@ -144,7 +145,7 @@ public class Main extends Application {
 
             if (minutes > 0) {
                 BackgroundMusicManager.playTimeRacingMusic();
-                guiController.configureTimeAttack(minutes);
+                gameScreenController.configureTimeAttack(minutes);
             }
         }
     }

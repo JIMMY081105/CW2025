@@ -1,4 +1,4 @@
-package com.comp2042.view;
+package com.comp2042.view.manager;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

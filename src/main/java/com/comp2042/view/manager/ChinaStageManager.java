@@ -1,7 +1,6 @@
-package com.comp2042.view;
+package com.comp2042.view.manager;
 
 import com.comp2042.data.ChinaStageDescriptionProvider;
-import com.comp2042.model.brick.BrickFactory;
 import com.comp2042.util.GameConstants;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -12,34 +11,32 @@ import java.util.function.IntConsumer;
 
 public final class ChinaStageManager {
 
+    private final List<ChinaStageDescriptionProvider.ChinaStage> stages;
     private final VBox descriptionBox;
     private final Text stateTitleText;
     private final Text stateDescriptionText;
 
     private final Consumer<String> backgroundApplier;
     private final IntConsumer gameTickUpdater;
-    private final Runnable completionCallback;
-
-    private final List<ChinaStageDescriptionProvider.ChinaStage> stages;
+    private final Runnable onJourneyCompleted;
 
     private boolean enabled;
     private int currentStageIndex;
-    private boolean completionTriggered;
 
     public ChinaStageManager(VBox descriptionBox,
                              Text stateTitleText,
                              Text stateDescriptionText,
                              Consumer<String> backgroundApplier,
                              IntConsumer gameTickUpdater,
-                             Runnable completionCallback) {
+                             Runnable onJourneyCompleted) {
 
+        this.stages = ChinaStageDescriptionProvider.getStages();
         this.descriptionBox = descriptionBox;
         this.stateTitleText = stateTitleText;
         this.stateDescriptionText = stateDescriptionText;
         this.backgroundApplier = backgroundApplier;
         this.gameTickUpdater = gameTickUpdater;
-        this.completionCallback = completionCallback;
-        this.stages = ChinaStageDescriptionProvider.getStages();
+        this.onJourneyCompleted = onJourneyCompleted;
 
         hideDescriptionBox();
     }
@@ -51,9 +48,8 @@ public final class ChinaStageManager {
             return;
         }
         enabled = true;
-        completionTriggered = false;
         currentStageIndex = 0;
-        applyStage(0);
+        applyStage(currentStageIndex);
     }
 
     public void disableExploreMode() {
@@ -79,16 +75,7 @@ public final class ChinaStageManager {
             applyStage(targetIndex);
         }
 
-        if (!completionTriggered) {
-            boolean atFinalStage = currentStageIndex >= stages.size() - 1;
-            int completionScore = GameConstants.POINTS_PER_CHINA_STAGE * stages.size();
-            if (atFinalStage && newScore >= completionScore) {
-                completionTriggered = true;
-                if (completionCallback != null) {
-                    completionCallback.run();
-                }
-            }
-        }
+        checkCompletion(newScore);
     }
 
     private void applyStage(int stageIndex) {
@@ -100,8 +87,6 @@ public final class ChinaStageManager {
         currentStageIndex = safeIndex;
 
         ChinaStageDescriptionProvider.ChinaStage stage = stages.get(safeIndex);
-
-        BrickFactory.setPlusEnabled(safeIndex >= 15);
 
         if (backgroundApplier != null) {
             backgroundApplier.accept(stage.getBackgroundResource());
@@ -126,6 +111,19 @@ public final class ChinaStageManager {
         );
         if (gameTickUpdater != null) {
             gameTickUpdater.accept(newTick);
+        }
+    }
+
+    private void checkCompletion(int score) {
+        if (!enabled || stages.isEmpty()) {
+            return;
+        }
+
+        boolean atFinalStage = currentStageIndex >= stages.size() - 1;
+        int completionScore = GameConstants.POINTS_PER_CHINA_STAGE * stages.size();
+
+        if (atFinalStage && score >= completionScore && onJourneyCompleted != null) {
+            onJourneyCompleted.run();
         }
     }
 

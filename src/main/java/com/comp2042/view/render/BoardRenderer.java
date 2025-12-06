@@ -1,4 +1,4 @@
-package com.comp2042.view;
+package com.comp2042.view.render;
 
 import com.comp2042.data.ViewData;
 import com.comp2042.util.BlockTextureProvider;

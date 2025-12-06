@@ -1,5 +1,8 @@
-package com.comp2042.view;
+package com.comp2042.view.screen;
 
+import com.comp2042.view.HomeSelection;
+import com.comp2042.view.manager.BackgroundMusicManager;
+import com.comp2042.view.manager.BackgroundVideoManager;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.MediaView;

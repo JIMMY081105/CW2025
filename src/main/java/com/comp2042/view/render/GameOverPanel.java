@@ -1,4 +1,4 @@
-package com.comp2042.view;
+package com.comp2042.view.render;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;

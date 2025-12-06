@@ -1,4 +1,4 @@
-package com.comp2042.view;
+package com.comp2042.view.manager;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;

@@ -1,4 +1,4 @@
-package com.comp2042.view;
+package com.comp2042.view.effect;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;

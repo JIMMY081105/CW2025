@@ -45,31 +45,36 @@ public final class GameInputHandler {
         KeyCode code = keyEvent.getCode();
 
         if (code == KeyCode.LEFT || code == KeyCode.A) {
-            leftHandler.accept(new MoveEvent(EventType.LEFT, EventSource.USER));
+            MoveEvent moveEvent = new MoveEvent(EventType.LEFT, EventSource.USER);
+            leftHandler.accept(moveEvent);
             keyEvent.consume();
             return;
         }
 
         if (code == KeyCode.RIGHT || code == KeyCode.D) {
-            rightHandler.accept(new MoveEvent(EventType.RIGHT, EventSource.USER));
+            MoveEvent moveEvent = new MoveEvent(EventType.RIGHT, EventSource.USER);
+            rightHandler.accept(moveEvent);
             keyEvent.consume();
             return;
         }
 
         if (code == KeyCode.UP || code == KeyCode.W) {
-            rotateHandler.accept(new MoveEvent(EventType.ROTATE, EventSource.USER));
+            MoveEvent moveEvent = new MoveEvent(EventType.ROTATE, EventSource.USER);
+            rotateHandler.accept(moveEvent);
             keyEvent.consume();
             return;
         }
 
         if (code == KeyCode.DOWN || code == KeyCode.S) {
-            downHandler.accept(new MoveEvent(EventType.DOWN, EventSource.USER));
+            MoveEvent moveEvent = new MoveEvent(EventType.DOWN, EventSource.USER);
+            downHandler.accept(moveEvent);
             keyEvent.consume();
             return;
         }
 
         if (code == KeyCode.SPACE) {
-            hardDropHandler.accept(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
+            MoveEvent moveEvent = new MoveEvent(EventType.HARD_DROP, EventSource.USER);
+            hardDropHandler.accept(moveEvent);
             keyEvent.consume();
         }
     }

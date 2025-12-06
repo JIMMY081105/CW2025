@@ -1,6 +1,7 @@
-package com.comp2042.view;
+package com.comp2042.view.manager;
 
 import com.comp2042.util.GameConstants;
+import com.comp2042.view.render.BoardRenderer;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Insets;

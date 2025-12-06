@@ -14,9 +14,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 public class SimpleBoard implements Board {
-
-    private final int width;
-    private final int height;
     
     private final BrickGenerator brickGenerator;
     private final ActivePiece activePiece;
@@ -32,8 +29,6 @@ public class SimpleBoard implements Board {
     }
 
     public SimpleBoard(int width, int height, BrickGenerator brickGenerator) {
-        this.width = width;
-        this.height = height;
         this.brickGenerator = brickGenerator;
         this.activePiece = new ActivePiece();
         this.score = new Score();

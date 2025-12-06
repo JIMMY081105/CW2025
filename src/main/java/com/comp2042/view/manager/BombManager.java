@@ -1,7 +1,9 @@
-package com.comp2042.view;
+package com.comp2042.view.manager;
 
 import com.comp2042.model.Board;
 import com.comp2042.util.GameConstants;
+import com.comp2042.view.effect.BoardVibrationEffect;
+import com.comp2042.view.render.BoardRenderer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.geometry.Point2D;

@@ -1,4 +1,4 @@
-package com.comp2042.view;
+package com.comp2042.view.manager;
 
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
