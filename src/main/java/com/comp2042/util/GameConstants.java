@@ -29,6 +29,7 @@ public final class GameConstants {
     public static final int POINTS_PER_CHINA_STAGE = 200;
     public static final int POINTS_PER_BOMB = 1000;
     public static final int CHINA_STAGE_SPEED_STEP = 10;
+    public static final int INITIAL_QUEUE_SIZE = 10;
 
 
     public static int visibleRows() {

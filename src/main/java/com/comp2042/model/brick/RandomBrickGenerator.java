@@ -1,5 +1,7 @@
 package com.comp2042.model.brick;
 
+import com.comp2042.util.GameConstants;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -21,7 +23,8 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     private void initializeQueue() {
         lastBrickPoolSize = BrickFactory.getBrickCount();
-        for (int i = 0; i < 10; i++) {
+        brickQueue.clear();
+        for (int i = 0; i < GameConstants.INITIAL_QUEUE_SIZE; i++) {
             brickQueue.add(createRandomBrick());
         }
     }
@@ -29,18 +32,20 @@ public class RandomBrickGenerator implements BrickGenerator {
     private void refreshIfPoolChanged() {
         int currentPoolSize = BrickFactory.getBrickCount();
         if (currentPoolSize != lastBrickPoolSize) {
-            brickQueue.clear();
-            lastBrickPoolSize = currentPoolSize;
+            initializeQueue();
+        }
+    }
+
+    private void ensureQueueReady() {
+        refreshIfPoolChanged();
+        if (brickQueue.isEmpty()) {
             initializeQueue();
         }
     }
 
     @Override
     public Brick getBrick() {
-        refreshIfPoolChanged();
-        if (brickQueue.isEmpty()) {
-            initializeQueue();
-        }
+        ensureQueueReady();
         Brick nextBrick = brickQueue.remove(0);
         brickQueue.add(createRandomBrick());
         return nextBrick;
@@ -48,10 +53,7 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     @Override
     public Brick getNextBrick() {
-        refreshIfPoolChanged();
-        if (brickQueue.isEmpty()) {
-            initializeQueue();
-        }
+        ensureQueueReady();
         return brickQueue.get(0);
     }
 
@@ -63,9 +65,7 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     @Override
     public List<Brick> preview(int count) {
-        if (brickQueue.isEmpty()) {
-            initializeQueue();
-        }
+        ensureQueueReady();
         List<Brick> previewBricks = new ArrayList<>();
         for (int i = 0; i < count && i < brickQueue.size(); i++) {
             previewBricks.add(brickQueue.get(i));
