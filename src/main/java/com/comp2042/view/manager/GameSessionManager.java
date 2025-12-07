@@ -17,7 +17,14 @@ import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 
+import java.util.Objects;
+
 public final class GameSessionManager {
+
+    private static final String TITLE_GAME_OVER = "Game Over";
+    private static final String MESSAGE_GAME_OVER = "The bricks reached the ceiling.";
+    private static final String TITLE_EXIT = "Exit Game";
+    private static final String MESSAGE_EXIT = "Choose what to do next.";
 
     private final BooleanProperty pauseProperty;
     private final BooleanProperty gameOverProperty;
@@ -48,12 +55,12 @@ public final class GameSessionManager {
                               GameNotificationManager notificationManager,
                               GameOverPanel gameOverPanel) {
 
-        this.pauseProperty = pauseProperty;
-        this.gameOverProperty = gameOverProperty;
-        this.gamePanel = gamePanel;
-        this.boardRenderer = boardRenderer;
-        this.nextBricksRenderer = nextBricksRenderer;
-        this.vibrationEffect = vibrationEffect;
+        this.pauseProperty = Objects.requireNonNull(pauseProperty, "pauseProperty must not be null");
+        this.gameOverProperty = Objects.requireNonNull(gameOverProperty, "gameOverProperty must not be null");
+        this.gamePanel = Objects.requireNonNull(gamePanel, "gamePanel must not be null");
+        this.boardRenderer = Objects.requireNonNull(boardRenderer, "boardRenderer must not be null");
+        this.nextBricksRenderer = Objects.requireNonNull(nextBricksRenderer, "nextBricksRenderer must not be null");
+        this.vibrationEffect = Objects.requireNonNull(vibrationEffect, "vibrationEffect must not be null");
         this.timeAttackManager = timeAttackManager;
         this.layoutManager = layoutManager;
         this.notificationManager = notificationManager;
@@ -74,7 +81,7 @@ public final class GameSessionManager {
 
         board.isGameOverProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null && newVal) {
-                handleGameEnd("Game Over", "The bricks reached the ceiling.");
+                handleGameEnd(TITLE_GAME_OVER, MESSAGE_GAME_OVER);
             } else {
                 if (gameOverPanel != null) {
                     gameOverPanel.setVisible(false);
@@ -185,22 +192,12 @@ public final class GameSessionManager {
         pauseProperty.set(paused);
 
         if (paused) {
-            if (gameLoop != null) {
-                gameLoop.pause();
-            }
-            if (timeAttackManager != null) {
-                timeAttackManager.pause();
-            }
+            pauseLoopAndTimeAttack();
             if (pauseButton != null) {
                 pauseButton.setText("Resume");
             }
         } else {
-            if (gameLoop != null) {
-                gameLoop.start();
-            }
-            if (timeAttackManager != null) {
-                timeAttackManager.resume();
-            }
+            resumeLoopAndTimeAttack();
             if (pauseButton != null) {
                 pauseButton.setText("Pause");
             }
@@ -210,15 +207,10 @@ public final class GameSessionManager {
     }
 
     public void exitGame() {
-        if (gameLoop != null) {
-            gameLoop.pause();
-        }
-        if (timeAttackManager != null) {
-            timeAttackManager.pause();
-        }
+        pauseLoopAndTimeAttack();
         pauseProperty.set(true);
         if (layoutManager != null) {
-            layoutManager.showEndScreen("Exit Game", "Choose what to do next.");
+            layoutManager.showEndScreen(TITLE_EXIT, MESSAGE_EXIT);
         }
     }
 
@@ -298,6 +290,24 @@ public final class GameSessionManager {
                     currentTickMillis,
                     () -> onMoveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
             );
+        }
+    }
+
+    private void pauseLoopAndTimeAttack() {
+        if (gameLoop != null) {
+            gameLoop.pause();
+        }
+        if (timeAttackManager != null) {
+            timeAttackManager.pause();
+        }
+    }
+
+    private void resumeLoopAndTimeAttack() {
+        if (gameLoop != null) {
+            gameLoop.start();
+        }
+        if (timeAttackManager != null) {
+            timeAttackManager.resume();
         }
     }
 }
