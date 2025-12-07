@@ -14,6 +14,9 @@ public final class MatrixOperations {
     }
 
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
+        requireValidMatrix(matrix, "matrix");
+        requireValidMatrix(brick, "brick");
+
         for (int row = 0; row < brick.length; row++) {
             for (int col = 0; col < brick[row].length; col++) {
                 if (brick[row][col] == 0) {
@@ -34,6 +37,9 @@ public final class MatrixOperations {
     }
 
     public static int[][] merge(final int[][] matrix, final int[][] brick, int x, int y) {
+        requireValidMatrix(matrix, "matrix");
+        requireValidMatrix(brick, "brick");
+
         int[][] result = copy(matrix);
 
         for (int row = 0; row < brick.length; row++) {
@@ -56,6 +62,8 @@ public final class MatrixOperations {
     }
 
     public static int[][] copy(int[][] original) {
+        requireValidMatrix(original, "original");
+
         int[][] copy = new int[original.length][];
         for (int row = 0; row < original.length; row++) {
             int[] sourceRow = original[row];
@@ -66,6 +74,8 @@ public final class MatrixOperations {
     }
 
     public static ClearRow checkRemoving(final int[][] matrix) {
+        requireValidMatrix(matrix, "matrix");
+
         int height = matrix.length;
         int width = matrix[0].length;
         int[][] currentMatrix = copy(matrix);
@@ -111,34 +121,17 @@ public final class MatrixOperations {
     }
 
     public static List<int[][]> deepCopyList(List<int[][]> list) {
+        if (list == null) {
+            throw new IllegalArgumentException("list must not be null");
+        }
         return list.stream()
                 .map(MatrixOperations::copy)
                 .collect(Collectors.toList());
     }
 
-    private static boolean isOutOfBounds(int[][] matrix, int x, int y) {
-        return x < 0
-                || y < 0
-                || y >= matrix.length
-                || x >= matrix[y].length;
-    }
-
-    private static boolean isRowFull(int[] row) {
-        for (int cell : row) {
-            if (cell == 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static int[] cloneRow(int[] source) {
-        int[] copy = new int[source.length];
-        System.arraycopy(source, 0, copy, 0, source.length);
-        return copy;
-    }
-
     public static int[][] explodeBomb(final int[][] matrix, int centerX, int centerY) {
+        requireValidMatrix(matrix, "matrix");
+
         int height = matrix.length;
         int width = matrix[0].length;
 
@@ -169,5 +162,44 @@ public final class MatrixOperations {
         }
 
         return result;
+    }
+
+    private static boolean isOutOfBounds(int[][] matrix, int x, int y) {
+        return x < 0
+                || y < 0
+                || y >= matrix.length
+                || x >= matrix[y].length;
+    }
+
+    private static boolean isRowFull(int[] row) {
+        if (row == null || row.length == 0) {
+            return false;
+        }
+        for (int cell : row) {
+            if (cell == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static int[] cloneRow(int[] source) {
+        int[] copy = new int[source.length];
+        System.arraycopy(source, 0, copy, 0, source.length);
+        return copy;
+    }
+
+    private static void requireValidMatrix(int[][] matrix, String name) {
+        if (matrix == null) {
+            throw new IllegalArgumentException(name + " must not be null");
+        }
+        if (matrix.length == 0) {
+            throw new IllegalArgumentException(name + " must have at least one row");
+        }
+        for (int i = 0; i < matrix.length; i++) {
+            if (matrix[i] == null) {
+                throw new IllegalArgumentException(name + " row " + i + " must not be null");
+            }
+        }
     }
 }
