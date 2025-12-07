@@ -2,7 +2,7 @@ package com.comp2042.model.scoring;
 
 import com.comp2042.util.GameConstants;
 
-public class ClassicScoringStrategy implements ScoringStrategy {
+public final class ClassicScoringStrategy implements ScoringStrategy {
 
     @Override
     public int scoreForManualDrop(int steps) {

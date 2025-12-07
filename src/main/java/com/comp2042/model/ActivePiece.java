@@ -1,13 +1,9 @@
 package com.comp2042.model;
 
-import com.comp2042.data.ViewData;
 import com.comp2042.model.brick.Brick;
 import com.comp2042.model.brick.NextShapeInfo;
 import com.comp2042.util.GameConstants;
 import com.comp2042.util.MatrixOperations;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ActivePiece {
 
@@ -57,17 +53,7 @@ public class ActivePiece {
         return y;
     }
 
-    public ViewData toViewData(List<Brick> nextBricks, int[][] boardMatrix) {
-        List<int[][]> previews = buildPreviews(nextBricks);
-        int ghostY = calculateGhostY(boardMatrix);
-        return new ViewData(getShape(), x, y, ghostY, previews);
-    }
-
-private boolean collides(int[][] boardMatrix, int[][] shape, int targetX, int targetY) {
-        return MatrixOperations.intersect(boardMatrix, shape, targetX, targetY);
-    }
-
-    private int calculateGhostY(int[][] boardMatrix) {
+    public int getGhostY(int[][] boardMatrix) {
         int ghostY = y;
         int[][] shape = brickRotator.getCurrentShape();
 
@@ -78,24 +64,7 @@ private boolean collides(int[][] boardMatrix, int[][] shape, int targetX, int ta
         return ghostY;
     }
 
-    private List<int[][]> buildPreviews(List<Brick> nextBricks) {
-        List<int[][]> previews = new ArrayList<>();
-        if (nextBricks == null) {
-            return previews;
-        }
-
-        for (Brick brick : nextBricks) {
-            if (brick == null) {
-                continue;
-            }
-            List<int[][]> shapes = brick.getShapeMatrix();
-            if (shapes.isEmpty()) {
-                continue;
-            }
-
-            previews.add(shapes.get(0));
-        }
-
-        return previews;
+    private boolean collides(int[][] boardMatrix, int[][] shape, int targetX, int targetY) {
+        return MatrixOperations.intersect(boardMatrix, shape, targetX, targetY);
     }
 }

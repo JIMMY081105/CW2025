@@ -1,7 +1,10 @@
 package com.comp2042.model;
 
+import java.util.List;
+
 import com.comp2042.data.ClearRow;
 import com.comp2042.data.ViewData;
+import com.comp2042.data.ViewDataFactory;
 import com.comp2042.model.brick.Brick;
 import com.comp2042.model.brick.BrickGenerator;
 import com.comp2042.model.brick.RandomBrickGenerator;
@@ -96,10 +99,8 @@ public class SimpleBoard implements Board {
 
     @Override
     public ViewData getViewData() {
-        return activePiece.toViewData(
-                brickGenerator.preview(GameConstants.NEXT_PREVIEW_COUNT),
-                currentGameMatrix
-        );
+        List<Brick> nextBricks = brickGenerator.preview(GameConstants.NEXT_PREVIEW_COUNT);
+        return ViewDataFactory.createViewData(activePiece, currentGameMatrix, nextBricks);
     }
 
     @Override
