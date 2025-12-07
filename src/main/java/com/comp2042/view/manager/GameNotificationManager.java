@@ -8,19 +8,24 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 
+import java.util.Objects;
+
 public final class GameNotificationManager {
+
+    private static final String SCORE_NOTIFICATION_STYLE_CLASS = "score-notification";
+    private static final int MAX_NOTIFICATIONS = 5;
 
     private final Group notificationGroup;
     private final IntegerProperty bombCountProperty;
     private int lastBombMilestone = 0;
 
     public GameNotificationManager(Group notificationGroup, IntegerProperty bombCountProperty) {
-        this.notificationGroup = notificationGroup;
-        this.bombCountProperty = bombCountProperty;
+        this.notificationGroup = Objects.requireNonNull(notificationGroup, "notificationGroup must not be null");
+        this.bombCountProperty = Objects.requireNonNull(bombCountProperty, "bombCountProperty must not be null");
     }
 
     public void handleDownMovement(DownData downData) {
-        if (downData == null || notificationGroup == null) {
+        if (downData == null) {
             return;
         }
 
@@ -31,10 +36,6 @@ public final class GameNotificationManager {
     }
 
     public void handleScoreChanged(int totalScore) {
-        if (bombCountProperty == null) {
-            return;
-        }
-
         int milestonesReached = totalScore / GameConfig.POINTS_PER_BOMB;
         int newBombs = milestonesReached - lastBombMilestone;
 
@@ -49,28 +50,24 @@ public final class GameNotificationManager {
     }
 
     private void showScoreNotification(int scoreBonus) {
-        if (notificationGroup == null) {
-            return;
-        }
         showTextNotification("+" + scoreBonus);
     }
 
     private void showBombNotification(int bombsAwarded) {
-        if (bombsAwarded <= 0 || notificationGroup == null) {
+        if (bombsAwarded <= 0) {
             return;
         }
         showTextNotification("+" + bombsAwarded + " \uD83D\uDCA3");
     }
 
     private void showTextNotification(String text) {
-        if (notificationGroup == null) {
-            return;
-        }
-
         Label label = new Label(text);
-        label.getStyleClass().add("score-notification");
+        label.getStyleClass().add(SCORE_NOTIFICATION_STYLE_CLASS);
 
         ObservableList<Node> children = notificationGroup.getChildren();
+        if (children.size() >= MAX_NOTIFICATIONS) {
+            children.remove(0);
+        }
         children.add(label);
     }
 }
