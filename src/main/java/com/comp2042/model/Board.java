@@ -19,9 +19,8 @@ public interface Board {
     void mergeBrickToBackground();
     ClearRow clearRows();
     Score getScore();
+
     BooleanProperty isGameOverProperty();
     ObjectProperty<int[][]> boardMatrixProperty();
     IntegerProperty scoreProperty();
-
-    void updateBoardMatrix(int[][] newMatrix);
 }

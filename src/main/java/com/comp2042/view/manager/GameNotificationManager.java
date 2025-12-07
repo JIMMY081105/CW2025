@@ -1,7 +1,7 @@
 package com.comp2042.view.manager;
 
-import com.comp2042.data.ClearRow;
 import com.comp2042.data.DownData;
+import com.comp2042.util.GameConstants;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
@@ -11,27 +11,12 @@ import javafx.scene.control.Label;
 public final class GameNotificationManager {
 
     private final Group notificationGroup;
+    private final IntegerProperty bombCountProperty;
+    private int lastBombMilestone = 0;
 
-    public GameNotificationManager(Group notificationGroup) {
+    public GameNotificationManager(Group notificationGroup, IntegerProperty bombCountProperty) {
         this.notificationGroup = notificationGroup;
-    }
-
-    public GameNotificationManager(Group notificationGroup, IntegerProperty scoreProperty) {
-        this.notificationGroup = notificationGroup;
-
-        if (scoreProperty != null) {
-            scoreProperty.addListener((obs, oldVal, newVal) -> {
-                int delta = newVal.intValue() - oldVal.intValue();
-                handleScoreChanged(delta);
-            });
-        }
-    }
-
-    public void handleScoreChanged(int deltaScore) {
-        if (deltaScore <= 0 || notificationGroup == null) {
-            return;
-        }
-        showScoreNotification(deltaScore);
+        this.bombCountProperty = bombCountProperty;
     }
 
     public void handleDownMovement(DownData downData) {
@@ -39,23 +24,28 @@ public final class GameNotificationManager {
             return;
         }
 
-        ClearRow clearRow = downData.getClearRow();
         int bonus = downData.getScoreBonus();
-
-        if (clearRow == null) {
-            return;
-        }
-
-        if (clearRow.getLinesRemoved() > 0 && bonus > 0) {
+        if (bonus > 0) {
             showScoreNotification(bonus);
         }
     }
 
-    public void showBombNotification(int bombsAwarded) {
-        if (bombsAwarded <= 0 || notificationGroup == null) {
+    public void handleScoreChanged(int totalScore) {
+        if (bombCountProperty == null) {
             return;
         }
-        showTextNotification("+" + bombsAwarded + " \uD83D\uDCA3");
+
+        int milestonesReached = totalScore / GameConstants.POINTS_PER_BOMB;
+        int newBombs = milestonesReached - lastBombMilestone;
+
+        if (newBombs <= 0) {
+            return;
+        }
+
+        bombCountProperty.set(bombCountProperty.get() + newBombs);
+        lastBombMilestone = milestonesReached;
+
+        showBombNotification(newBombs);
     }
 
     private void showScoreNotification(int scoreBonus) {
@@ -63,6 +53,13 @@ public final class GameNotificationManager {
             return;
         }
         showTextNotification("+" + scoreBonus);
+    }
+
+    private void showBombNotification(int bombsAwarded) {
+        if (bombsAwarded <= 0 || notificationGroup == null) {
+            return;
+        }
+        showTextNotification("+" + bombsAwarded + " \uD83D\uDCA3");
     }
 
     private void showTextNotification(String text) {

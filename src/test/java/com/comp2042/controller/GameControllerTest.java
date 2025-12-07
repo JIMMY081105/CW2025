@@ -126,10 +126,6 @@ class GameControllerTest {
             return score.scoreProperty();
         }
 
-        @Override
-        public void updateBoardMatrix(int[][] newMatrix) {
-            boardMatrix.set(newMatrix);
-        }
     }
 
     @Test

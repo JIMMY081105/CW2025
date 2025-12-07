@@ -32,7 +32,6 @@ public class SimpleBoard implements Board {
         this.brickGenerator = brickGenerator;
         this.activePiece = new ActivePiece();
         this.score = new Score();
-
         updateBoardMatrix(new int[height][width]);
     }
 
@@ -92,7 +91,7 @@ public class SimpleBoard implements Board {
 
     @Override
     public int[][] getBoardMatrix() {
-        return currentGameMatrix;
+        return MatrixOperations.copy(currentGameMatrix);
     }
 
     @Override
@@ -126,8 +125,11 @@ public class SimpleBoard implements Board {
         return score;
     }
 
-    @Override
-    public void updateBoardMatrix(int[][] newMatrix) {
+    void applyBombMatrix(int[][] newMatrix) {
+        updateBoardMatrix(newMatrix);
+    }
+
+    private void updateBoardMatrix(int[][] newMatrix) {
         this.currentGameMatrix = newMatrix;
         this.boardMatrix.set(newMatrix);
     }

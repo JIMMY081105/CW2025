@@ -6,7 +6,6 @@ import com.comp2042.util.MatrixOperations;
 public final class BombEffectService {
 
     private BombEffectService() {
-
     }
 
     public static ClearRow applyBomb(Board board, int centerX, int centerY) {
@@ -17,7 +16,12 @@ public final class BombEffectService {
         );
 
         ClearRow clearRow = MatrixOperations.checkRemoving(exploded);
-        board.updateBoardMatrix(clearRow.getNewMatrix());
+
+        if (board instanceof SimpleBoard) {
+            SimpleBoard simpleBoard = (SimpleBoard) board;
+            simpleBoard.applyBombMatrix(clearRow.getNewMatrix());
+        }
+
         return clearRow;
     }
 }

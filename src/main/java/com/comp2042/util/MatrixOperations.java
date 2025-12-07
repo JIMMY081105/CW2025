@@ -99,6 +99,11 @@ public final class MatrixOperations {
                 writeRow--;
             }
 
+            while (writeRow >= 0) {
+                newMatrix[writeRow] = new int[width];
+                writeRow--;
+            }
+
             currentMatrix = newMatrix;
         }
 
