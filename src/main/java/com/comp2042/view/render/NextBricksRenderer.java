@@ -1,7 +1,8 @@
 package com.comp2042.view.render;
 
 import com.comp2042.util.BlockTextureProvider;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
+import com.comp2042.util.LayoutMetrics;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -27,10 +28,10 @@ public class NextBricksRenderer {
         nextBricksList.getChildren().clear();
         nextPreviewGrids.clear();
 
-        for (int i = 0; i < GameConstants.NEXT_PREVIEW_COUNT; i++) {
+        for (int i = 0; i < GameConfig.NEXT_PREVIEW_COUNT; i++) {
             GridPane previewGrid = new GridPane();
-            previewGrid.setHgap(GameConstants.NEXT_BRICK_GAP);
-            previewGrid.setVgap(GameConstants.NEXT_BRICK_GAP);
+            previewGrid.setHgap(LayoutMetrics.NEXT_BRICK_GAP);
+            previewGrid.setVgap(LayoutMetrics.NEXT_BRICK_GAP);
             previewGrid.setAlignment(Pos.CENTER);
             nextPreviewGrids.add(previewGrid);
             nextBricksList.getChildren().add(previewGrid);
@@ -67,10 +68,10 @@ public class NextBricksRenderer {
     }
 
     private Rectangle createPreviewRectangle(int colorIndex) {
-        Rectangle rectangle = new Rectangle(GameConstants.NEXT_BRICK_SIZE, GameConstants.NEXT_BRICK_SIZE);
+        Rectangle rectangle = new Rectangle(LayoutMetrics.NEXT_BRICK_SIZE, LayoutMetrics.NEXT_BRICK_SIZE);
         rectangle.setFill(BlockTextureProvider.getPattern(colorIndex));
-        rectangle.setArcHeight(GameConstants.BRICK_ARC_SIZE);
-        rectangle.setArcWidth(GameConstants.BRICK_ARC_SIZE);
+        rectangle.setArcHeight(LayoutMetrics.BRICK_ARC_SIZE);
+        rectangle.setArcWidth(LayoutMetrics.BRICK_ARC_SIZE);
         return rectangle;
     }
 }

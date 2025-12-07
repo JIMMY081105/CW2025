@@ -8,7 +8,7 @@ import com.comp2042.data.ViewDataFactory;
 import com.comp2042.model.brick.Brick;
 import com.comp2042.model.brick.BrickGenerator;
 import com.comp2042.model.brick.RandomBrickGenerator;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
 import com.comp2042.util.MatrixOperations;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -99,7 +99,7 @@ public final class SimpleBoard implements Board {
 
     @Override
     public ViewData getViewData() {
-        List<Brick> nextBricks = brickGenerator.preview(GameConstants.NEXT_PREVIEW_COUNT);
+        List<Brick> nextBricks = brickGenerator.preview(GameConfig.NEXT_PREVIEW_COUNT);
         return ViewDataFactory.createViewData(activePiece, currentGameMatrix, nextBricks);
     }
 

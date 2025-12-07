@@ -2,7 +2,7 @@ package com.comp2042.data;
 
 import com.comp2042.model.ActivePiece;
 import com.comp2042.model.brick.Brick;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public final class ViewDataFactory {
             return previews;
         }
 
-        int maxCount = GameConstants.NEXT_PREVIEW_COUNT;
+        int maxCount = GameConfig.NEXT_PREVIEW_COUNT;
         int size = nextBricks.size();
 
         for (int i = 0; i < maxCount && i < size; i++) {

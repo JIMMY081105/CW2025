@@ -5,7 +5,7 @@ import com.comp2042.data.ViewData;
 import com.comp2042.model.brick.Brick;
 import com.comp2042.model.brick.BrickFactory;
 import com.comp2042.model.brick.BrickGenerator;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayDeque;
@@ -19,10 +19,10 @@ class SimpleBoardTest {
 
     @Test
     void createNewBrick_WhenSpawnBlocked_SetsGameOver() {
-        SimpleBoard board = new SimpleBoard(GameConstants.BOARD_WIDTH, GameConstants.BOARD_HEIGHT);
+        SimpleBoard board = new SimpleBoard(GameConfig.BOARD_WIDTH, GameConfig.BOARD_HEIGHT);
 
         int[][] matrix = board.getBoardMatrix();
-        for (int y = GameConstants.SPAWN_Y; y < GameConstants.SPAWN_Y + 4 && y < matrix.length; y++) {
+        for (int y = GameConfig.SPAWN_Y; y < GameConfig.SPAWN_Y + 4 && y < matrix.length; y++) {
             for (int x = 0; x < matrix[y].length; x++) {
                 matrix[y][x] = 1;
             }
@@ -37,7 +37,7 @@ class SimpleBoardTest {
 
     @Test
     void moveBrickLeftRightDown_UpdatesViewDataPosition() {
-        SimpleBoard boardLeft = new SimpleBoard(GameConstants.BOARD_WIDTH, GameConstants.BOARD_HEIGHT);
+        SimpleBoard boardLeft = new SimpleBoard(GameConfig.BOARD_WIDTH, GameConfig.BOARD_HEIGHT);
         boardLeft.createNewBrick();
         ViewData initialLeft = boardLeft.getViewData();
 
@@ -48,7 +48,7 @@ class SimpleBoardTest {
         assertEquals(initialLeft.getXPosition() - 1, afterLeft.getXPosition());
         assertEquals(initialLeft.getYPosition(), afterLeft.getYPosition());
 
-        SimpleBoard boardRight = new SimpleBoard(GameConstants.BOARD_WIDTH, GameConstants.BOARD_HEIGHT);
+        SimpleBoard boardRight = new SimpleBoard(GameConfig.BOARD_WIDTH, GameConfig.BOARD_HEIGHT);
         boardRight.createNewBrick();
         ViewData initialRight = boardRight.getViewData();
 
@@ -59,7 +59,7 @@ class SimpleBoardTest {
         assertEquals(initialRight.getXPosition() + 1, afterRight.getXPosition());
         assertEquals(initialRight.getYPosition(), afterRight.getYPosition());
 
-        SimpleBoard boardDown = new SimpleBoard(GameConstants.BOARD_WIDTH, GameConstants.BOARD_HEIGHT);
+        SimpleBoard boardDown = new SimpleBoard(GameConfig.BOARD_WIDTH, GameConfig.BOARD_HEIGHT);
         boardDown.createNewBrick();
         ViewData initialDown = boardDown.getViewData();
 
@@ -128,12 +128,12 @@ class SimpleBoardTest {
             bricks.add(BrickFactory.createBrick(i % BrickFactory.getBrickCount()));
         }
         BrickGenerator generator = new FixedBrickGenerator(bricks);
-        SimpleBoard board = new SimpleBoard(GameConstants.BOARD_WIDTH, GameConstants.BOARD_HEIGHT, generator);
+        SimpleBoard board = new SimpleBoard(GameConfig.BOARD_WIDTH, GameConfig.BOARD_HEIGHT, generator);
 
         board.createNewBrick();
         List<int[][]> firstPreview = board.getViewData().getNextBricksData();
 
-        assertEquals(GameConstants.NEXT_PREVIEW_COUNT, firstPreview.size());
+        assertEquals(GameConfig.NEXT_PREVIEW_COUNT, firstPreview.size());
         assertMatrixEquals(bricks.get(1).getShapeMatrix().get(0), firstPreview.get(0));
         assertMatrixEquals(bricks.get(2).getShapeMatrix().get(0), firstPreview.get(1));
 

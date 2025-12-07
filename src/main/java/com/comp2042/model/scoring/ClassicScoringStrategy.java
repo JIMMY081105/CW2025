@@ -1,6 +1,6 @@
 package com.comp2042.model.scoring;
 
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
 
 public final class ClassicScoringStrategy implements ScoringStrategy {
 
@@ -9,7 +9,7 @@ public final class ClassicScoringStrategy implements ScoringStrategy {
         if (steps <= 0) {
             return 0;
         }
-        return steps * GameConstants.MANUAL_DOWN_SCORE;
+        return steps * GameConfig.MANUAL_DOWN_SCORE;
     }
 
     @Override
@@ -17,6 +17,6 @@ public final class ClassicScoringStrategy implements ScoringStrategy {
         if (linesRemoved <= 0) {
             return 0;
         }
-        return GameConstants.SCORE_PER_LINE * linesRemoved * linesRemoved;
+        return GameConfig.SCORE_PER_LINE * linesRemoved * linesRemoved;
     }
 }

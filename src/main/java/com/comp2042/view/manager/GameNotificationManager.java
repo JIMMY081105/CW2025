@@ -1,7 +1,7 @@
 package com.comp2042.view.manager;
 
 import com.comp2042.data.DownData;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
@@ -35,7 +35,7 @@ public final class GameNotificationManager {
             return;
         }
 
-        int milestonesReached = totalScore / GameConstants.POINTS_PER_BOMB;
+        int milestonesReached = totalScore / GameConfig.POINTS_PER_BOMB;
         int newBombs = milestonesReached - lastBombMilestone;
 
         if (newBombs <= 0) {

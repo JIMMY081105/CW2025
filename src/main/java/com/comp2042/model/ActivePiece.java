@@ -2,7 +2,7 @@ package com.comp2042.model;
 
 import com.comp2042.model.brick.Brick;
 import com.comp2042.model.brick.NextShapeInfo;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
 import com.comp2042.util.MatrixOperations;
 
 public class ActivePiece {
@@ -13,8 +13,8 @@ public class ActivePiece {
 
     public void spawn(Brick brick) {
         brickRotator.setBrick(brick);
-        this.x = GameConstants.SPAWN_X;
-        this.y = GameConstants.SPAWN_Y;
+        this.x = GameConfig.SPAWN_X;
+        this.y = GameConfig.SPAWN_Y;
     }
 
     public boolean move(int[][] boardMatrix, int dx, int dy) {

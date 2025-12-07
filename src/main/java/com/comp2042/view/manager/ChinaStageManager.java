@@ -1,7 +1,7 @@
 package com.comp2042.view.manager;
 
 import com.comp2042.data.ChinaStageDescriptionProvider;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
@@ -67,7 +67,7 @@ public final class ChinaStageManager {
         }
 
         int targetIndex = Math.min(
-                newScore / GameConstants.POINTS_PER_CHINA_STAGE,
+                newScore / GameConfig.POINTS_PER_CHINA_STAGE,
                 stages.size() - 1
         );
 
@@ -106,8 +106,8 @@ public final class ChinaStageManager {
         }
 
         int newTick = Math.max(
-                GameConstants.MIN_GAME_TICK_MS,
-                GameConstants.GAME_TICK_MS - (safeIndex * GameConstants.CHINA_STAGE_SPEED_STEP)
+                GameConfig.MIN_GAME_TICK_MS,
+                GameConfig.GAME_TICK_MS - (safeIndex * GameConfig.CHINA_STAGE_SPEED_STEP)
         );
         if (gameTickUpdater != null) {
             gameTickUpdater.accept(newTick);
@@ -120,7 +120,7 @@ public final class ChinaStageManager {
         }
 
         boolean atFinalStage = currentStageIndex >= stages.size() - 1;
-        int completionScore = GameConstants.POINTS_PER_CHINA_STAGE * stages.size();
+        int completionScore = GameConfig.POINTS_PER_CHINA_STAGE * stages.size();
 
         if (atFinalStage && score >= completionScore && onJourneyCompleted != null) {
             onJourneyCompleted.run();

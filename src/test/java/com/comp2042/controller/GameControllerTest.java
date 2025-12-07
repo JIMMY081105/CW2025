@@ -8,7 +8,7 @@ import com.comp2042.event.EventType;
 import com.comp2042.event.MoveEvent;
 import com.comp2042.model.Board;
 import com.comp2042.model.Score;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -154,7 +154,7 @@ class GameControllerTest {
         assertEquals(1, board.moveDownCalls);
         assertEquals(initialCreateCalls, board.createNewBrickCalls,
                 "createNewBrick should not be called when piece can move down");
-        assertEquals(initialScore + GameConstants.MANUAL_DOWN_SCORE,
+        assertEquals(initialScore + GameConfig.MANUAL_DOWN_SCORE,
                 board.getScore().scoreProperty().get(),
                 "Manual down from USER should increase score");
         assertNull(result.getClearRow());
@@ -173,7 +173,7 @@ class GameControllerTest {
 
         int initialScore = board.getScore().scoreProperty().get();
         int initialCreateCalls = board.createNewBrickCalls;
-        int expectedBonus = GameConstants.SCORE_PER_LINE * 2 * 2;
+        int expectedBonus = GameConfig.SCORE_PER_LINE * 2 * 2;
 
         DownData result = controller.onDownEvent(
                 new MoveEvent(EventType.DOWN, EventSource.THREAD));

@@ -2,7 +2,8 @@ package com.comp2042.view.render;
 
 import com.comp2042.data.ViewData;
 import com.comp2042.util.BlockTextureProvider;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
+import com.comp2042.util.LayoutMetrics;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -35,8 +36,8 @@ public class BoardRenderer {
         }
 
         if (this.brickPanel != null) {
-            this.brickPanel.setHgap(GameConstants.GRID_GAP);
-            this.brickPanel.setVgap(GameConstants.GRID_GAP);
+            this.brickPanel.setHgap(LayoutMetrics.GRID_GAP);
+            this.brickPanel.setVgap(LayoutMetrics.GRID_GAP);
         }
     }
 
@@ -53,7 +54,7 @@ public void refreshBackground(int[][] boardMatrix) {
             return;
         }
 
-        for (int i = GameConstants.HIDDEN_BUFFER_ROWS; i < boardMatrix.length; i++) {
+        for (int i = GameConfig.HIDDEN_BUFFER_ROWS; i < boardMatrix.length; i++) {
             for (int j = 0; j < boardMatrix[i].length; j++) {
                 setRectangleData(boardMatrix[i][j], displayMatrix[i][j]);
             }
@@ -83,11 +84,11 @@ public void redrawGridLines() {
 
         gridLinesPane.getChildren().clear();
 
-        double gridWidth = GameConstants.boardPixelWidth();
-        double gridHeight = GameConstants.boardPixelHeight();
-        double step = GameConstants.brickStep();
-        int visibleRows = GameConstants.visibleRows();
-        int cols = GameConstants.BOARD_WIDTH;
+        double gridWidth = LayoutMetrics.boardPixelWidth();
+        double gridHeight = LayoutMetrics.boardPixelHeight();
+        double step = LayoutMetrics.brickStep();
+        int visibleRows = GameConfig.visibleRows();
+        int cols = GameConfig.BOARD_WIDTH;
 
         Color lineColor = Color.rgb(60, 60, 80, 0.6);
 
@@ -123,12 +124,12 @@ private void createBackgroundCells(int[][] boardMatrix) {
 
         displayMatrix = new Rectangle[rows][cols];
 
-        for (int i = GameConstants.HIDDEN_BUFFER_ROWS; i < rows; i++) {
+        for (int i = GameConfig.HIDDEN_BUFFER_ROWS; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE, GameConstants.BRICK_SIZE);
+                Rectangle rectangle = new Rectangle(LayoutMetrics.BRICK_SIZE, LayoutMetrics.BRICK_SIZE);
                 rectangle.setFill(Color.TRANSPARENT);
                 displayMatrix[i][j] = rectangle;
-                gamePanel.add(rectangle, j, i - GameConstants.HIDDEN_BUFFER_ROWS);
+                gamePanel.add(rectangle, j, i - GameConfig.HIDDEN_BUFFER_ROWS);
             }
         }
     }
@@ -147,7 +148,7 @@ private void createBackgroundCells(int[][] boardMatrix) {
 
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
-                Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE, GameConstants.BRICK_SIZE);
+                Rectangle rectangle = new Rectangle(LayoutMetrics.BRICK_SIZE, LayoutMetrics.BRICK_SIZE);
                 setRectangleData(brickData[row][col], rectangle);
                 activeRectangles[row][col] = rectangle;
                 brickPanel.add(rectangle, col, row);
@@ -164,12 +165,12 @@ private void createBackgroundCells(int[][] boardMatrix) {
         double boardOriginY = gamePanel.getLayoutY();
 
         brickPanel.setLayoutX(
-                boardOriginX + brick.getXPosition() * GameConstants.brickStep()
+                boardOriginX + brick.getXPosition() * LayoutMetrics.brickStep()
         );
         brickPanel.setLayoutY(
-                GameConstants.brickPanelYOffset()
+                LayoutMetrics.brickPanelYOffset()
                         + boardOriginY
-                        + brick.getYPosition() * GameConstants.brickStep()
+                        + brick.getYPosition() * LayoutMetrics.brickStep()
         );
     }
 
@@ -188,12 +189,12 @@ private void createBackgroundCells(int[][] boardMatrix) {
             return;
         }
 
-        double step = GameConstants.brickStep();
-        double brickSize = GameConstants.BRICK_SIZE;
+        double step = LayoutMetrics.brickStep();
+        double brickSize = LayoutMetrics.BRICK_SIZE;
         Color ghostOutline = Color.rgb(180, 220, 255, 0.65);
         Color ghostDetail = Color.rgb(180, 220, 255, 0.4);
         double strokeWidth = 1.5;
-        double cornerRadius = Math.max(2, GameConstants.BRICK_ARC_SIZE - 4);
+        double cornerRadius = Math.max(2, LayoutMetrics.BRICK_ARC_SIZE - 4);
         double inset = strokeWidth * 0.5; // let diamond touch the square stroke from inside
 
         for (int row = 0; row < brickData.length; row++) {
@@ -231,7 +232,7 @@ private void createBackgroundCells(int[][] boardMatrix) {
 
         ghostPane.setLayoutX(boardOriginX + brickX * step);
         ghostPane.setLayoutY(
-                GameConstants.brickPanelYOffset()
+                LayoutMetrics.brickPanelYOffset()
                         + boardOriginY
                         + ghostY * step
         );
@@ -239,7 +240,7 @@ private void createBackgroundCells(int[][] boardMatrix) {
 
     private void setRectangleData(int color, Rectangle rectangle) {
         rectangle.setFill(BlockTextureProvider.getPattern(color));
-        rectangle.setArcHeight(GameConstants.BRICK_ARC_SIZE);
-        rectangle.setArcWidth(GameConstants.BRICK_ARC_SIZE);
+        rectangle.setArcHeight(LayoutMetrics.BRICK_ARC_SIZE);
+        rectangle.setArcWidth(LayoutMetrics.BRICK_ARC_SIZE);
     }
 }

@@ -1,6 +1,6 @@
 package com.comp2042.model.brick;
 
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class RandomBrickGenerator implements BrickGenerator {
     private void initializeQueue() {
         lastBrickPoolSize = BrickFactory.getBrickCount();
         brickQueue.clear();
-        for (int i = 0; i < GameConstants.INITIAL_QUEUE_SIZE; i++) {
+        for (int i = 0; i < GameConfig.INITIAL_QUEUE_SIZE; i++) {
             brickQueue.add(createRandomBrick());
         }
     }

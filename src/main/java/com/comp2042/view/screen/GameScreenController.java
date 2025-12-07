@@ -3,7 +3,7 @@ package com.comp2042.view.screen;
 import com.comp2042.event.InputEventListener;
 import com.comp2042.model.Board;
 import com.comp2042.model.brick.BrickFactory;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.LayoutMetrics;
 import com.comp2042.view.GameInputHandler;
 import com.comp2042.view.effect.BoardVibrationEffect;
 import com.comp2042.view.manager.BackgroundMusicManager;
@@ -189,7 +189,7 @@ public class GameScreenController implements Initializable {
                 }
             });
 
-            double initialWidth = Math.max(rootPane.getWidth(), GameConstants.initialWindowWidth());
+            double initialWidth = Math.max(rootPane.getWidth(), LayoutMetrics.initialWindowWidth());
             layoutManager.positionContent(initialWidth);
         }
 

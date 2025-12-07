@@ -1,7 +1,7 @@
 package com.comp2042.model;
 
 import com.comp2042.model.brick.Brick;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -38,8 +38,8 @@ class ActivePieceTest {
 
         activePiece.spawn(brick);
 
-        assertEquals(GameConstants.SPAWN_X, activePiece.getX());
-        assertEquals(GameConstants.SPAWN_Y, activePiece.getY());
+        assertEquals(GameConfig.SPAWN_X, activePiece.getX());
+        assertEquals(GameConfig.SPAWN_Y, activePiece.getY());
 
         int[][] shape = activePiece.getShape();
         assertEquals(2, shape.length);
@@ -49,7 +49,7 @@ class ActivePieceTest {
 
     @Test
     void move_OnEmptyBoard_UpdatesPosition() {
-        int[][] board = new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
+        int[][] board = new int[GameConfig.BOARD_HEIGHT][GameConfig.BOARD_WIDTH];
 
         ActivePiece activePiece = new ActivePiece();
         List<int[][]> shapes = new ArrayList<>();
@@ -76,7 +76,7 @@ class ActivePieceTest {
 
     @Test
     void move_BlockedByBottom_ReturnsFalseAndKeepsPosition() {
-        int[][] board = new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
+        int[][] board = new int[GameConfig.BOARD_HEIGHT][GameConfig.BOARD_WIDTH];
 
         ActivePiece activePiece = new ActivePiece();
         List<int[][]> shapes = new ArrayList<>();
@@ -100,7 +100,7 @@ class ActivePieceTest {
 
     @Test
     void rotateLeft_FreeSpace_ChangesShape() {
-        int[][] board = new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
+        int[][] board = new int[GameConfig.BOARD_HEIGHT][GameConfig.BOARD_WIDTH];
 
         int[][] shape0 = {
                 {1, 0},
@@ -130,9 +130,9 @@ class ActivePieceTest {
 
     @Test
     void rotateLeft_WithCollision_ReturnsFalseAndKeepsShape() {
-        int[][] board = new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
+        int[][] board = new int[GameConfig.BOARD_HEIGHT][GameConfig.BOARD_WIDTH];
 
-        board[GameConstants.SPAWN_Y][GameConstants.SPAWN_X + 1] = 9;
+        board[GameConfig.SPAWN_Y][GameConfig.SPAWN_X + 1] = 9;
 
         int[][] shape0 = {
                 {1, 0},

@@ -3,7 +3,8 @@ package com.comp2042;
 import com.comp2042.controller.GameController;
 import com.comp2042.model.Board;
 import com.comp2042.model.SimpleBoard;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
+import com.comp2042.util.LayoutMetrics;
 import com.comp2042.view.HomeSelection;
 import com.comp2042.view.manager.BackgroundMusicManager;
 import com.comp2042.view.manager.BackgroundVideoManager;
@@ -85,7 +86,7 @@ public class Main extends Application {
 
     private void launchGame(Stage primaryStage, HomeSelection selection) throws Exception {
 
-        Board board = new SimpleBoard(GameConstants.BOARD_WIDTH, GameConstants.BOARD_HEIGHT);
+        Board board = new SimpleBoard(GameConfig.BOARD_WIDTH, GameConfig.BOARD_HEIGHT);
 
         URL location = getClass().getClassLoader().getResource("gameLayout.fxml");
         ResourceBundle resources = null;
@@ -156,12 +157,12 @@ public class Main extends Application {
         if (scene == null) {
             scene = new Scene(
                     root,
-                    GameConstants.initialWindowWidth(),
-                    GameConstants.initialWindowHeight()
+                    LayoutMetrics.initialWindowWidth(),
+                    LayoutMetrics.initialWindowHeight()
             );
             stage.setScene(scene);
-            stage.setMinWidth(GameConstants.initialWindowWidth());
-            stage.setMinHeight(GameConstants.initialWindowHeight());
+            stage.setMinWidth(LayoutMetrics.initialWindowWidth());
+            stage.setMinHeight(LayoutMetrics.initialWindowHeight());
 
             stage.setMaximized(true);
             stage.setFullScreen(true);

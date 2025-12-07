@@ -1,7 +1,8 @@
 package com.comp2042.view.manager;
 
 import com.comp2042.model.Board;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
+import com.comp2042.util.LayoutMetrics;
 import com.comp2042.view.effect.BoardVibrationEffect;
 import com.comp2042.view.render.BoardRenderer;
 import com.comp2042.model.BombEffectService;
@@ -38,7 +39,7 @@ public final class BombManager {
     private Pane bombTargetOverlay;
     private boolean draggingBomb = false;
 
-    private final double gridStep = GameConstants.brickStep();
+    private final double gridStep = LayoutMetrics.brickStep();
 
     public BombManager(StackPane bombToolbar,
                        Label bombEmoji,
@@ -149,13 +150,13 @@ public final class BombManager {
         bombTargetOverlay = new Pane();
         bombTargetOverlay.setMouseTransparent(true);
         bombTargetOverlay.setPrefSize(
-                GameConstants.gridContentWidth(),
-                GameConstants.gridContentHeight()
+                LayoutMetrics.gridContentWidth(),
+                LayoutMetrics.gridContentHeight()
         );
 
         if (gamePanel != null) {
-            double offsetX = GameConstants.gridCenterOffsetX();
-            double offsetY = GameConstants.gridCenterOffsetY();
+            double offsetX = LayoutMetrics.gridCenterOffsetX();
+            double offsetY = LayoutMetrics.gridCenterOffsetY();
             bombTargetOverlay.setLayoutX(gamePanel.getLayoutX() + offsetX);
             bombTargetOverlay.setLayoutY(gamePanel.getLayoutY() + offsetY);
         }
@@ -191,20 +192,20 @@ public final class BombManager {
                 int cellX = gridX + dx;
                 int cellY = gridY + dy;
 
-                if (cellX >= 0 && cellX < GameConstants.BOARD_WIDTH &&
-                        cellY >= 0 && cellY < GameConstants.visibleRows()) {
+                if (cellX >= 0 && cellX < GameConfig.BOARD_WIDTH &&
+                        cellY >= 0 && cellY < GameConfig.visibleRows()) {
 
                     Rectangle highlight = new Rectangle(
                             cellX * gridStep,
                             cellY * gridStep,
-                            GameConstants.BRICK_SIZE,
-                            GameConstants.BRICK_SIZE
+                            LayoutMetrics.BRICK_SIZE,
+                            LayoutMetrics.BRICK_SIZE
                     );
                     highlight.setFill(Color.rgb(255, 100, 50, 0.4));
                     highlight.setStroke(Color.rgb(255, 140, 0, 0.8));
                     highlight.setStrokeWidth(2);
-                    highlight.setArcWidth(GameConstants.BRICK_ARC_SIZE);
-                    highlight.setArcHeight(GameConstants.BRICK_ARC_SIZE);
+                    highlight.setArcWidth(LayoutMetrics.BRICK_ARC_SIZE);
+                    highlight.setArcHeight(LayoutMetrics.BRICK_ARC_SIZE);
                     bombTargetOverlay.getChildren().add(highlight);
                 }
             }
@@ -218,16 +219,16 @@ public final class BombManager {
 
         Point2D local = gamePanel.sceneToLocal(sceneX, sceneY);
 
-        double offsetX = GameConstants.gridCenterOffsetX();
-        double offsetY = GameConstants.gridCenterOffsetY();
+        double offsetX = LayoutMetrics.gridCenterOffsetX();
+        double offsetY = LayoutMetrics.gridCenterOffsetY();
         double adjustedX = local.getX() - offsetX;
         double adjustedY = local.getY() - offsetY;
 
         int gridX = (int) (adjustedX / gridStep);
         int gridY = (int) (adjustedY / gridStep);
 
-        if (gridX >= 0 && gridX < GameConstants.BOARD_WIDTH &&
-                gridY >= 0 && gridY < GameConstants.visibleRows()) {
+        if (gridX >= 0 && gridX < GameConfig.BOARD_WIDTH &&
+                gridY >= 0 && gridY < GameConfig.visibleRows()) {
             return new int[]{gridX, gridY};
         }
         return null;
@@ -238,7 +239,7 @@ public final class BombManager {
             return;
         }
 
-        int actualY = gridY + GameConstants.HIDDEN_BUFFER_ROWS;
+        int actualY = gridY + GameConfig.HIDDEN_BUFFER_ROWS;
         BombEffectService.applyBomb(board, gridX, actualY);
         if (boardRenderer != null) {
             boardRenderer.refreshBackground(board.getBoardMatrix());

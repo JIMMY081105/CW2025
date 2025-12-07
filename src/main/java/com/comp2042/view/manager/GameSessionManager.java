@@ -7,7 +7,7 @@ import com.comp2042.event.EventType;
 import com.comp2042.event.InputEventListener;
 import com.comp2042.event.MoveEvent;
 import com.comp2042.model.Board;
-import com.comp2042.util.GameConstants;
+import com.comp2042.util.GameConfig;
 import com.comp2042.view.GameLoop;
 import com.comp2042.view.effect.BoardVibrationEffect;
 import com.comp2042.view.render.BoardRenderer;
@@ -34,7 +34,7 @@ public final class GameSessionManager {
     private GameLoop gameLoop;
     private InputEventListener eventListener;
 
-    private int currentTickMillis = GameConstants.GAME_TICK_MS;
+    private int currentTickMillis = GameConfig.GAME_TICK_MS;
     private boolean endScreenShown = false;
 
     public GameSessionManager(BooleanProperty pauseProperty,
@@ -264,7 +264,7 @@ public final class GameSessionManager {
     }
 
     public void updateGameLoopSpeed(int newTickMillis) {
-        int clamped = Math.max(GameConstants.MIN_GAME_TICK_MS, newTickMillis);
+        int clamped = Math.max(GameConfig.MIN_GAME_TICK_MS, newTickMillis);
         if (clamped == currentTickMillis) {
             return;
         }
