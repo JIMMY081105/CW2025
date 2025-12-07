@@ -49,7 +49,7 @@ public final class BackgroundVideoManager {
 
     private static MediaPlayer getOrCreatePlayer() {
         if (sharedPlayer == null) {
-            URL videoUrl = BackgroundVideoManager.class.getClassLoader().getResource("images/mainpage.mp4");
+            URL videoUrl = BackgroundVideoManager.class.getClassLoader().getResource("video/mainpage.mp4");
             if (videoUrl == null) {
                 return null;
             }

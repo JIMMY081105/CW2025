@@ -31,7 +31,7 @@ public final class BlockTextureProvider {
         if (fileName == null) {
             return Color.TRANSPARENT;
         }
-        String path = String.format("images/%s.png", fileName);
+        String path = String.format("images/Bricks/%s.png", fileName);
         URL resource = BlockTextureProvider.class.getClassLoader().getResource(path);
         if (resource == null) {
             return Color.GRAY;
@@ -60,4 +60,3 @@ public final class BlockTextureProvider {
     private BlockTextureProvider() {
     }
 }
-

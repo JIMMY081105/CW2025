@@ -428,11 +428,11 @@ public class GameScreenController implements Initializable {
     private void applyTimeAttackBackground(int minutes) {
         String resourcePath = null;
         if (minutes == 1) {
-            resourcePath = "Time stages/1.jpg";
+            resourcePath = "images/time stages/1.jpg";
         } else if (minutes == 3) {
-            resourcePath = "Time stages/3.jpg";
+            resourcePath = "images/time stages/3.jpg";
         } else if (minutes == 5) {
-            resourcePath = "Time stages/5.jpg";
+            resourcePath = "images/time stages/5.jpg";
         }
 
         if (resourcePath != null && layoutManager != null) {
