@@ -22,7 +22,15 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
 
+import java.util.Objects;
+
 public final class GameLayoutManager {
+
+    private static final double VISUAL_BUFFER = 4.0;
+    private static final double BOMB_TOOLBAR_PADDING = 8.0;
+    private static final double BOMB_TOOLBAR_Y_OFFSET = 35.0;
+    private static final double BOMB_TOOLBAR_WIDTH_OFFSET = 50.0;
+    private static final double END_OVERLAY_ANIMATION_MS = 520.0;
 
     private final Pane rootPane;
     private final BorderPane gameBoard;
@@ -55,98 +63,71 @@ public final class GameLayoutManager {
                              StackPane bombToolbar,
                              VBox chinaDescriptionBox) {
 
-        this.rootPane = rootPane;
-        this.gameBoard = gameBoard;
-        this.gamePanel = gamePanel;
-        this.gridLinesPane = gridLinesPane;
-        this.sidePanel = sidePanel;
-        this.timerBox = timerBox;
-        this.nextBricksContainer = nextBricksContainer;
-        this.nextBricksList = nextBricksList;
-        this.notificationGroup = notificationGroup;
-        this.boardRenderer = boardRenderer;
-        this.bombToolbar = bombToolbar;
-        this.chinaDescriptionBox = chinaDescriptionBox;
+        this.rootPane = Objects.requireNonNull(rootPane, "rootPane must not be null");
+        this.gameBoard = Objects.requireNonNull(gameBoard, "gameBoard must not be null");
+        this.gamePanel = Objects.requireNonNull(gamePanel, "gamePanel must not be null");
+        this.gridLinesPane = Objects.requireNonNull(gridLinesPane, "gridLinesPane must not be null");
+        this.sidePanel = Objects.requireNonNull(sidePanel, "sidePanel must not be null");
+        this.timerBox = Objects.requireNonNull(timerBox, "timerBox must not be null");
+        this.nextBricksContainer = Objects.requireNonNull(nextBricksContainer, "nextBricksContainer must not be null");
+        this.nextBricksList = Objects.requireNonNull(nextBricksList, "nextBricksList must not be null");
+        this.notificationGroup = Objects.requireNonNull(notificationGroup, "notificationGroup must not be null");
+        this.boardRenderer = Objects.requireNonNull(boardRenderer, "boardRenderer must not be null");
+        this.bombToolbar = Objects.requireNonNull(bombToolbar, "bombToolbar must not be null");
+        this.chinaDescriptionBox = Objects.requireNonNull(chinaDescriptionBox, "chinaDescriptionBox must not be null");
     }
 
     public void applyInitialLayout() {
         double boardWidth = LayoutMetrics.boardPixelWidth();
         double boardHeight = LayoutMetrics.boardPixelHeight();
 
-        if (gamePanel != null) {
-            gamePanel.setHgap(LayoutMetrics.GRID_GAP);
-            gamePanel.setVgap(LayoutMetrics.GRID_GAP);
-            gamePanel.setPrefSize(boardWidth, boardHeight);
-            gamePanel.setMinSize(boardWidth, boardHeight);
-            gamePanel.setMaxSize(boardWidth, boardHeight);
-        }
+        gamePanel.setHgap(LayoutMetrics.GRID_GAP);
+        gamePanel.setVgap(LayoutMetrics.GRID_GAP);
+        gamePanel.setPrefSize(boardWidth, boardHeight);
+        gamePanel.setMinSize(boardWidth, boardHeight);
+        gamePanel.setMaxSize(boardWidth, boardHeight);
 
-        if (gridLinesPane != null) {
-            gridLinesPane.setPrefSize(boardWidth, boardHeight);
-            gridLinesPane.setMinSize(boardWidth, boardHeight);
-            gridLinesPane.setMaxSize(boardWidth, boardHeight);
-        }
+        gridLinesPane.setPrefSize(boardWidth, boardHeight);
+        gridLinesPane.setMinSize(boardWidth, boardHeight);
+        gridLinesPane.setMaxSize(boardWidth, boardHeight);
 
-        if (gameBoard != null) {
-            double visualBuffer = 4.0;
-            double bufferedWidth = LayoutMetrics.boardAreaWidth() + (visualBuffer * 2);
-            double bufferedHeight = LayoutMetrics.boardAreaHeight() + (visualBuffer * 2);
-            gameBoard.setPrefSize(bufferedWidth, bufferedHeight);
-            gameBoard.setMinSize(bufferedWidth, bufferedHeight);
-            gameBoard.setMaxSize(bufferedWidth, bufferedHeight);
-            gameBoard.setPadding(new Insets(
-                    LayoutMetrics.BOARD_FRAME_THICKNESS,
-                    LayoutMetrics.BOARD_FRAME_THICKNESS,
-                    LayoutMetrics.BOARD_FRAME_THICKNESS + LayoutMetrics.BOTTOM_PADDING,
-                    LayoutMetrics.BOARD_FRAME_THICKNESS
-            ));
-        }
+        double bufferedWidth = LayoutMetrics.boardAreaWidth() + (VISUAL_BUFFER * 2);
+        double bufferedHeight = LayoutMetrics.boardAreaHeight() + (VISUAL_BUFFER * 2);
+        gameBoard.setPrefSize(bufferedWidth, bufferedHeight);
+        gameBoard.setMinSize(bufferedWidth, bufferedHeight);
+        gameBoard.setMaxSize(bufferedWidth, bufferedHeight);
+        gameBoard.setPadding(new Insets(
+                LayoutMetrics.BOARD_FRAME_THICKNESS,
+                LayoutMetrics.BOARD_FRAME_THICKNESS,
+                LayoutMetrics.BOARD_FRAME_THICKNESS + LayoutMetrics.BOTTOM_PADDING,
+                LayoutMetrics.BOARD_FRAME_THICKNESS
+        ));
 
-        if (sidePanel != null) {
-            sidePanel.setSpacing(LayoutMetrics.SIDE_PANEL_SPACING);
-            sidePanel.setPrefWidth(LayoutMetrics.SIDE_PANEL_WIDTH);
-            sidePanel.setPadding(new Insets(LayoutMetrics.SIDE_PANEL_PADDING));
-        }
+        sidePanel.setSpacing(LayoutMetrics.SIDE_PANEL_SPACING);
+        sidePanel.setPrefWidth(LayoutMetrics.SIDE_PANEL_WIDTH);
+        sidePanel.setPadding(new Insets(LayoutMetrics.SIDE_PANEL_PADDING));
 
-        if (timerBox != null) {
-            timerBox.setSpacing(LayoutMetrics.SIDE_PANEL_SPACING / 2.0);
-            timerBox.setPrefWidth(LayoutMetrics.SIDE_PANEL_WIDTH);
-            timerBox.setPadding(new Insets(LayoutMetrics.SIDE_PANEL_PADDING));
-        }
+        timerBox.setSpacing(LayoutMetrics.SIDE_PANEL_SPACING / 2.0);
+        timerBox.setPrefWidth(LayoutMetrics.SIDE_PANEL_WIDTH);
+        timerBox.setPadding(new Insets(LayoutMetrics.SIDE_PANEL_PADDING));
 
-        if (nextBricksContainer != null) {
-            nextBricksContainer.setSpacing(LayoutMetrics.NEXT_PREVIEW_SPACING);
-        }
+        nextBricksContainer.setSpacing(LayoutMetrics.NEXT_PREVIEW_SPACING);
+        nextBricksList.setSpacing(LayoutMetrics.NEXT_PREVIEW_SPACING);
 
-        if (nextBricksList != null) {
-            nextBricksList.setSpacing(LayoutMetrics.NEXT_PREVIEW_SPACING);
-        }
+        notificationGroup.setLayoutY(LayoutMetrics.notificationPanelY());
 
-        if (notificationGroup != null) {
-            notificationGroup.setLayoutY(LayoutMetrics.notificationPanelY());
-        }
+        bombToolbar.setPadding(new Insets(BOMB_TOOLBAR_PADDING));
 
-        if (bombToolbar != null) {
-            bombToolbar.setPadding(new Insets(8));
-        }
+        double chinaBufferedWidth = LayoutMetrics.boardAreaWidth() + (VISUAL_BUFFER * 2);
+        double chinaBufferedHeight = LayoutMetrics.boardAreaHeight() + (VISUAL_BUFFER * 2);
+        chinaDescriptionBox.setPrefSize(chinaBufferedWidth, chinaBufferedHeight);
+        chinaDescriptionBox.setMinSize(chinaBufferedWidth, chinaBufferedHeight);
+        chinaDescriptionBox.setMaxSize(chinaBufferedWidth, chinaBufferedHeight);
 
-        if (chinaDescriptionBox != null) {
-            double visualBuffer = 4.0;
-            double bufferedWidth = LayoutMetrics.boardAreaWidth() + (visualBuffer * 2);
-            double bufferedHeight = LayoutMetrics.boardAreaHeight() + (visualBuffer * 2);
-            chinaDescriptionBox.setPrefSize(bufferedWidth, bufferedHeight);
-            chinaDescriptionBox.setMinSize(bufferedWidth, bufferedHeight);
-            chinaDescriptionBox.setMaxSize(bufferedWidth, bufferedHeight);
-        }
+        rootPane.setPrefWidth(LayoutMetrics.initialWindowWidth());
+        rootPane.setPrefHeight(LayoutMetrics.initialWindowHeight());
 
-        if (rootPane != null) {
-            rootPane.setPrefWidth(LayoutMetrics.initialWindowWidth());
-            rootPane.setPrefHeight(LayoutMetrics.initialWindowHeight());
-        }
-
-        if (boardRenderer != null) {
-            boardRenderer.redrawGridLines();
-        }
+        boardRenderer.redrawGridLines();
     }
 
     public void positionContent(double availableWidth) {
@@ -165,62 +146,45 @@ public final class GameLayoutManager {
 
         double boardTop = LayoutMetrics.BOARD_TOP_PADDING;
 
-        if (gamePanel != null) {
-            gamePanel.setLayoutX(boardLeft);
-            gamePanel.setLayoutY(boardTop);
-        }
+        gamePanel.setLayoutX(boardLeft);
+        gamePanel.setLayoutY(boardTop);
 
-        if (gridLinesPane != null) {
-            gridLinesPane.setLayoutX(boardLeft);
-            gridLinesPane.setLayoutY(boardTop);
-        }
+        gridLinesPane.setLayoutX(boardLeft);
+        gridLinesPane.setLayoutY(boardTop);
 
-        double visualBuffer = 4.0;
-        if (gameBoard != null) {
-            gameBoard.setLayoutX(boardLeft - LayoutMetrics.BOARD_FRAME_THICKNESS - visualBuffer);
-            gameBoard.setLayoutY(boardTop - LayoutMetrics.BOARD_FRAME_THICKNESS - visualBuffer);
-        }
+        gameBoard.setLayoutX(boardLeft - LayoutMetrics.BOARD_FRAME_THICKNESS - VISUAL_BUFFER);
+        gameBoard.setLayoutY(boardTop - LayoutMetrics.BOARD_FRAME_THICKNESS - VISUAL_BUFFER);
 
         double sidePanelLeft = boardLeft + boardAreaWidth + LayoutMetrics.PANEL_GAP;
-        if (sidePanel != null) {
-            sidePanel.setLayoutX(sidePanelLeft);
-            sidePanel.setLayoutY(boardTop);
-        }
+        sidePanel.setLayoutX(sidePanelLeft);
+        sidePanel.setLayoutY(boardTop);
 
-        if (timerBox != null) {
-            double timerLeft = Math.max(
-                    LayoutMetrics.SIDE_PANEL_PADDING,
-                    boardLeft - LayoutMetrics.SIDE_PANEL_WIDTH - LayoutMetrics.PANEL_GAP
-            );
-            timerBox.setLayoutX(timerLeft);
-            timerBox.setLayoutY(boardTop);
-        }
+        double timerLeft = Math.max(
+                LayoutMetrics.SIDE_PANEL_PADDING,
+                boardLeft - LayoutMetrics.SIDE_PANEL_WIDTH - LayoutMetrics.PANEL_GAP
+        );
+        timerBox.setLayoutX(timerLeft);
+        timerBox.setLayoutY(boardTop);
 
-        if (notificationGroup != null) {
-            notificationGroup.setLayoutX(sidePanelLeft);
-        }
+        notificationGroup.setLayoutX(sidePanelLeft);
 
-        if (bombToolbar != null) {
-            double bombToolbarY = boardTop + LayoutMetrics.boardPixelHeight() + 35;
-            double bombToolbarX = boardLeft + (LayoutMetrics.boardPixelWidth() - 50) / 2.0;
-            bombToolbar.setLayoutX(bombToolbarX);
-            bombToolbar.setLayoutY(bombToolbarY);
-        }
+        double bombToolbarY = boardTop + LayoutMetrics.boardPixelHeight() + BOMB_TOOLBAR_Y_OFFSET;
+        double bombToolbarX = boardLeft + (LayoutMetrics.boardPixelWidth() - BOMB_TOOLBAR_WIDTH_OFFSET) / 2.0;
+        bombToolbar.setLayoutX(bombToolbarX);
+        bombToolbar.setLayoutY(bombToolbarY);
 
-        if (chinaDescriptionBox != null) {
-            double bufferedWidth = chinaDescriptionBox.getPrefWidth();
-            double descLeft = Math.max(
-                    LayoutMetrics.SIDE_PANEL_PADDING,
-                    boardLeft - bufferedWidth - LayoutMetrics.PANEL_GAP
-            );
-            double descTop = boardTop - LayoutMetrics.BOARD_FRAME_THICKNESS - visualBuffer;
-            chinaDescriptionBox.setLayoutX(descLeft);
-            chinaDescriptionBox.setLayoutY(descTop);
-        }
+        double descBufferedWidth = chinaDescriptionBox.getPrefWidth();
+        double descLeft = Math.max(
+                LayoutMetrics.SIDE_PANEL_PADDING,
+                boardLeft - descBufferedWidth - LayoutMetrics.PANEL_GAP
+        );
+        double descTop = boardTop - LayoutMetrics.BOARD_FRAME_THICKNESS - VISUAL_BUFFER;
+        chinaDescriptionBox.setLayoutX(descLeft);
+        chinaDescriptionBox.setLayoutY(descTop);
     }
 
     public void applyBackgroundImage(String resourcePath) {
-        if (rootPane == null || resourcePath == null || resourcePath.isBlank()) {
+        if (resourcePath == null || resourcePath.isBlank()) {
             return;
         }
 
@@ -244,13 +208,6 @@ public final class GameLayoutManager {
                 size
         );
         rootPane.setBackground(new Background(backgroundImage));
-        rootPane.setStyle(
-                "-fx-background-image: url('" + url + "');"
-                        + "-fx-background-size: cover;"
-                        + "-fx-background-repeat: no-repeat;"
-                        + "-fx-background-position: center center;"
-                        + "-fx-background-color: transparent;"
-        );
     }
 
     public void setupEndOverlay(StackPane endOverlay,
@@ -269,10 +226,8 @@ public final class GameLayoutManager {
         this.endOverlay.setVisible(false);
         this.endOverlay.setManaged(false);
 
-        if (rootPane != null) {
-            this.endOverlay.prefWidthProperty().bind(rootPane.widthProperty());
-            this.endOverlay.prefHeightProperty().bind(rootPane.heightProperty());
-        }
+        this.endOverlay.prefWidthProperty().bind(rootPane.widthProperty());
+        this.endOverlay.prefHeightProperty().bind(rootPane.heightProperty());
 
         if (this.endBackgroundVideo != null) {
             BackgroundVideoManager.attach(this.endBackgroundVideo, this.endOverlay);
@@ -305,12 +260,15 @@ public final class GameLayoutManager {
         }
 
         double width = LayoutMetrics.initialWindowWidth();
-        if (rootPane != null && rootPane.getWidth() > 0) {
+        if (rootPane.getWidth() > 0) {
             width = rootPane.getWidth();
         }
 
         endOverlay.setTranslateX(-width);
-        TranslateTransition slideIn = new TranslateTransition(Duration.millis(520), endOverlay);
+        TranslateTransition slideIn = new TranslateTransition(
+                Duration.millis(END_OVERLAY_ANIMATION_MS),
+                endOverlay
+        );
         slideIn.setFromX(-width);
         slideIn.setToX(0);
         slideIn.setInterpolator(Interpolator.EASE_OUT);
