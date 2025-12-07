@@ -19,8 +19,9 @@ public final class BrickFactory {
             PlusBrick::new
     );
 
-    private BrickFactory() {
+    private static final int PLUS_BRICK_INDEX = BRICK_SUPPLIERS.size() - 1;
 
+    private BrickFactory() {
     }
 
     public static Brick createBrick(int id) {
@@ -43,6 +44,6 @@ public final class BrickFactory {
         if (plusEnabled) {
             return BRICK_SUPPLIERS;
         }
-        return BRICK_SUPPLIERS.subList(0, BRICK_SUPPLIERS.size() - 1);
+        return BRICK_SUPPLIERS.subList(0, PLUS_BRICK_INDEX);
     }
 }
