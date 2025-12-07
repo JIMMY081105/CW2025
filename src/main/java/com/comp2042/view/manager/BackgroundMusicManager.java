@@ -5,6 +5,10 @@ import javafx.scene.media.MediaPlayer;
 
 public final class BackgroundMusicManager {
 
+    private static final String MAIN_MUSIC_PATH = "audio/mainmusic.mp3";
+    private static final String EXPLORE_CHINA_MUSIC_PATH = "audio/explorechina.mp3";
+    private static final String TIME_RACING_MUSIC_PATH = "audio/timeracing.mp3";
+
     private static MediaPlayer currentPlayer;
     private static String currentTrack;
     private static double volume = 0.6;
@@ -13,15 +17,15 @@ public final class BackgroundMusicManager {
     }
 
     public static void playMainMusic() {
-        playLoop("audio/mainmusic.mp3");
+        playLoop(MAIN_MUSIC_PATH);
     }
 
     public static void playExploreChinaMusic() {
-        playLoop("audio/explorechina.mp3");
+        playLoop(EXPLORE_CHINA_MUSIC_PATH);
     }
 
     public static void playTimeRacingMusic() {
-        playLoop("audio/timeracing.mp3");
+        playLoop(TIME_RACING_MUSIC_PATH);
     }
 
     public static void stop() {
