@@ -16,7 +16,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-public class SimpleBoard implements Board {
+public final class SimpleBoard implements Board {
 
     private final BrickGenerator brickGenerator;
     private final ActivePiece activePiece;
@@ -131,7 +131,8 @@ public class SimpleBoard implements Board {
     }
 
     private void updateBoardMatrix(int[][] newMatrix) {
-        this.currentGameMatrix = newMatrix;
-        this.boardMatrix.set(newMatrix);
+        int[][] copy = MatrixOperations.copy(newMatrix);
+        this.currentGameMatrix = copy;
+        this.boardMatrix.set(copy);
     }
 }
