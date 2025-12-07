@@ -16,18 +16,22 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
-import javafx.stage.StageStyle;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
-import java.net.URL;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ResourceBundle;
 
 public class Main extends Application {
 
     private static final double HOME_UI_SCALE = 1.3;
     private static final double SELECTION_UI_SCALE = 1.3;
-    private static final double GAME_UI_SCALE = 1.0; 
+    private static final double GAME_UI_SCALE = 1.0;
+
+    private static final String OPTION_1_MINUTE_SPRINT = "1 Minute Sprint";
+    private static final String OPTION_3_MINUTE_RUSH = "3 Minute Rush";
+    private static final String OPTION_5_MINUTE_MARATHON = "5 Minute Marathon";
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -37,6 +41,10 @@ public class Main extends Application {
 
     private void showHome(Stage primaryStage) throws IOException {
         URL homeLocation = getClass().getClassLoader().getResource("home_layout.fxml");
+        if (homeLocation == null) {
+            throw new IllegalStateException("Missing FXML: home_layout.fxml");
+        }
+
         FXMLLoader homeLoader = new FXMLLoader(homeLocation);
         Parent homeRoot = homeLoader.load();
         HomeController homeController = homeLoader.getController();
@@ -51,31 +59,25 @@ public class Main extends Application {
     private void showModeSelection(Stage primaryStage, HomeSelection.Mode mode) {
         try {
             if (mode == HomeSelection.Mode.COUNTRY_EXPLORE) {
-                try {
-                    launchGame(primaryStage, new HomeSelection(HomeSelection.Mode.COUNTRY_EXPLORE, "China"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                safeLaunchGame(primaryStage,
+                        new HomeSelection(HomeSelection.Mode.COUNTRY_EXPLORE, "China"));
                 return;
             }
 
             URL selectionLocation = getClass().getClassLoader().getResource("selection_layout.fxml");
+            if (selectionLocation == null) {
+                throw new IllegalStateException("Missing FXML: selection_layout.fxml");
+            }
+
             FXMLLoader selectionLoader = new FXMLLoader(selectionLocation);
             Parent selectionRoot = selectionLoader.load();
             ModeSelectionController controller = selectionLoader.getController();
-            controller.configure(mode, selection -> {
-                try {
-                    launchGame(primaryStage, selection);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }, () -> {
-                try {
-                    showHome(primaryStage);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+
+            controller.configure(
+                    mode,
+                    selection -> safeLaunchGame(primaryStage, selection),
+                    () -> safeShowHome(primaryStage)
+            );
 
             applyScale(selectionRoot, SELECTION_UI_SCALE);
             setSceneAndMaximize(primaryStage, selectionRoot);
@@ -85,17 +87,19 @@ public class Main extends Application {
     }
 
     private void launchGame(Stage primaryStage, HomeSelection selection) throws Exception {
-
         Board board = new SimpleBoard(GameConfig.BOARD_WIDTH, GameConfig.BOARD_HEIGHT);
 
         URL location = getClass().getClassLoader().getResource("gameLayout.fxml");
+        if (location == null) {
+            throw new IllegalStateException("Missing FXML: gameLayout.fxml");
+        }
+
         ResourceBundle resources = null;
         FXMLLoader fxmlLoader = new FXMLLoader(location, resources);
         Parent root = fxmlLoader.load();
         GameScreenController gameScreenController = fxmlLoader.getController();
 
-
-        applyScale(root, GAME_UI_SCALE); 
+        applyScale(root, GAME_UI_SCALE);
         setSceneAndMaximize(primaryStage, root);
 
         GameController gameController = new GameController(board);
@@ -104,20 +108,8 @@ public class Main extends Application {
         gameScreenController.bindScore(board.scoreProperty());
 
         gameScreenController.setNavigationHandlers(
-                () -> {
-                    try {
-                        showHome(primaryStage);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                },
-                () -> {
-                    try {
-                        launchGame(primaryStage, selection);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                () -> safeShowHome(primaryStage),
+                () -> safeLaunchGame(primaryStage, selection)
         );
 
         applySelectionToGame(selection, gameScreenController);
@@ -138,9 +130,9 @@ public class Main extends Application {
             gameScreenController.showModeLabel("Time Racing: " + selection.option());
 
             int minutes = switch (selection.option()) {
-                case "1 Minute Sprint" -> 1;
-                case "3 Minute Rush" -> 3;
-                case "5 Minute Marathon" -> 5;
+                case OPTION_1_MINUTE_SPRINT -> 1;
+                case OPTION_3_MINUTE_RUSH -> 3;
+                case OPTION_5_MINUTE_MARATHON -> 5;
                 default -> 0;
             };
 
@@ -150,7 +142,6 @@ public class Main extends Application {
             }
         }
     }
-
 
     private void setSceneAndMaximize(Stage stage, Parent root) {
         Scene scene = stage.getScene();
@@ -177,6 +168,23 @@ public class Main extends Application {
         if (root != null) {
             root.setScaleX(scale);
             root.setScaleY(scale);
+        }
+    }
+
+
+    private void safeLaunchGame(Stage primaryStage, HomeSelection selection) {
+        try {
+            launchGame(primaryStage, selection);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void safeShowHome(Stage primaryStage) {
+        try {
+            showHome(primaryStage);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
