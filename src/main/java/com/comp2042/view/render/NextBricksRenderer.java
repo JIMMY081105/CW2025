@@ -10,21 +10,18 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class NextBricksRenderer {
+public final class NextBricksRenderer {
 
     private final VBox nextBricksList;
     private final List<GridPane> nextPreviewGrids = new ArrayList<>();
 
     public NextBricksRenderer(VBox nextBricksList) {
-        this.nextBricksList = nextBricksList;
+        this.nextBricksList = Objects.requireNonNull(nextBricksList, "nextBricksList must not be null");
     }
 
     public void initialisePanels() {
-        if (nextBricksList == null) {
-            return;
-        }
-
         nextBricksList.getChildren().clear();
         nextPreviewGrids.clear();
 
@@ -39,9 +36,6 @@ public class NextBricksRenderer {
     }
 
     public void renderNextBricks(List<int[][]> nextBricksData) {
-        if (nextBricksList == null) {
-            return;
-        }
         if (nextPreviewGrids.isEmpty()) {
             initialisePanels();
         }
