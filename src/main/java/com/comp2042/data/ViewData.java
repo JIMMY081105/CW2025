@@ -14,7 +14,7 @@ public final class ViewData {
     private final List<int[][]> nextBricksData;
 
     public ViewData(int[][] brickData, int xPosition, int yPosition, int ghostYPosition, List<int[][]> nextBricksData) {
-        this.brickData = brickData;
+        this.brickData = MatrixOperations.copy(brickData);
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.ghostYPosition = ghostYPosition;
@@ -41,7 +41,7 @@ public final class ViewData {
         return copyNextBricks(nextBricksData);
     }
 
-    private List<int[][]> copyNextBricks(List<int[][]> source) {
+    private static List<int[][]> copyNextBricks(List<int[][]> source) {
         if (source == null || source.isEmpty()) {
             return Collections.emptyList();
         }
