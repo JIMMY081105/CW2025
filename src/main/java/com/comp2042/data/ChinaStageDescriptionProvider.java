@@ -37,7 +37,7 @@ public final class ChinaStageDescriptionProvider {
     private static final List<ChinaStage> STAGES = loadStages();
 
     private ChinaStageDescriptionProvider() {
-        // Utility class, no instances
+        
     }
 
     public static List<ChinaStage> getStages() {

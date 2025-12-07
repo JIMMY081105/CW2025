@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 
 public class ModeSelectionController {
 
-    // Font config
+    
     private static final String DIGITAL_FONT_RESOURCE = "digital.ttf";
     private static final double DIGITAL_FONT_SIZE = 38.0;
     
