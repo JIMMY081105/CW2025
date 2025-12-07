@@ -8,7 +8,21 @@ import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.util.Objects;
+
 public final class TimeAttackManager {
+
+    private static final int ONE_MINUTE = 1;
+    private static final int THREE_MINUTES = 3;
+    private static final int FIVE_MINUTES = 5;
+
+    private static final String CLASSIC_MODE_TITLE = "CLASSIC MODE";
+    private static final String TIME_ATTACK_TITLE_SUFFIX = " MIN TIME ATTACK";
+    private static final String BEST_SCORE_LABEL = "BEST SCORE";
+    private static final String BEST_1_MIN_LABEL = "BEST 1 MIN";
+    private static final String BEST_3_MIN_LABEL = "BEST 3 MIN";
+    private static final String BEST_5_MIN_LABEL = "BEST 5 MIN";
+    private static final String DEFAULT_TIME_DISPLAY = "--:--";
 
     private final Label timerTitleLabel;
     private final Text timerValueLabel;
@@ -43,8 +57,8 @@ public final class TimeAttackManager {
         this.timerValueLabel = timerValueLabel;
         this.bestScoreTitleLabel = bestScoreTitleLabel;
         this.bestScoreValueLabel = bestScoreValueLabel;
-        this.pauseProperty = pauseProperty;
-        this.gameOverProperty = gameOverProperty;
+        this.pauseProperty = Objects.requireNonNull(pauseProperty, "pauseProperty must not be null");
+        this.gameOverProperty = Objects.requireNonNull(gameOverProperty, "gameOverProperty must not be null");
 
         disableTimeAttack();
     }
@@ -74,7 +88,7 @@ public final class TimeAttackManager {
         this.remainingSeconds = totalSeconds;
 
         if (timerTitleLabel != null) {
-            timerTitleLabel.setText(minutes + " MIN TIME ATTACK");
+            timerTitleLabel.setText(configuredMinutes + TIME_ATTACK_TITLE_SUFFIX);
         }
 
         updateTimerLabel();
@@ -123,10 +137,10 @@ public final class TimeAttackManager {
         this.remainingSeconds = 0;
 
         if (timerTitleLabel != null) {
-            timerTitleLabel.setText("CLASSIC MODE");
+            timerTitleLabel.setText(CLASSIC_MODE_TITLE);
         }
         if (timerValueLabel != null) {
-            timerValueLabel.setText("--:--");
+            timerValueLabel.setText(DEFAULT_TIME_DISPLAY);
         }
         updateBestScoreLabel();
         if (timeline != null) {
@@ -182,17 +196,17 @@ public final class TimeAttackManager {
 
         int currentScore = boundScoreProperty.get();
         switch (configuredMinutes) {
-            case 1:
+            case ONE_MINUTE:
                 if (currentScore > bestScore1Min) {
                     bestScore1Min = currentScore;
                 }
                 break;
-            case 3:
+            case THREE_MINUTES:
                 if (currentScore > bestScore3Min) {
                     bestScore3Min = currentScore;
                 }
                 break;
-            case 5:
+            case FIVE_MINUTES:
                 if (currentScore > bestScore5Min) {
                     bestScore5Min = currentScore;
                 }
@@ -210,20 +224,20 @@ public final class TimeAttackManager {
         int value;
 
         switch (configuredMinutes) {
-            case 1:
-                label = "BEST 1 MIN";
+            case ONE_MINUTE:
+                label = BEST_1_MIN_LABEL;
                 value = bestScore1Min;
                 break;
-            case 3:
-                label = "BEST 3 MIN";
+            case THREE_MINUTES:
+                label = BEST_3_MIN_LABEL;
                 value = bestScore3Min;
                 break;
-            case 5:
-                label = "BEST 5 MIN";
+            case FIVE_MINUTES:
+                label = BEST_5_MIN_LABEL;
                 value = bestScore5Min;
                 break;
             default:
-                label = "BEST SCORE";
+                label = BEST_SCORE_LABEL;
                 value = 0;
         }
 
