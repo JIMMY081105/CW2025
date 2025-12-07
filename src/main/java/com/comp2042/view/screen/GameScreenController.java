@@ -40,6 +40,15 @@ import java.util.ResourceBundle;
 
 public class GameScreenController implements Initializable {
 
+    private static final int ONE_MINUTE = 1;
+    private static final int THREE_MINUTES = 3;
+    private static final int FIVE_MINUTES = 5;
+
+    private static final String TIME_STAGE_BACKGROUND_1 = "images/time stages/1.jpg";
+    private static final String TIME_STAGE_BACKGROUND_3 = "images/time stages/3.jpg";
+    private static final String TIME_STAGE_BACKGROUND_5 = "images/time stages/5.jpg";
+    private static final String DIGITAL_FONT_RESOURCE = "digital.ttf";
+
     @FXML
     private Pane rootPane;
 
@@ -155,10 +164,12 @@ public class GameScreenController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Font.loadFont(
-                getClass().getClassLoader().getResource("digital.ttf").toExternalForm(),
-                38
-        );
+        URL fontUrl = getClass().getClassLoader().getResource(DIGITAL_FONT_RESOURCE);
+        if (fontUrl != null) {
+            Font.loadFont(fontUrl.toExternalForm(), 38);
+        } else {
+            System.err.println("Missing font resource: " + DIGITAL_FONT_RESOURCE);
+        }
 
         boardRenderer = new BoardRenderer(gamePanel, brickPanel, ghostPane, gridLinesPane);
         nextBricksRenderer = new NextBricksRenderer(nextBricksList);
@@ -360,10 +371,6 @@ public class GameScreenController implements Initializable {
     }
 
     public void configureExploreChinaMode() {
-        if (chinaStageManager == null || sessionManager == null) {
-            return;
-        }
-
         BrickFactory.setPlusEnabled(false);
         BackgroundMusicManager.playExploreChinaMusic();
 
@@ -378,14 +385,12 @@ public class GameScreenController implements Initializable {
             bestScoreBox.setManaged(false);
         }
 
-        chinaStageManager.enableExploreMode();
+        if (chinaStageManager != null) {
+            chinaStageManager.enableExploreMode();
+        }
     }
 
     public void configureTimeAttack(int minutes) {
-        if (timeAttackManager == null) {
-            return;
-        }
-
         timeAttackManager.configure(minutes);
 
         if (minutes <= 0) {
@@ -412,7 +417,7 @@ public class GameScreenController implements Initializable {
         applyTimeAttackBackground(minutes);
 
         BackgroundMusicManager.playTimeRacingMusic();
-        BrickFactory.setPlusEnabled(minutes == 5);
+        BrickFactory.setPlusEnabled(minutes == FIVE_MINUTES);
 
         if (sessionManager != null && sessionManager.isRunning()) {
             timeAttackManager.start();
@@ -427,12 +432,12 @@ public class GameScreenController implements Initializable {
 
     private void applyTimeAttackBackground(int minutes) {
         String resourcePath = null;
-        if (minutes == 1) {
-            resourcePath = "images/time stages/1.jpg";
-        } else if (minutes == 3) {
-            resourcePath = "images/time stages/3.jpg";
-        } else if (minutes == 5) {
-            resourcePath = "images/time stages/5.jpg";
+        if (minutes == ONE_MINUTE) {
+            resourcePath = TIME_STAGE_BACKGROUND_1;
+        } else if (minutes == THREE_MINUTES) {
+            resourcePath = TIME_STAGE_BACKGROUND_3;
+        } else if (minutes == FIVE_MINUTES) {
+            resourcePath = TIME_STAGE_BACKGROUND_5;
         }
 
         if (resourcePath != null && layoutManager != null) {
