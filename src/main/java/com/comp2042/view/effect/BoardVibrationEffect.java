@@ -11,7 +11,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BoardVibrationEffect {
+public final class BoardVibrationEffect {
+
+    private static final double STEP_1_TIME_MS = 30;
+    private static final double STEP_2_TIME_MS = 60;
+    private static final double STEP_3_TIME_MS = 90;
+    private static final double STEP_4_TIME_MS = 120;
+    private static final double STEP_5_TIME_MS = 150;
+
+    private static final double OFFSET_INITIAL = 0;
+    private static final double OFFSET_STEP_1 = 8;
+    private static final double OFFSET_STEP_2 = -6;
+    private static final double OFFSET_STEP_3 = 5;
+    private static final double OFFSET_STEP_4 = -3;
+    private static final double OFFSET_FINAL = 0;
 
     private final List<Node> targets = new ArrayList<>();
     private Timeline vibrationTimeline;
@@ -35,12 +48,12 @@ public class BoardVibrationEffect {
         }
 
         vibrationTimeline = new Timeline(
-                new KeyFrame(Duration.ZERO, keyValuesForTargets(0)),
-                new KeyFrame(Duration.millis(30), keyValuesForTargets(8)),
-                new KeyFrame(Duration.millis(60), keyValuesForTargets(-6)),
-                new KeyFrame(Duration.millis(90), keyValuesForTargets(5)),
-                new KeyFrame(Duration.millis(120), keyValuesForTargets(-3)),
-                new KeyFrame(Duration.millis(150), keyValuesForTargets(0))
+                new KeyFrame(Duration.ZERO, keyValuesForTargets(OFFSET_INITIAL)),
+                new KeyFrame(Duration.millis(STEP_1_TIME_MS), keyValuesForTargets(OFFSET_STEP_1)),
+                new KeyFrame(Duration.millis(STEP_2_TIME_MS), keyValuesForTargets(OFFSET_STEP_2)),
+                new KeyFrame(Duration.millis(STEP_3_TIME_MS), keyValuesForTargets(OFFSET_STEP_3)),
+                new KeyFrame(Duration.millis(STEP_4_TIME_MS), keyValuesForTargets(OFFSET_STEP_4)),
+                new KeyFrame(Duration.millis(STEP_5_TIME_MS), keyValuesForTargets(OFFSET_FINAL))
         );
         vibrationTimeline.setOnFinished(event -> resetTargets());
         vibrationTimeline.play();
