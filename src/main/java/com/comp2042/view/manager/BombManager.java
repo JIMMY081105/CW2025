@@ -17,7 +17,19 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.util.Objects;
+
 public final class BombManager {
+
+    private static final double ACTIVE_OPACITY = 1.0;
+    private static final double DISABLED_OPACITY = 0.4;
+    private static final double DRAGGING_OPACITY = 0.5;
+
+    private static final double HIGHLIGHT_STROKE_WIDTH = 2.0;
+    private static final Color HIGHLIGHT_FILL =
+            Color.rgb(255, 100, 50, 0.4);
+    private static final Color HIGHLIGHT_STROKE =
+            Color.rgb(255, 140, 0, 0.8);
 
     private final StackPane bombToolbar;
     private final Label bombEmoji;
@@ -58,8 +70,8 @@ public final class BombManager {
         this.bombCountLabel = bombCountLabel;
         this.gameLayer = gameLayer;
         this.gamePanel = gamePanel;
-        this.bombCount = bombCount;
-        this.isGameOver = isGameOver;
+        this.bombCount = Objects.requireNonNull(bombCount, "bombCount must not be null");
+        this.isGameOver = Objects.requireNonNull(isGameOver, "isGameOver must not be null");
         this.boardRenderer = boardRenderer;
         this.vibrationEffect = vibrationEffect;
         this.onBombDragStarted = onBombDragStarted;
@@ -96,7 +108,7 @@ public final class BombManager {
         createOverlay();
 
         if (bombToolbar != null) {
-            bombToolbar.setOpacity(0.5);
+            bombToolbar.setOpacity(DRAGGING_OPACITY);
         }
 
         event.consume();
@@ -125,7 +137,7 @@ public final class BombManager {
         draggingBomb = false;
 
         if (bombToolbar != null) {
-            bombToolbar.setOpacity(bombCount.get() > 0 ? 1.0 : 0.4);
+            bombToolbar.setOpacity(bombCount.get() > 0 ? ACTIVE_OPACITY : DISABLED_OPACITY);
         }
 
         int[] grid = screenToGrid(event.getSceneX(), event.getSceneY());
@@ -201,9 +213,9 @@ public final class BombManager {
                             LayoutMetrics.BRICK_SIZE,
                             LayoutMetrics.BRICK_SIZE
                     );
-                    highlight.setFill(Color.rgb(255, 100, 50, 0.4));
-                    highlight.setStroke(Color.rgb(255, 140, 0, 0.8));
-                    highlight.setStrokeWidth(2);
+                    highlight.setFill(HIGHLIGHT_FILL);
+                    highlight.setStroke(HIGHLIGHT_STROKE);
+                    highlight.setStrokeWidth(HIGHLIGHT_STROKE_WIDTH);
                     highlight.setArcWidth(LayoutMetrics.BRICK_ARC_SIZE);
                     highlight.setArcHeight(LayoutMetrics.BRICK_ARC_SIZE);
                     bombTargetOverlay.getChildren().add(highlight);
@@ -241,6 +253,7 @@ public final class BombManager {
 
         int actualY = gridY + GameConfig.HIDDEN_BUFFER_ROWS;
         BombEffectService.applyBomb(board, gridX, actualY);
+
         if (boardRenderer != null) {
             boardRenderer.refreshBackground(board.getBoardMatrix());
         }
@@ -260,7 +273,7 @@ public final class BombManager {
             bombCountLabel.setVisible(count > 0);
         }
 
-        double opacity = (count > 0) ? 1.0 : 0.4;
+        double opacity = (count > 0) ? ACTIVE_OPACITY : DISABLED_OPACITY;
 
         if (bombToolbar != null) {
             bombToolbar.setOpacity(opacity);
