@@ -12,7 +12,18 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
+import java.util.Objects;
+
 public class BoardRenderer {
+
+    private static final Color GRID_LINE_COLOR = Color.rgb(60, 60, 80, 0.6);
+    private static final double GRID_LINE_WIDTH = 1.0;
+
+    private static final Color GHOST_OUTLINE_COLOR = Color.rgb(180, 220, 255, 0.65);
+    private static final Color GHOST_DETAIL_COLOR = Color.rgb(180, 220, 255, 0.4);
+    private static final double GHOST_STROKE_WIDTH = 1.5;
+    private static final double GHOST_CORNER_RADIUS_MIN = 2.0;
+    private static final double GHOST_CORNER_RADIUS_OFFSET = 4.0;
 
     private final GridPane gamePanel;
     private final GridPane brickPanel;
@@ -26,22 +37,19 @@ public class BoardRenderer {
                          GridPane brickPanel,
                          Pane ghostPane,
                          Pane gridLinesPane) {
-        this.gamePanel = gamePanel;
-        this.brickPanel = brickPanel;
+
+        this.gamePanel = Objects.requireNonNull(gamePanel, "gamePanel must not be null");
+        this.brickPanel = Objects.requireNonNull(brickPanel, "brickPanel must not be null");
         this.ghostPane = ghostPane;
         this.gridLinesPane = gridLinesPane;
 
-        if (this.gamePanel != null) {
-            this.gamePanel.setAlignment(Pos.CENTER);
-        }
+        this.gamePanel.setAlignment(Pos.CENTER);
 
-        if (this.brickPanel != null) {
-            this.brickPanel.setHgap(LayoutMetrics.GRID_GAP);
-            this.brickPanel.setVgap(LayoutMetrics.GRID_GAP);
-        }
+        this.brickPanel.setHgap(LayoutMetrics.GRID_GAP);
+        this.brickPanel.setVgap(LayoutMetrics.GRID_GAP);
     }
 
-public void initialiseBoard(int[][] boardMatrix, ViewData viewData) {
+    public void initialiseBoard(int[][] boardMatrix, ViewData viewData) {
         createBackgroundCells(boardMatrix);
         createActiveBrick(viewData.getBrickData());
         updateBrickPosition(viewData);
@@ -49,7 +57,7 @@ public void initialiseBoard(int[][] boardMatrix, ViewData viewData) {
         redrawGridLines();
     }
 
-public void refreshBackground(int[][] boardMatrix) {
+    public void refreshBackground(int[][] boardMatrix) {
         if (displayMatrix == null) {
             return;
         }
@@ -61,7 +69,7 @@ public void refreshBackground(int[][] boardMatrix) {
         }
     }
 
-public void refreshBrick(ViewData viewData) {
+    public void refreshBrick(ViewData viewData) {
         if (activeRectangles == null) {
             return;
         }
@@ -77,7 +85,7 @@ public void refreshBrick(ViewData viewData) {
         }
     }
 
-public void redrawGridLines() {
+    public void redrawGridLines() {
         if (gridLinesPane == null) {
             return;
         }
@@ -90,21 +98,19 @@ public void redrawGridLines() {
         int visibleRows = GameConfig.visibleRows();
         int cols = GameConfig.BOARD_WIDTH;
 
-        Color lineColor = Color.rgb(60, 60, 80, 0.6);
-
         for (int col = 0; col <= cols; col++) {
             double x = col * step;
             Line verticalLine = new Line(x, 0, x, gridHeight);
-            verticalLine.setStroke(lineColor);
-            verticalLine.setStrokeWidth(1);
+            verticalLine.setStroke(GRID_LINE_COLOR);
+            verticalLine.setStrokeWidth(GRID_LINE_WIDTH);
             gridLinesPane.getChildren().add(verticalLine);
         }
 
         for (int row = 0; row <= visibleRows; row++) {
             double y = row * step;
             Line horizontalLine = new Line(0, y, gridWidth, y);
-            horizontalLine.setStroke(lineColor);
-            horizontalLine.setStrokeWidth(1);
+            horizontalLine.setStroke(GRID_LINE_COLOR);
+            horizontalLine.setStrokeWidth(GRID_LINE_WIDTH);
             gridLinesPane.getChildren().add(horizontalLine);
         }
 
@@ -113,11 +119,7 @@ public void redrawGridLines() {
         gridLinesPane.setMaxSize(gridWidth, gridHeight);
     }
 
-private void createBackgroundCells(int[][] boardMatrix) {
-        if (gamePanel == null) {
-            return;
-        }
-
+    private void createBackgroundCells(int[][] boardMatrix) {
         gamePanel.getChildren().clear();
         int rows = boardMatrix.length;
         int cols = boardMatrix[0].length;
@@ -135,10 +137,6 @@ private void createBackgroundCells(int[][] boardMatrix) {
     }
 
     private void createActiveBrick(int[][] brickData) {
-        if (brickPanel == null) {
-            return;
-        }
-
         brickPanel.getChildren().clear();
 
         int rows = brickData.length;
@@ -157,10 +155,6 @@ private void createBackgroundCells(int[][] boardMatrix) {
     }
 
     private void updateBrickPosition(ViewData brick) {
-        if (gamePanel == null || brickPanel == null) {
-            return;
-        }
-
         double boardOriginX = gamePanel.getLayoutX();
         double boardOriginY = gamePanel.getLayoutY();
 
@@ -175,7 +169,7 @@ private void createBackgroundCells(int[][] boardMatrix) {
     }
 
     private void drawGhost(ViewData brick) {
-        if (ghostPane == null || gamePanel == null) {
+        if (ghostPane == null) {
             return;
         }
 
@@ -191,11 +185,10 @@ private void createBackgroundCells(int[][] boardMatrix) {
 
         double step = LayoutMetrics.brickStep();
         double brickSize = LayoutMetrics.BRICK_SIZE;
-        Color ghostOutline = Color.rgb(180, 220, 255, 0.65);
-        Color ghostDetail = Color.rgb(180, 220, 255, 0.4);
-        double strokeWidth = 1.5;
-        double cornerRadius = Math.max(2, LayoutMetrics.BRICK_ARC_SIZE - 4);
-        double inset = strokeWidth * 0.5; // let diamond touch the square stroke from inside
+        double strokeWidth = GHOST_STROKE_WIDTH;
+        double cornerRadius = Math.max(GHOST_CORNER_RADIUS_MIN,
+                LayoutMetrics.BRICK_ARC_SIZE - GHOST_CORNER_RADIUS_OFFSET);
+        double inset = strokeWidth * 0.5;
 
         for (int row = 0; row < brickData.length; row++) {
             for (int col = 0; col < brickData[row].length; col++) {
@@ -208,7 +201,7 @@ private void createBackgroundCells(int[][] boardMatrix) {
 
                 Rectangle outline = new Rectangle(cellX, cellY, brickSize, brickSize);
                 outline.setFill(Color.TRANSPARENT);
-                outline.setStroke(ghostOutline);
+                outline.setStroke(GHOST_OUTLINE_COLOR);
                 outline.setStrokeWidth(strokeWidth);
                 outline.setArcWidth(cornerRadius);
                 outline.setArcHeight(cornerRadius);
@@ -221,7 +214,7 @@ private void createBackgroundCells(int[][] boardMatrix) {
                         cellX + inset, cellY + brickSize / 2
                 );
                 diamond.setFill(Color.TRANSPARENT);
-                diamond.setStroke(ghostDetail);
+                diamond.setStroke(GHOST_DETAIL_COLOR);
                 diamond.setStrokeWidth(strokeWidth);
                 ghostPane.getChildren().add(diamond);
             }
