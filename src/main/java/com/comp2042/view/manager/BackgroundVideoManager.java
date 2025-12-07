@@ -7,11 +7,9 @@ import javafx.scene.media.MediaView;
 
 import java.net.URL;
 
-/**
- * Provides a shared background video player so we don't recreate it
- * every time the user switches screens.
- */
 public final class BackgroundVideoManager {
+
+    private static final String MAIN_PAGE_VIDEO_PATH = "video/mainpage.mp4";
 
     private static MediaPlayer sharedPlayer;
 
@@ -49,7 +47,10 @@ public final class BackgroundVideoManager {
 
     private static MediaPlayer getOrCreatePlayer() {
         if (sharedPlayer == null) {
-            URL videoUrl = BackgroundVideoManager.class.getClassLoader().getResource("video/mainpage.mp4");
+            URL videoUrl = BackgroundVideoManager.class
+                    .getClassLoader()
+                    .getResource(MAIN_PAGE_VIDEO_PATH);
+
             if (videoUrl == null) {
                 return null;
             }
@@ -59,7 +60,9 @@ public final class BackgroundVideoManager {
             sharedPlayer.setCycleCount(MediaPlayer.INDEFINITE);
             sharedPlayer.setAutoPlay(true);
             sharedPlayer.setMute(true);
-            sharedPlayer.setOnError(() -> System.err.println("Background video error: " + sharedPlayer.getError()));
+            sharedPlayer.setOnError(() ->
+                    System.err.println("Background video error: " + sharedPlayer.getError())
+            );
             sharedPlayer.setOnReady(() -> {
                 if (sharedPlayer.getStatus() != MediaPlayer.Status.PLAYING) {
                     sharedPlayer.play();
