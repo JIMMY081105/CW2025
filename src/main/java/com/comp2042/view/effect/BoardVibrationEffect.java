@@ -11,6 +11,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The {@code BoardVibrationEffect} class produces a short vibration animation on supplied nodes to emphasize
+ * events such as bomb explosions. It encapsulates timeline setup and safely resets targets after playback.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/effect/BoardVibrationEffect.java">
+ * BoardVibrationEffect.java</a>
+ */
 public final class BoardVibrationEffect {
 
     private static final double STEP_1_TIME_MS = 30;
@@ -29,6 +37,11 @@ public final class BoardVibrationEffect {
     private final List<Node> targets = new ArrayList<>();
     private Timeline vibrationTimeline;
 
+    /**
+     * Creates an effect targeting the given nodes.
+     *
+     * @param nodes nodes to translate during vibration.
+     */
     public BoardVibrationEffect(Node... nodes) {
         if (nodes != null) {
             Arrays.stream(nodes)
@@ -37,6 +50,9 @@ public final class BoardVibrationEffect {
         }
     }
 
+    /**
+     * Starts the vibration animation, restarting it if already running.
+     */
     public void vibrate() {
         if (targets.isEmpty()) {
             return;

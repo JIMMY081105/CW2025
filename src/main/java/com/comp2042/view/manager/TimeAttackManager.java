@@ -46,6 +46,16 @@ public final class TimeAttackManager {
 
     private Runnable onTimeOverCallback;
 
+    /**
+     * Creates a manager responsible for time-attack countdowns and best score tracking.
+     *
+     * @param timerTitleLabel     label showing the mode title.
+     * @param timerValueLabel     text displaying remaining time.
+     * @param bestScoreTitleLabel label describing the best score shown.
+     * @param bestScoreValueLabel text displaying the best score value.
+     * @param pauseProperty       property indicating pause state.
+     * @param gameOverProperty    property indicating game-over state.
+     */
     public TimeAttackManager(Label timerTitleLabel,
                              Text timerValueLabel,
                              Label bestScoreTitleLabel,
@@ -63,19 +73,39 @@ public final class TimeAttackManager {
         disableTimeAttack();
     }
 
+    /**
+     * Binds the current score property so best scores can be updated when runs end.
+     *
+     * @param scoreProperty observable score from the board.
+     */
     public void bindScoreProperty(IntegerProperty scoreProperty) {
         this.boundScoreProperty = scoreProperty;
         updateBestScoreLabel();
     }
 
+    /**
+     * Registers a callback to invoke when the countdown reaches zero.
+     *
+     * @param callback action to run when time expires.
+     */
     public void setOnTimeOver(Runnable callback) {
         this.onTimeOverCallback = callback;
     }
 
+    /**
+     * Indicates whether time-attack mode is configured and active.
+     *
+     * @return {@code true} if enabled.
+     */
     public boolean isEnabled() {
         return enabled;
     }
 
+    /**
+     * Configures the time-attack duration and updates UI labels; disables when minutes are non-positive.
+     *
+     * @param minutes duration in minutes.
+     */
     public void configure(int minutes) {
         if (minutes <= 0) {
             disableTimeAttack();
@@ -96,6 +126,9 @@ public final class TimeAttackManager {
         recreateTimeline();
     }
 
+    /**
+     * Starts the countdown from the configured duration.
+     */
     public void start() {
         if (!enabled || timeline == null || gameOverProperty.get()) {
             return;
@@ -103,12 +136,18 @@ public final class TimeAttackManager {
         timeline.playFromStart();
     }
 
+    /**
+     * Pauses the countdown without resetting remaining time.
+     */
     public void pause() {
         if (timeline != null) {
             timeline.pause();
         }
     }
 
+    /**
+     * Resumes the countdown if enabled and not blocked by pause or game over.
+     */
     public void resume() {
         if (!enabled || timeline == null || gameOverProperty.get()) {
             return;
@@ -118,12 +157,18 @@ public final class TimeAttackManager {
         }
     }
 
+    /**
+     * Stops the countdown timer.
+     */
     public void stop() {
         if (timeline != null) {
             timeline.stop();
         }
     }
 
+    /**
+     * Handles game termination by stopping the timer and updating best scores if applicable.
+     */
     public void handleGameStopped() {
         stop();
         updateBestScoreIfNeeded();

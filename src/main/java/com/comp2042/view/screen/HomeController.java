@@ -10,6 +10,14 @@ import javafx.scene.text.Font;
 
 import java.util.function.Consumer;
 
+/**
+ * The {@code HomeController} class manages the home screen, loading fonts, background media, and forwarding mode
+ * selections to the application.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/screen/HomeController.java">
+ * HomeController.java</a>
+ */
 public class HomeController {
 
     @FXML
@@ -20,6 +28,11 @@ public class HomeController {
 
     private Consumer<HomeSelection.Mode> selectionHandler;
 
+    /**
+     * Registers a callback invoked when the user selects a game mode.
+     *
+     * @param selectionHandler consumer receiving the selected mode.
+     */
     public void setSelectionHandler(Consumer<HomeSelection.Mode> selectionHandler) {
         this.selectionHandler = selectionHandler;
     }

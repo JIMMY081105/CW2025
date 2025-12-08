@@ -38,6 +38,15 @@ import javafx.scene.text.Text;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * The {@code GameScreenController} class serves as the main JavaFX controller for the Tetris game screen, wiring
+ * UI elements to the board model and managers such as time attack, bombs, notifications, and China stages.
+ * It initialises renderers, input handling, and navigation callbacks to coordinate gameplay.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/screen/GameScreenController.java">
+ * GameScreenController.java</a>
+ */
 public class GameScreenController implements Initializable {
 
     private static final int ONE_MINUTE = 1;
@@ -162,6 +171,12 @@ public class GameScreenController implements Initializable {
     private Runnable backToHomeHandler;
     private Runnable restartHandler;
 
+    /**
+     * Initializes the game screen by wiring UI components to renderers, managers, and input handlers.
+     *
+     * @param location  FXML location.
+     * @param resources resource bundle.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         URL fontUrl = getClass().getClassLoader().getResource(DIGITAL_FONT_RESOURCE);
@@ -173,20 +188,21 @@ public class GameScreenController implements Initializable {
 
         boardRenderer = new BoardRenderer(gamePanel, brickPanel, ghostPane, gridLinesPane);
         nextBricksRenderer = new NextBricksRenderer(nextBricksList);
-        layoutManager = new GameLayoutManager(
-                rootPane,
-                gameBoard,
-                gamePanel,
-                gridLinesPane,
-                sidePanel,
-                timerBox,
-                nextBricksContainer,
-                nextBricksList,
-                groupNotification,
-                boardRenderer,
-                bombToolbar,
-                chinaDescriptionBox
-        );
+            layoutManager = new GameLayoutManager(
+                    rootPane,
+                    gameLayer,
+                    gameBoard,
+                    gamePanel,
+                    gridLinesPane,
+                    sidePanel,
+                    timerBox,
+                    nextBricksContainer,
+                    nextBricksList,
+                    groupNotification,
+                    boardRenderer,
+                    bombToolbar,
+                    chinaDescriptionBox
+            );
         vibrationEffect = new BoardVibrationEffect(gameBoard, scoreBox, nextBricksContainer);
 
         layoutManager.applyInitialLayout();
@@ -295,6 +311,11 @@ public class GameScreenController implements Initializable {
         }
     }
 
+    /**
+     * Binds this controller to the given {@link Board} so renderers and managers reflect current game state.
+     *
+     * @param board active game board.
+     */
     public void bind(Board board) {
         this.board = board;
 
@@ -306,17 +327,33 @@ public class GameScreenController implements Initializable {
         }
     }
 
+    /**
+     * Registers the listener that translates UI events into board actions.
+     *
+     * @param eventListener controller handling movement events.
+     */
     public void setEventListener(InputEventListener eventListener) {
         if (sessionManager != null) {
             sessionManager.setEventListener(eventListener);
         }
     }
 
+    /**
+     * Sets callbacks for returning home or restarting the current game.
+     *
+     * @param backToHomeHandler handler invoked when navigating home.
+     * @param restartHandler    handler invoked when restarting.
+     */
     public void setNavigationHandlers(Runnable backToHomeHandler, Runnable restartHandler) {
         this.backToHomeHandler = backToHomeHandler;
         this.restartHandler = restartHandler;
     }
 
+    /**
+     * Binds score UI elements and forwards score changes to notification and China stage managers.
+     *
+     * @param scoreProperty observable score property.
+     */
     public void bindScore(IntegerProperty scoreProperty) {
         if (scoreValue != null) {
             scoreValue.textProperty().bind(scoreProperty.asString());
@@ -337,6 +374,11 @@ public class GameScreenController implements Initializable {
         });
     }
 
+    /**
+     * Toggles pause state through the session manager.
+     *
+     * @param actionEvent pause button event.
+     */
     public void pauseGame(ActionEvent actionEvent) {
         if (sessionManager != null) {
             sessionManager.togglePause(pauseButton);
@@ -364,12 +406,18 @@ public class GameScreenController implements Initializable {
         }
     }
 
+    /**
+     * Signals a game-over condition to the session manager with default messaging.
+     */
     public void gameOver() {
         if (sessionManager != null) {
             sessionManager.handleGameEnd("Game Over", "The bricks reached the ceiling.");
         }
     }
 
+    /**
+     * Configures managers and UI for Explore China mode, disabling time attack and enabling stage progression.
+     */
     public void configureExploreChinaMode() {
         BrickFactory.setPlusEnabled(false);
         BackgroundMusicManager.playExploreChinaMusic();
@@ -390,6 +438,11 @@ public class GameScreenController implements Initializable {
         }
     }
 
+    /**
+     * Configures time-attack mode for the specified duration, updating UI, backgrounds, and music.
+     *
+     * @param minutes duration in minutes; non-positive disables time attack.
+     */
     public void configureTimeAttack(int minutes) {
         timeAttackManager.configure(minutes);
 
@@ -424,6 +477,11 @@ public class GameScreenController implements Initializable {
         }
     }
 
+    /**
+     * Displays the provided mode label in the best-score title area.
+     *
+     * @param modeLabel text to show.
+     */
     public void showModeLabel(String modeLabel) {
         if (bestScoreTitle != null) {
             bestScoreTitle.setText(modeLabel);

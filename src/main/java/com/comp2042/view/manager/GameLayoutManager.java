@@ -24,6 +24,14 @@ import javafx.util.Duration;
 
 import java.util.Objects;
 
+/**
+ * The {@code GameLayoutManager} class coordinates sizing, positioning, and end-screen overlays for the game view,
+ * applying measurements from {@link LayoutMetrics} and binding background media where appropriate.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/manager/GameLayoutManager.java">
+ * GameLayoutManager.java</a>
+ */
 public final class GameLayoutManager {
 
     private static final double VISUAL_BUFFER = 4.0;
@@ -33,6 +41,7 @@ public final class GameLayoutManager {
     private static final double END_OVERLAY_ANIMATION_MS = 520.0;
 
     private final Pane rootPane;
+    private final Pane gameLayer;
     private final BorderPane gameBoard;
     private final GridPane gamePanel;
     private final Pane gridLinesPane;
@@ -51,6 +60,7 @@ public final class GameLayoutManager {
     private Label endSubtitle;
 
     public GameLayoutManager(Pane rootPane,
+                             Pane gameLayer,
                              BorderPane gameBoard,
                              GridPane gamePanel,
                              Pane gridLinesPane,
@@ -64,6 +74,7 @@ public final class GameLayoutManager {
                              VBox chinaDescriptionBox) {
 
         this.rootPane = Objects.requireNonNull(rootPane, "rootPane must not be null");
+        this.gameLayer = Objects.requireNonNull(gameLayer, "gameLayer must not be null");
         this.gameBoard = Objects.requireNonNull(gameBoard, "gameBoard must not be null");
         this.gamePanel = Objects.requireNonNull(gamePanel, "gamePanel must not be null");
         this.gridLinesPane = Objects.requireNonNull(gridLinesPane, "gridLinesPane must not be null");
@@ -75,8 +86,15 @@ public final class GameLayoutManager {
         this.boardRenderer = Objects.requireNonNull(boardRenderer, "boardRenderer must not be null");
         this.bombToolbar = Objects.requireNonNull(bombToolbar, "bombToolbar must not be null");
         this.chinaDescriptionBox = Objects.requireNonNull(chinaDescriptionBox, "chinaDescriptionBox must not be null");
+
+        // Make sure the game layer always fills the window so the background image covers everything.
+        this.gameLayer.prefWidthProperty().bind(rootPane.widthProperty());
+        this.gameLayer.prefHeightProperty().bind(rootPane.heightProperty());
     }
 
+    /**
+     * Applies initial sizing, padding, and spacing to board and side panels.
+     */
     public void applyInitialLayout() {
         double boardWidth = LayoutMetrics.boardPixelWidth();
         double boardHeight = LayoutMetrics.boardPixelHeight();
@@ -130,6 +148,11 @@ public final class GameLayoutManager {
         boardRenderer.redrawGridLines();
     }
 
+    /**
+     * Positions board, panels, notifications, and bomb toolbar within the available width.
+     *
+     * @param availableWidth current window width.
+     */
     public void positionContent(double availableWidth) {
         double safeWidth = Math.max(availableWidth, LayoutMetrics.initialWindowWidth());
         double boardAreaWidth = LayoutMetrics.boardAreaWidth();
@@ -183,23 +206,43 @@ public final class GameLayoutManager {
         chinaDescriptionBox.setLayoutY(descTop);
     }
 
+    /**
+     * Applies a background image from the classpath to the main game layer.
+     *
+     * @param resourcePath classpath to the image.
+     */
     public void applyBackgroundImage(String resourcePath) {
         if (resourcePath == null || resourcePath.isBlank()) {
             return;
         }
 
-        var resourceUrl = getClass().getClassLoader().getResource(resourcePath);
+        System.out.println("[Layout] Request background: '" + resourcePath + "'");
+
+        var classLoader = getClass().getClassLoader();
+        var resourceUrl = classLoader.getResource(resourcePath);
+
+        if (resourceUrl == null && resourcePath.contains(" ")) {
+            resourceUrl = classLoader.getResource(resourcePath.replace(" ", "%20"));
+        }
+        if (resourceUrl == null && !resourcePath.startsWith("/")) {
+            resourceUrl = classLoader.getResource("/" + resourcePath);
+        }
         if (resourceUrl == null) {
-            System.err.println("Missing background resource: " + resourcePath);
+            System.err.println("[Layout] Missing background resource: " + resourcePath);
             return;
         }
 
         String url = resourceUrl.toExternalForm();
+        System.out.println("[Layout] Loaded background URL: " + url);
 
         Image image = new Image(url, true);
+
         BackgroundSize size = new BackgroundSize(
-                1.0, 1.0, true, true, false, true
+                1.0, 1.0,
+                true,  true,
+                false, true
         );
+
         BackgroundImage backgroundImage = new BackgroundImage(
                 image,
                 BackgroundRepeat.NO_REPEAT,
@@ -207,9 +250,20 @@ public final class GameLayoutManager {
                 BackgroundPosition.CENTER,
                 size
         );
-        rootPane.setBackground(new Background(backgroundImage));
+
+        // 👉 Key fix: put the background on gameLayer, which sits behind everything else.
+        gameLayer.setBackground(new Background(backgroundImage));
+        gameLayer.requestLayout();
     }
 
+    /**
+     * Configures the end overlay, binding sizes and attaching background video.
+     *
+     * @param endOverlay         overlay container.
+     * @param endBackgroundVideo media view for the overlay background.
+     * @param endTitle           label for the end title.
+     * @param endSubtitle        label for the end subtitle.
+     */
     public void setupEndOverlay(StackPane endOverlay,
                                 MediaView endBackgroundVideo,
                                 Label endTitle,
@@ -234,6 +288,12 @@ public final class GameLayoutManager {
         }
     }
 
+    /**
+     * Shows the end overlay with sliding animation and optional text.
+     *
+     * @param title    title text to display.
+     * @param subtitle subtitle text to display.
+     */
     public void showEndScreen(String title, String subtitle) {
         if (endOverlay == null) {
             return;
@@ -275,6 +335,9 @@ public final class GameLayoutManager {
         slideIn.play();
     }
 
+    /**
+     * Hides the end overlay if present.
+     */
     public void hideEndOverlay() {
         if (endOverlay != null) {
             endOverlay.setVisible(false);

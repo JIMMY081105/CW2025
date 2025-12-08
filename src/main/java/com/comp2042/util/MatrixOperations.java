@@ -8,11 +8,29 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The {@code MatrixOperations} class encapsulates matrix utilities for copying, collision checks, merging,
+ * clearing rows, deep copying lists of shapes, and simulating bomb explosions. It isolates low-level grid
+ * manipulation from higher-level board and controller logic.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/util/MatrixOperations.java">
+ * MatrixOperations.java</a>
+ */
 public final class MatrixOperations {
 
     private MatrixOperations() {
     }
 
+    /**
+     * Determines whether placing a brick at the given coordinates intersects boundaries or occupied cells.
+     *
+     * @param matrix board matrix.
+     * @param brick  brick matrix to test.
+     * @param x      left coordinate for placement.
+     * @param y      top coordinate for placement.
+     * @return {@code true} if a collision occurs.
+     */
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
         requireValidMatrix(matrix, "matrix");
         requireValidMatrix(brick, "brick");
@@ -36,6 +54,15 @@ public final class MatrixOperations {
         return false;
     }
 
+    /**
+     * Merges a brick matrix into a copy of the board at the specified location.
+     *
+     * @param matrix board matrix.
+     * @param brick  brick to overlay.
+     * @param x      target x-coordinate.
+     * @param y      target y-coordinate.
+     * @return new matrix containing both board and brick.
+     */
     public static int[][] merge(final int[][] matrix, final int[][] brick, int x, int y) {
         requireValidMatrix(matrix, "matrix");
         requireValidMatrix(brick, "brick");
@@ -61,6 +88,12 @@ public final class MatrixOperations {
         return result;
     }
 
+    /**
+     * Produces a deep copy of the supplied matrix.
+     *
+     * @param original matrix to copy.
+     * @return copied matrix.
+     */
     public static int[][] copy(int[][] original) {
         requireValidMatrix(original, "original");
 
@@ -73,6 +106,12 @@ public final class MatrixOperations {
         return copy;
     }
 
+    /**
+     * Iteratively removes any full rows, compacts remaining rows downward, and reports how many were cleared.
+     *
+     * @param matrix matrix to process.
+     * @return {@link ClearRow} describing removed lines and the resulting matrix.
+     */
     public static ClearRow checkRemoving(final int[][] matrix) {
         requireValidMatrix(matrix, "matrix");
 
@@ -120,6 +159,12 @@ public final class MatrixOperations {
         return new ClearRow(totalLinesRemoved, currentMatrix);
     }
 
+    /**
+     * Deep-copies each matrix in the provided list.
+     *
+     * @param list list of matrices to copy.
+     * @return list containing copied matrices.
+     */
     public static List<int[][]> deepCopyList(List<int[][]> list) {
         if (list == null) {
             throw new IllegalArgumentException("list must not be null");
@@ -129,6 +174,14 @@ public final class MatrixOperations {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Simulates a bomb explosion by clearing a 3x3 area and letting blocks above fall down.
+     *
+     * @param matrix  board matrix to copy and mutate.
+     * @param centerX x-coordinate of the blast centre.
+     * @param centerY y-coordinate of the blast centre.
+     * @return resulting matrix after the explosion.
+     */
     public static int[][] explodeBomb(final int[][] matrix, int centerX, int centerY) {
         requireValidMatrix(matrix, "matrix");
 

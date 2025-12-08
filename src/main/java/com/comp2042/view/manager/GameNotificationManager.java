@@ -19,11 +19,22 @@ public final class GameNotificationManager {
     private final IntegerProperty bombCountProperty;
     private int lastBombMilestone = 0;
 
+    /**
+     * Creates a notification manager bound to the given UI container and bomb counter.
+     *
+     * @param notificationGroup group to host notification labels.
+     * @param bombCountProperty property tracking available bombs.
+     */
     public GameNotificationManager(Group notificationGroup, IntegerProperty bombCountProperty) {
         this.notificationGroup = Objects.requireNonNull(notificationGroup, "notificationGroup must not be null");
         this.bombCountProperty = Objects.requireNonNull(bombCountProperty, "bombCountProperty must not be null");
     }
 
+    /**
+     * Displays score notifications in response to downward movement results.
+     *
+     * @param downData movement result including any bonus.
+     */
     public void handleDownMovement(DownData downData) {
         if (downData == null) {
             return;
@@ -35,6 +46,11 @@ public final class GameNotificationManager {
         }
     }
 
+    /**
+     * Awards bombs at score milestones and shows bomb notifications.
+     *
+     * @param totalScore current total score.
+     */
     public void handleScoreChanged(int totalScore) {
         int milestonesReached = totalScore / GameConfig.POINTS_PER_BOMB;
         int newBombs = milestonesReached - lastBombMilestone;

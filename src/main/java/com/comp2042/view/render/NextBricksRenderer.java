@@ -12,15 +12,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The {@code NextBricksRenderer} class renders the list of upcoming bricks into separate preview grids for display
+ * in the side panel.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/render/NextBricksRenderer.java">
+ * NextBricksRenderer.java</a>
+ */
 public final class NextBricksRenderer {
 
     private final VBox nextBricksList;
     private final List<GridPane> nextPreviewGrids = new ArrayList<>();
 
+    /**
+     * Creates a renderer bound to the container that will host preview grids.
+     *
+     * @param nextBricksList container for preview grids.
+     */
     public NextBricksRenderer(VBox nextBricksList) {
         this.nextBricksList = Objects.requireNonNull(nextBricksList, "nextBricksList must not be null");
     }
 
+    /**
+     * Prepares empty preview panels according to the configured preview count.
+     */
     public void initialisePanels() {
         nextBricksList.getChildren().clear();
         nextPreviewGrids.clear();
@@ -35,6 +51,11 @@ public final class NextBricksRenderer {
         }
     }
 
+    /**
+     * Renders the given preview matrices into the prepared grids.
+     *
+     * @param nextBricksData list of brick matrices in spawn order.
+     */
     public void renderNextBricks(List<int[][]> nextBricksData) {
         if (nextPreviewGrids.isEmpty()) {
             initialisePanels();

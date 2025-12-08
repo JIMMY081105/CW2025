@@ -6,16 +6,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * The {@code RandomBrickGenerator} class maintains a queue of randomly selected bricks, refreshing when the
+ * available brick pool changes. It supports previewing upcoming pieces and ensures deterministic supply based
+ * on an underlying {@link Random} source.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/model/brick/RandomBrickGenerator.java">
+ * RandomBrickGenerator.java</a>
+ */
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final Random random;
     private final List<Brick> brickQueue = new ArrayList<>();
     private int lastBrickPoolSize;
 
+    /**
+     * Creates a generator using a new random source.
+     */
     public RandomBrickGenerator() {
         this(new Random());
     }
 
+    /**
+     * Creates a generator using the provided random source.
+     *
+     * @param random random number generator for brick selection.
+     */
     RandomBrickGenerator(Random random) {
         this.random = random;
         initializeQueue();

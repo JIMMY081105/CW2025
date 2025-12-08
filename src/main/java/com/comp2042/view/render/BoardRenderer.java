@@ -14,6 +14,14 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.Objects;
 
+/**
+ * The {@code BoardRenderer} class handles visual rendering of the board grid, settled bricks, active piece, ghost
+ * projection, and grid lines based on {@link com.comp2042.model.Board} view data.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/render/BoardRenderer.java">
+ * BoardRenderer.java</a>
+ */
 public class BoardRenderer {
 
     private static final Color GRID_LINE_COLOR = Color.rgb(60, 60, 80, 0.6);
@@ -33,6 +41,14 @@ public class BoardRenderer {
     private Rectangle[][] displayMatrix;
     private Rectangle[][] activeRectangles;
 
+    /**
+     * Creates a renderer bound to the provided panes.
+     *
+     * @param gamePanel     grid pane for settled bricks.
+     * @param brickPanel    grid pane for the active piece.
+     * @param ghostPane     pane for ghost projections.
+     * @param gridLinesPane pane for drawing grid lines.
+     */
     public BoardRenderer(GridPane gamePanel,
                          GridPane brickPanel,
                          Pane ghostPane,
@@ -49,6 +65,12 @@ public class BoardRenderer {
         this.brickPanel.setVgap(LayoutMetrics.GRID_GAP);
     }
 
+    /**
+     * Initialises board cells, active brick, ghost projection, and grid lines from the given state.
+     *
+     * @param boardMatrix initial board matrix.
+     * @param viewData    active piece view data.
+     */
     public void initialiseBoard(int[][] boardMatrix, ViewData viewData) {
         createBackgroundCells(boardMatrix);
         createActiveBrick(viewData.getBrickData());
@@ -57,6 +79,11 @@ public class BoardRenderer {
         redrawGridLines();
     }
 
+    /**
+     * Updates the settled brick background using the supplied matrix.
+     *
+     * @param boardMatrix latest board state.
+     */
     public void refreshBackground(int[][] boardMatrix) {
         if (displayMatrix == null) {
             return;
@@ -69,6 +96,11 @@ public class BoardRenderer {
         }
     }
 
+    /**
+     * Updates the active brick rendering and ghost projection.
+     *
+     * @param viewData latest active piece view data.
+     */
     public void refreshBrick(ViewData viewData) {
         if (activeRectangles == null) {
             return;
@@ -85,6 +117,9 @@ public class BoardRenderer {
         }
     }
 
+    /**
+     * Redraws the grid lines overlay to match current board dimensions.
+     */
     public void redrawGridLines() {
         if (gridLinesPane == null) {
             return;

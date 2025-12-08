@@ -12,6 +12,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The {@code BlockTextureProvider} class loads and caches paint patterns for each brick type, cropping images
+ * where necessary to remove padding. It serves the rendering layer by mapping brick IDs to reusable
+ * {@link Paint} instances.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/util/BlockTextureProvider.java">
+ * BlockTextureProvider.java</a>
+ */
 public final class BlockTextureProvider {
 
     private static final int IMAGE_PADDING = 4;
@@ -59,6 +68,12 @@ public final class BlockTextureProvider {
         return new ImagePattern(image);
     }
 
+    /**
+     * Returns a cached paint pattern corresponding to the given brick identifier.
+     *
+     * @param id brick identifier used in board matrices.
+     * @return paint pattern for rendering; transparent if unknown.
+     */
     public static Paint getPattern(int id) {
         return PATTERNS.getOrDefault(id, Color.TRANSPARENT);
     }

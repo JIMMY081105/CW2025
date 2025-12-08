@@ -23,6 +23,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * The {@code Main} class serves as the JavaFX entry point, orchestrating navigation between home, mode selection,
+ * and game screens. It wires controllers to boards, applies UI scaling, and configures background media when
+ * launching different gameplay modes.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/Main.java">
+ * Main.java</a>
+ */
 public class Main extends Application {
 
     private static final double HOME_UI_SCALE = 1.3;

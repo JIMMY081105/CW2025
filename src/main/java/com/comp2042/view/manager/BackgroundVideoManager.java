@@ -7,6 +7,14 @@ import javafx.scene.media.MediaView;
 
 import java.net.URL;
 
+/**
+ * The {@code BackgroundVideoManager} class manages a shared looping background video for home and selection
+ * screens, attaching it to views as needed and handling disposal.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/manager/BackgroundVideoManager.java">
+ * BackgroundVideoManager.java</a>
+ */
 public final class BackgroundVideoManager {
 
     private static final String MAIN_PAGE_VIDEO_PATH = "video/mainpage.mp4";
@@ -16,6 +24,12 @@ public final class BackgroundVideoManager {
     private BackgroundVideoManager() {
     }
 
+    /**
+     * Attaches the shared background player to the provided media view and binds sizing to the container.
+     *
+     * @param mediaView media view to display the video.
+     * @param container container used for sizing bindings.
+     */
     public static void attach(MediaView mediaView, StackPane container) {
         if (mediaView == null || container == null) {
             return;
@@ -37,6 +51,9 @@ public final class BackgroundVideoManager {
         }
     }
 
+    /**
+     * Stops and disposes of the shared player.
+     */
     public static void dispose() {
         if (sharedPlayer != null) {
             sharedPlayer.stop();

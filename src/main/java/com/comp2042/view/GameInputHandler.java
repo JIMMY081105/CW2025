@@ -9,6 +9,15 @@ import javafx.scene.input.KeyEvent;
 
 import java.util.function.Consumer;
 
+/**
+ * The {@code GameInputHandler} class listens for key events and forwards them as movement commands to the session
+ * manager, respecting pause and game-over states. It acts as a thin adapter between JavaFX input and the
+ * {@link com.comp2042.event.InputEventListener}.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/GameInputHandler.java">
+ * GameInputHandler.java</a>
+ */
 public final class GameInputHandler {
 
     private final BooleanProperty isPause;
@@ -20,6 +29,17 @@ public final class GameInputHandler {
     private final Consumer<MoveEvent> downHandler;
     private final Consumer<MoveEvent> hardDropHandler;
 
+    /**
+     * Creates an input handler bound to pause and game-over flags and downstream consumers.
+     *
+     * @param isPause         pause flag.
+     * @param isGameOver      game-over flag.
+     * @param leftHandler     consumer for left movement.
+     * @param rightHandler    consumer for right movement.
+     * @param rotateHandler   consumer for rotation.
+     * @param downHandler     consumer for soft drop.
+     * @param hardDropHandler consumer for hard drop.
+     */
     public GameInputHandler(BooleanProperty isPause,
                             BooleanProperty isGameOver,
                             Consumer<MoveEvent> leftHandler,
@@ -37,6 +57,11 @@ public final class GameInputHandler {
         this.hardDropHandler = hardDropHandler;
     }
 
+    /**
+     * Handles a key press event, dispatching movement commands when appropriate.
+     *
+     * @param keyEvent the key event.
+     */
     public void handleKeyPressed(KeyEvent keyEvent) {
         if (isPause.get() || isGameOver.get()) {
             return;

@@ -13,6 +13,14 @@ import javafx.scene.text.Font;
 import java.net.URL;
 import java.util.function.Consumer;
 
+/**
+ * The {@code ModeSelectionController} class manages the mode selection screen, presenting time-attack options and
+ * forwarding the user's choice to the application.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/screen/ModeSelectionController.java">
+ * ModeSelectionController.java</a>
+ */
 public class ModeSelectionController {
 
     
@@ -96,6 +104,13 @@ public class ModeSelectionController {
         }
     }
 
+    /**
+     * Configures the controller for the given mode and attaches navigation callbacks.
+     *
+     * @param mode             selected mode.
+     * @param selectionHandler handler invoked when an option is chosen.
+     * @param backHandler      handler invoked when navigating back.
+     */
     public void configure(HomeSelection.Mode mode,
                           Consumer<HomeSelection> selectionHandler,
                           Runnable backHandler) {

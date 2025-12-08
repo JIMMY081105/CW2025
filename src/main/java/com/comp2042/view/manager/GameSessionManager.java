@@ -19,6 +19,15 @@ import javafx.scene.layout.GridPane;
 
 import java.util.Objects;
 
+/**
+ * The {@code GameSessionManager} class coordinates gameplay flow by wiring the board model, renderers,
+ * time-attack timer, bomb handling, notifications, and layout transitions. It forwards input events to
+ * the controller, maintains game loop timing, and triggers end overlays when sessions conclude.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/manager/GameSessionManager.java">
+ * GameSessionManager.java</a>
+ */
 public final class GameSessionManager {
 
     private static final String TITLE_GAME_OVER = "Game Over";
@@ -44,6 +53,20 @@ public final class GameSessionManager {
     private int currentTickMillis = GameConfig.GAME_TICK_MS;
     private boolean endScreenShown = false;
 
+    /**
+     * Constructs a session manager coordinating renderers, timers, and notifications.
+     *
+     * @param pauseProperty       pause flag.
+     * @param gameOverProperty    game-over flag.
+     * @param gamePanel           grid pane receiving focus and input.
+     * @param boardRenderer       renderer for the board.
+     * @param nextBricksRenderer  renderer for preview bricks.
+     * @param vibrationEffect     effect for hard drops or bombs.
+     * @param timeAttackManager   time-attack controller (nullable).
+     * @param layoutManager       layout coordinator.
+     * @param notificationManager notification handler.
+     * @param gameOverPanel       panel shown when the game ends.
+     */
     public GameSessionManager(BooleanProperty pauseProperty,
                               BooleanProperty gameOverProperty,
                               GridPane gamePanel,
@@ -67,10 +90,20 @@ public final class GameSessionManager {
         this.gameOverPanel = gameOverPanel;
     }
 
+    /**
+     * Registers the controller that will process movement events.
+     *
+     * @param listener input listener.
+     */
     public void setEventListener(InputEventListener listener) {
         this.eventListener = listener;
     }
 
+    /**
+     * Binds renderers and listeners to the supplied board, starting the game if state is available.
+     *
+     * @param board active board instance.
+     */
     public void bindBoard(Board board) {
 
         board.boardMatrixProperty().addListener((obs, oldVal, newVal) -> {
@@ -99,6 +132,12 @@ public final class GameSessionManager {
         }
     }
 
+    /**
+     * Initialises rendering from the provided state and starts the game loop (and time attack, if enabled).
+     *
+     * @param boardMatrix board state including background.
+     * @param viewData    active piece view data.
+     */
     public void startGame(int[][] boardMatrix, ViewData viewData) {
         boardRenderer.initialiseBoard(boardMatrix, viewData);
         nextBricksRenderer.renderNextBricks(viewData.getNextBricksData());
@@ -110,6 +149,11 @@ public final class GameSessionManager {
         }
     }
 
+    /**
+     * Handles a left movement input and refreshes active brick rendering.
+     *
+     * @param event move event metadata.
+     */
     public void onMoveLeft(MoveEvent event) {
         if (pauseProperty.get() || eventListener == null) {
             return;
@@ -119,6 +163,11 @@ public final class GameSessionManager {
         gamePanel.requestFocus();
     }
 
+    /**
+     * Handles a right movement input and refreshes active brick rendering.
+     *
+     * @param event move event metadata.
+     */
     public void onMoveRight(MoveEvent event) {
         if (pauseProperty.get() || eventListener == null) {
             return;
@@ -128,6 +177,11 @@ public final class GameSessionManager {
         gamePanel.requestFocus();
     }
 
+    /**
+     * Handles a rotation request and refreshes active brick rendering.
+     *
+     * @param event move event metadata.
+     */
     public void onRotate(MoveEvent event) {
         if (pauseProperty.get() || eventListener == null) {
             return;
@@ -137,6 +191,11 @@ public final class GameSessionManager {
         gamePanel.requestFocus();
     }
 
+    /**
+     * Handles a soft drop from the user or game loop and updates visuals/notifications.
+     *
+     * @param event move event metadata.
+     */
     public void onMoveDown(MoveEvent event) {
         if (pauseProperty.get() || eventListener == null) {
             return;
@@ -146,6 +205,11 @@ public final class GameSessionManager {
         gamePanel.requestFocus();
     }
 
+    /**
+     * Handles a hard drop from the user, applying vibration and updating visuals.
+     *
+     * @param event move event metadata.
+     */
     public void onHardDrop(MoveEvent event) {
         if (pauseProperty.get() || eventListener == null) {
             return;
@@ -183,6 +247,11 @@ public final class GameSessionManager {
         nextBricksRenderer.renderNextBricks(viewData.getNextBricksData());
     }
 
+    /**
+     * Toggles pause state and updates the pause button label accordingly.
+     *
+     * @param pauseButton button to update.
+     */
     public void togglePause(ToggleButton pauseButton) {
         if (gameOverProperty.get()) {
             return;
@@ -206,6 +275,9 @@ public final class GameSessionManager {
         gamePanel.requestFocus();
     }
 
+    /**
+     * Pauses the session and shows the exit end-screen overlay.
+     */
     public void exitGame() {
         pauseLoopAndTimeAttack();
         pauseProperty.set(true);
@@ -214,6 +286,12 @@ public final class GameSessionManager {
         }
     }
 
+    /**
+     * Handles session end triggered by loss or completion by stopping timers and showing the overlay.
+     *
+     * @param title    title text to display.
+     * @param subtitle subtitle text to display.
+     */
     public void handleGameEnd(String title, String subtitle) {
         if (gameOverProperty.get() || endScreenShown) {
             return;
@@ -236,6 +314,9 @@ public final class GameSessionManager {
         }
     }
 
+    /**
+     * Temporarily pauses timers while a bomb drag interaction is active.
+     */
     public void pauseForBombDrag() {
         if (gameLoop != null && !pauseProperty.get()) {
             gameLoop.pause();
@@ -245,6 +326,9 @@ public final class GameSessionManager {
         }
     }
 
+    /**
+     * Resumes timers after a bomb drag interaction finishes.
+     */
     public void resumeAfterBombDrag() {
         if (gameLoop != null && !pauseProperty.get()) {
             gameLoop.start();
@@ -255,6 +339,11 @@ public final class GameSessionManager {
         gamePanel.requestFocus();
     }
 
+    /**
+     * Updates the tick duration for the game loop, preserving running state when appropriate.
+     *
+     * @param newTickMillis new tick duration in milliseconds.
+     */
     public void updateGameLoopSpeed(int newTickMillis) {
         int clamped = Math.max(GameConfig.MIN_GAME_TICK_MS, newTickMillis);
         if (clamped == currentTickMillis) {
@@ -280,6 +369,11 @@ public final class GameSessionManager {
         }
     }
 
+    /**
+     * Indicates whether the game loop is currently running.
+     *
+     * @return {@code true} if running.
+     */
     public boolean isRunning() {
         return gameLoop != null && gameLoop.isRunning();
     }

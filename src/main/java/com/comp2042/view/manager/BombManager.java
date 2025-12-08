@@ -19,6 +19,15 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.Objects;
 
+/**
+ * The {@code BombManager} class encapsulates the UI and interaction logic for bomb power-ups, handling drag-and-drop
+ * placement, visual targeting overlays, explosion triggering, and related board updates. It collaborates with the
+ * {@link BoardRenderer}, {@link com.comp2042.model.Board}, and vibration effects to keep visuals in sync.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/manager/BombManager.java">
+ * BombManager.java</a>
+ */
 public final class BombManager {
 
     private static final double ACTIVE_OPACITY = 1.0;
@@ -78,6 +87,9 @@ public final class BombManager {
         this.onBombDragFinished = onBombDragFinished;
     }
 
+    /**
+     * Registers mouse handlers and synchronises toolbar visuals based on bomb availability.
+     */
     public void initialise() {
         if (bombToolbar == null) {
             return;
@@ -91,6 +103,11 @@ public final class BombManager {
         updateBombVisuals();
     }
 
+    /**
+     * Sets the board that will be mutated when bombs explode.
+     *
+     * @param board active board instance.
+     */
     public void setBoard(Board board) {
         this.board = board;
     }

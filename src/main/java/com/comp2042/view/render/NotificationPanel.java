@@ -14,6 +14,14 @@ import javafx.util.Duration;
 
 import java.util.Objects;
 
+/**
+ * The {@code NotificationPanel} class displays transient score or bonus messages with fade and translate
+ * animations, removing itself from the parent list when finished.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/render/NotificationPanel.java">
+ * NotificationPanel.java</a>
+ */
 public class NotificationPanel extends BorderPane {
 
     private static final double MIN_WIDTH = 220.0;
@@ -25,6 +33,11 @@ public class NotificationPanel extends BorderPane {
     private static final double MOVE_DURATION_MS = 2500.0;
     private static final double MOVE_OFFSET_Y = 40.0;
 
+    /**
+     * Creates a notification panel displaying the provided text.
+     *
+     * @param text text to display.
+     */
     public NotificationPanel(String text) {
         setMinHeight(MIN_HEIGHT);
         setMinWidth(MIN_WIDTH);
@@ -39,6 +52,11 @@ public class NotificationPanel extends BorderPane {
         setCenter(score);
     }
 
+    /**
+     * Plays the notification animation and removes the panel from the given list on completion.
+     *
+     * @param list node list containing this panel.
+     */
     public void showScore(ObservableList<Node> list) {
         Objects.requireNonNull(list, "list must not be null");
 

@@ -8,6 +8,14 @@ public final class BombEffectService {
     private BombEffectService() {
     }
 
+    /**
+     * Applies a bomb explosion at the specified coordinates, clears resulting lines, and updates the board matrix.
+     *
+     * @param board   board whose matrix will be mutated.
+     * @param centerX x-coordinate of the explosion centre.
+     * @param centerY y-coordinate of the explosion centre.
+     * @return {@link ClearRow} describing removed lines and the new matrix.
+     */
     public static ClearRow applyBomb(Board board, int centerX, int centerY) {
         int[][] exploded = MatrixOperations.explodeBomb(
                 board.getBoardMatrix(),

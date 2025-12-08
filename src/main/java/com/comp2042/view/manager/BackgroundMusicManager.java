@@ -3,6 +3,14 @@ package com.comp2042.view.manager;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
+/**
+ * The {@code BackgroundMusicManager} class controls playback of looping music tracks for different screens and
+ * modes, caching a single player instance and exposing volume control.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/view/manager/BackgroundMusicManager.java">
+ * BackgroundMusicManager.java</a>
+ */
 public final class BackgroundMusicManager {
 
     private static final String MAIN_MUSIC_PATH = "audio/mainmusic.mp3";
@@ -16,18 +24,30 @@ public final class BackgroundMusicManager {
     private BackgroundMusicManager() {
     }
 
+    /**
+     * Plays the main menu music on loop.
+     */
     public static void playMainMusic() {
         playLoop(MAIN_MUSIC_PATH);
     }
 
+    /**
+     * Plays the Explore China music on loop.
+     */
     public static void playExploreChinaMusic() {
         playLoop(EXPLORE_CHINA_MUSIC_PATH);
     }
 
+    /**
+     * Plays the time-racing music on loop.
+     */
     public static void playTimeRacingMusic() {
         playLoop(TIME_RACING_MUSIC_PATH);
     }
 
+    /**
+     * Stops and disposes of the current music player, if any.
+     */
     public static void stop() {
         if (currentPlayer != null) {
             currentPlayer.stop();
@@ -37,6 +57,11 @@ public final class BackgroundMusicManager {
         }
     }
 
+    /**
+     * Adjusts the playback volume, clamped between 0 and 1.
+     *
+     * @param newVolume desired volume level.
+     */
     public static void setVolume(double newVolume) {
         volume = Math.max(0.0, Math.min(1.0, newVolume));
         if (currentPlayer != null) {

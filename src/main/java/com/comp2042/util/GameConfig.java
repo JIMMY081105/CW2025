@@ -1,5 +1,13 @@
 package com.comp2042.util;
 
+/**
+ * The {@code GameConfig} class centralises static gameplay constants such as board dimensions, scoring values,
+ * spawn positions, and preview settings, ensuring consistent configuration across the application.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/util/GameConfig.java">
+ * GameConfig.java</a>
+ */
 public final class GameConfig {
 
     public static final int BOARD_HEIGHT = 23;
@@ -22,6 +30,11 @@ public final class GameConfig {
 
     public static final int INITIAL_QUEUE_SIZE = 10;
 
+    /**
+     * Returns the number of rows visible to the player, excluding the hidden spawn buffer.
+     *
+     * @return visible row count.
+     */
     public static int visibleRows() {
         return BOARD_HEIGHT - HIDDEN_BUFFER_ROWS;
     }

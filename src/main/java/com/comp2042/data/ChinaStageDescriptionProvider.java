@@ -7,6 +7,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * The {@code ChinaStageDescriptionProvider} class loads Explore China stage metadata from a bundled properties
+ * file and exposes immutable descriptions for use by the China stage manager.
+ *
+ * <p>See the source code at
+ * <a href="https://github.com/JIMMY081105/CW2025/tree/master/src/main/java/com/comp2042/data/ChinaStageDescriptionProvider.java">
+ * ChinaStageDescriptionProvider.java</a>
+ */
 public final class ChinaStageDescriptionProvider {
 
     public static final class ChinaStage {
@@ -31,13 +39,21 @@ public final class ChinaStageDescriptionProvider {
         public String getDescription() {
             return description;
         }
+
+        @Override
+        public String toString() {
+            return "ChinaStage{" +
+                    "name='" + name + '\'' +
+                    ", backgroundResource='" + backgroundResource + '\'' +
+                    '}';
+        }
     }
 
     private static final String CONFIG_FILE = "china_stages.properties";
     private static final List<ChinaStage> STAGES = loadStages();
 
     private ChinaStageDescriptionProvider() {
-        
+
     }
 
     public static List<ChinaStage> getStages() {
@@ -46,6 +62,8 @@ public final class ChinaStageDescriptionProvider {
 
     private static List<ChinaStage> loadStages() {
         Properties props = new Properties();
+
+        System.out.println("[ChinaStageDescriptionProvider] Loading properties from: " + CONFIG_FILE);
 
         try (InputStream in = ChinaStageDescriptionProvider.class
                 .getClassLoader()
@@ -61,6 +79,8 @@ public final class ChinaStageDescriptionProvider {
         }
 
         int count = Integer.parseInt(props.getProperty("stage.count", "0"));
+        System.out.println("[ChinaStageDescriptionProvider] stage.count=" + count);
+
         if (count <= 0) {
             throw new IllegalStateException("Invalid or missing 'stage.count' in " + CONFIG_FILE);
         }
@@ -78,7 +98,9 @@ public final class ChinaStageDescriptionProvider {
                 throw new IllegalStateException("Missing properties for " + prefix + " in " + CONFIG_FILE);
             }
 
-            stages.add(new ChinaStage(name, image, description));
+            ChinaStage stage = new ChinaStage(name, image, description);
+            System.out.println("[ChinaStageDescriptionProvider] Loaded " + stage);
+            stages.add(stage);
         }
 
         return Collections.unmodifiableList(stages);
