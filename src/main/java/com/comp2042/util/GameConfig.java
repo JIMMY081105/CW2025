@@ -16,11 +16,11 @@ public final class GameConfig {
 
     public static final int GAME_TICK_MS = 400;
     public static final int MIN_GAME_TICK_MS = 120;
-    public static final int CHINA_STAGE_SPEED_STEP = 10;
+    public static final int CHINA_STAGE_SPEED_STEP = 7;
 
     public static final int SCORE_PER_LINE = 50;
     public static final int MANUAL_DOWN_SCORE = 1;
-    public static final int POINTS_PER_CHINA_STAGE = 200;
+    public static final int POINTS_PER_CHINA_STAGE = 1000;
     public static final int POINTS_PER_BOMB = 1000;
 
     public static final int SPAWN_X = 4;

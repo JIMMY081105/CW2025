@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  */
 public final class BrickFactory {
 
-    private static boolean plusEnabled = true;
+    private static boolean plusEnabled = false;
 
     private static final List<Supplier<Brick>> BRICK_SUPPLIERS = Arrays.asList(
             IBrick::new,
